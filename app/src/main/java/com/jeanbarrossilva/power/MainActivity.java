@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
             equal = findViewById(R.id.equal);
 
             dialogBetaVersion();
-            // dialogReleaseNotes();
 
             inputNumber();
             inputDecimalSeparator();
@@ -201,12 +200,8 @@ public class MainActivity extends AppCompatActivity {
             dialogWelcomeTo();
 
             // Declares that, obviously, from now on, it won't be the first time the app is launched.
-            preferencesEditor.putBoolean("firstLaunch", false);
-        }
-
-        // Checks if this is a beta version of the app.
-        if (versionName.contains("beta")) {
-            dialogReleaseNotes();
+            preferencesEditor.putBoolean("firstLaunch", false)
+                    .apply();
         }
     }
 
@@ -284,18 +279,6 @@ public class MainActivity extends AppCompatActivity {
         dialogOKTitle.setText(getString(R.string.beta_version_dialog_title));
         dialogOKMessage.setText(getString(R.string.beta_version_dialog_message));
         dialogOK.show();
-    }
-
-    // Shows a dialog about the release notes when the app is updated.
-    private void dialogReleaseNotes() {
-        if (preferences.getBoolean("firstLaunchSinceUpdate", true)) {
-            dialogOKTitle.setText(getString(R.string.release_notes_dialog_title));
-            dialogOKMessage.setText(String.format(getString(R.string.release_notes_dialog_message), appName, versionName));
-            dialogOK.show();
-
-            // Declares that, from now on, it isn't the first time the user opened the app since its last update.
-            preferencesEditor.putBoolean("firstLaunchSinceUpdate", false);
-        }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

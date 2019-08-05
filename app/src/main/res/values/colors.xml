@@ -4,5 +4,8 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     
-    <color name="calculator">#121212</color>
+    <color name="background">@android:color/white</color>
+    <color name="calculator">#F7F7F7</color>
+    <color name="operator">#F0F0F0</color>
+    <color name="number">#F0F0F0</color>
 </resources>
