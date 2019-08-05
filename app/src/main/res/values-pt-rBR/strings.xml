@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="beta_version_dialog_message">Você está usando uma versão beta do Power. Isso significa que podem haver alguns bugs, crashes e/ou recursos ausentes.</string>
+    <string name="beta_version_dialog_title">Versão beta</string>
+    <string name="clear">Limpar</string>
+    <string name="clear_all">Limpar tudo</string>
+    <string name="delete_dialog_message">Tem certeza de que deseja deletar? Uma vez feito, não há como voltar atrás.</string>
+    <string name="delete_dialog_title">Deletar</string>
+    <string name="maybe_later">Talvez mais tarde</string>
+    <string name="message">Mensagem</string>
+    <string name="no">Não</string>
+    <string name="ok">Feito</string>
+    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:</string>
+    <string name="release_notes_dialog_title">Notas de lançamento</string>
+    <string name="title">Título</string>
+    <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>
+    <string name="welcome_to_dialog_title">Bem-vindo ao %1$s!</string>
+    <string name="ac">Limpar</string>
+    <string name="yes">Sim</string>
+    <string name="error">Erro</string>
+    <string name="incompatible_device_dialog_title">Dispositivo incompatível</string>
+    <string name="incompatible_device_dialog_message">Infelizmente, o seu dispositivo é incompatível com %1$s devido ao seu tamanho de tela. Clique em \"OK\" para fechar o aplicativo.</string>
+</resources>
