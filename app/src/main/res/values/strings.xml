@@ -12,7 +12,7 @@
     <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap "OK" to the app.</string>
     <string name="welcome_to_dialog_message">%1$s is a powerful calculator that lets you easily calculate expressions and convert units like Celsius to Fahrenheit, meter to kilometer, liter to barrel and much more! This is CalcOne, but taken to a whole new level.\n\nHope you enjoy it!</string>
     <string name="beta_version_dialog_message">You are using a beta version of Power. That means there may be some bugs, crashes and/or missing features.</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:</string>
+    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nRemoval of a subtle shadow previously present on the calculator buttons.</string>
     <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
     
     <string name="ok">OK</string>
