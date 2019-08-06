@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void dialogReleaseNotes() {
         dialogOKTitle.setText(getString(R.string.release_notes_dialog_title));
-        dialogOKMessage.setText(getString(R.string.release_notes_dialog_message));
+        dialogOKMessage.setText(String.format(getString(R.string.release_notes_dialog_message), appName, versionName));
         dialogOK.show();
     }
 

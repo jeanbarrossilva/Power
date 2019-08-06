@@ -10,7 +10,7 @@
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
     <string name="ok">Feito</string>
-    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nRemoção de uma sombra sutil anteriormente presente nos botões da calculadora.</string>
+    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nCorreção de um bug que não exibia o nome e a versão do aplicativo no diálogo "Notas de atualização";\n\nA cor da barra de status é preta ao usar ambos os modos dia e noite.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>
