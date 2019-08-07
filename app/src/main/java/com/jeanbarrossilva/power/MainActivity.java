@@ -3,10 +3,12 @@ package com.jeanbarrossilva.power;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -31,6 +34,8 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
     String appName;
     String versionName;
+
+    private static final int HIDDEN_MODE = 1;
 
     String empty;
     String space;
@@ -50,7 +55,11 @@ public class MainActivity extends AppCompatActivity {
     Button dialogYesNoYesButton;
 
     int theme;
-    boolean isNight;
+    boolean isHiddenModeEnabled;
+
+    Button settings;
+
+    String hiddenModePassword;
 
     HorizontalScrollView inputHorizontalScrollView;
     EditText input;
@@ -136,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            isNight = preferences.getBoolean("isNight", true);
+            settings = findViewById(R.id.settings);
 
             inputHorizontalScrollView = findViewById(R.id.input_horizontal_scroll_view);
             input = findViewById(R.id.input);
@@ -176,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
             equal = findViewById(R.id.equal);
 
+            settings();
+
             inputNumber();
             inputDecimalSeparator();
             inputOperator();
@@ -195,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Checks if this is the first time the app is being launched.
         if (preferences.getBoolean("firstLaunch", true)) {
+            // Hidden Mode is disabled when the app is first launched.
+            isHiddenModeEnabled = false;
+
             dialogWelcomeTo();
             dialogBetaVersion();
 
@@ -214,23 +228,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data != null) {
+            switch (requestCode) {
+                case HIDDEN_MODE:
+                    Toast.makeText(this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
+                    hiddenModePassword = data.getStringExtra("password");
+
+                    dialogHiddenMode();
+                    isHiddenModeEnabled = true;
+
+                    break;
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "Activity returned null.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration configuration) {
         theme = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
         // Changes the app theme based on if the system dark mode is enabled or not.
         switch(theme) {
             case Configuration.UI_MODE_NIGHT_YES:
-                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
-
+                night(true);
                 System.out.println("Night mode has been enabled.");
-                isNight = true;
 
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
-                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
-
+                night(false);
                 System.out.println("Night mode has been disabled.");
-                isNight = false;
 
                 break;
         }
@@ -262,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void dialogIncompatibleDevice() {
         dialogOKTitle.setText(getString(R.string.incompatible_device_dialog_title));
-        dialogOKMessage.setText(getString(R.string.incompatible_device_dialog_message));
+        dialogOKMessage.setText(String.format(getString(R.string.incompatible_device_dialog_message), appName));
 
         dialogOKButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
     // Shows a dialog warning that the actual build is a beta version if, of course, it is, in fact, a beta version.
     private void dialogBetaVersion() {
         dialogOKTitle.setText(getString(R.string.beta_version_dialog_title));
-        dialogOKMessage.setText(getString(R.string.beta_version_dialog_message));
+        dialogOKMessage.setText(String.format(getString(R.string.beta_version_dialog_message), appName));
         dialogOK.show();
     }
 
@@ -293,6 +321,42 @@ public class MainActivity extends AppCompatActivity {
         dialogOKTitle.setText(getString(R.string.release_notes_dialog_title));
         dialogOKMessage.setText(String.format(getString(R.string.release_notes_dialog_message), appName, versionName));
         dialogOK.show();
+    }
+
+    private void dialogHiddenMode() {
+        dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
+        dialogYesNoMessage.setText(getString(R.string.hidden_mode_enter_dialog_message));
+
+        dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, HiddenMode.class));
+            }
+        });
+
+        dialogYesNo.show();
+    }
+
+    private void settings() {
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), HIDDEN_MODE);
+            }
+        });
+    }
+
+    private void night(boolean isNight) {
+        if (isNight) {
+            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+            preferencesEditor.putBoolean("isNight", true);
+
+            System.out.println("Night mode has been enabled.");
+        } else {
+            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
+            preferencesEditor.putBoolean("isNight", false);
+            System.out.println("Night mode has been disabled.");
+        }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

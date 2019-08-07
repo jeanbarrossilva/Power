@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="beta_version_dialog_message">Você está usando uma versão beta do Power. Isso significa que podem haver alguns bugs, crashes e/ou recursos ausentes.</string>
+    <string name="beta_version_dialog_message">Você está usando uma versão beta do %1$s. Isso significa que podem haver alguns bugs, crashes e/ou recursos ausentes.</string>
     <string name="beta_version_dialog_title">Versão beta</string>
     <string name="clear">Limpar</string>
     <string name="clear_all">Limpar tudo</string>
@@ -10,7 +10,7 @@
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
     <string name="ok">Feito</string>
-    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nCorreção de um bug que não exibia o nome e a versão do aplicativo no diálogo "Notas de atualização";\n\nA cor da barra de status é preta ao usar ambos os modos dia e noite.</string>
+    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nAdição do menu Ajustes;\nAdição do Modo Oculto;\nAdição da opção "Enviar feedback";\nAdição de créditos e número da versão do aplicativo.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>
@@ -20,4 +20,24 @@
     <string name="error">Erro</string>
     <string name="incompatible_device_dialog_title">Dispositivo incompatível</string>
     <string name="incompatible_device_dialog_message">Infelizmente, o seu dispositivo é incompatível com %1$s devido ao seu tamanho de tela. Clique em \"OK\" para fechar o aplicativo.</string>
+    <string name="settings">Ajustes</string>
+    <string name="created_by">Criado por Jean Silva</string>
+    <string name="version">Versão %1$s</string>
+    <string name="night_incompatibility">O seu dispositivo não é compatível com o modo Noite.</string>
+    <string name="version_beta">Versão %1$s (beta)</string>
+    <string name="hidden_mode">Modo Oculto</string>
+    <string name="hidden_mode_dialog_title">Modo Oculto</string>
+    <string name="hidden_mode_dialog_message">O Modo Oculto é um recurso que permite que você armazene imagens de forma segura na calculadora com uma senha. Gostaria de habilitá-lo?</string>
+    <string name="send_feedback">Enviar feedback</string>
+    <string name="string_continue">Continuar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="hidden_mode_set_password_dialog_message">Defina um PIN de 4 dígitos.</string>
+    <string name="hidden_mode_set_password_dialog_disclaimer">Se esquecer o PIN, você não poderá mais acessar o Modo Oculto. Procure anotá-lo em algum lugar.</string>
+    <string name="hidden_mode_set_password_dialog_title">Modo Oculto</string>
+    <string name="hidden_mode_enter_dialog_message">Gostaria de entrar no Modo Oculto agora?</string>
+    <string name="hidden_mode_set_up_success">O Modo Oculto foi configurado com sucesso. Digite seu PIN e toque em \"=\" para entrar.</string>
+    <string name="hidden_mode_disable_dialog_message">A desativação do Modo Oculto removerá todos os arquivos armazenados. Gostaria de continuar?</string>
+    <string name="hidden_mode_disable_dialog_title">Desativar o Modo Oculto</string>
+    <string name="hidden_mode_disable">A desativação do Modo Oculto removerá todos os arquivos armazenados.</string>
+    <string name="send_feedback_email_subject">Feedback do %1$s</string>
 </resources>

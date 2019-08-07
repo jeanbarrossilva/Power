@@ -5,20 +5,39 @@
     <string name="incompatible_device_dialog_title">Incompatible device</string>
     <string name="welcome_to_dialog_title">Welcome to %1$s!</string>
     <string name="beta_version_dialog_title">Beta version</string>
+    <string name="hidden_mode_dialog_title">Hidden Mode</string>
+    <string name="hidden_mode_set_password_dialog_title">Hidden Mode</string>
+    <string name="hidden_mode_disable_dialog_title">Disable Hidden Mode</string>
     <string name="release_notes_dialog_title">Release notes</string>
     <string name="delete_dialog_title">Delete</string>
     
     <string name="message">Message</string>
     <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap "OK" to the app.</string>
     <string name="welcome_to_dialog_message">%1$s is a powerful calculator that lets you easily calculate expressions and convert units like Celsius to Fahrenheit, meter to kilometer, liter to barrel and much more! This is CalcOne, but taken to a whole new level.\n\nHope you enjoy it!</string>
-    <string name="beta_version_dialog_message">You are using a beta version of Power. That means there may be some bugs, crashes and/or missing features.</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t show the app name and version in the "Release notes" dialog;\n\nThe status bar color is now black when using both day and night modes.</string>
+    <string name="beta_version_dialog_message">You are using a beta version of %1$s. That means there may be some bugs, crashes and/or missing features.</string>
+    <string name="hidden_mode_dialog_message">Hidden Mode is a feature that allows you to securely store images in the calculator with a password. Would you like to enable it?</string>
+    <string name="hidden_mode_set_password_dialog_message">Set a 4-digit PIN.</string>
+    <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
+    <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
+    <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
+    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nSettings menu added;\nHidden Mode added;\n"Send feedback" option added;\nCredits and app version number added.</string>
     <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
     
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
+    <string name="string_continue">Continue</string>
     <string name="no">No</string>
+    <string name="cancel">Cancel</string>
     <string name="maybe_later">Maybe later</string>
+    
+    <string name="settings">Settings</string>
+    <string name="hidden_mode">Hidden Mode</string>
+    <string name="hidden_mode_disable">Disabling Hidden Mode will remove all the stored files.</string>
+    <string name="send_feedback">Send feedback</string>
+    <string name="send_feedback_email_subject">%1$s feedback</string>
+    <string name="created_by">Created by Jean Silva</string>
+    <string name="version">Version %1$s</string>
+    <string name="version_beta">Version %1$s (beta)</string>
     
     <string name="zero" translatable="false">0</string>
     <string name="dot" translatable="false">.</string>
@@ -45,5 +64,8 @@
     <string name="times" translatable="false">×</string>
     <string name="division" translatable="false">÷</string>
     
+    <string name="hidden_mode_set_up_success">Hidden Mode was successfully set up. Type in your PIN and hit \"=\" to enter.</string>
+    
     <string name="error">Error</string>
+    <string name="night_incompatibility">Your device is not compatible with Night mode.</string>
 </resources>

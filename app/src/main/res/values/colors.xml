@@ -5,7 +5,11 @@
     <color name="colorAccent">#D81B60</color>
     
     <color name="background">@android:color/white</color>
+    <color name="settings">#F7F7F7</color>
+    <color name="setting">#F7F7F7</color>
+    <color name="activity_additional_info">#F7F7F7</color>
     <color name="calculator">#F7F7F7</color>
     <color name="operator">#FAFAFA</color>
     <color name="number">#FAFAFA</color>
+    <color name="equal">#03A9F4</color>
 </resources>
