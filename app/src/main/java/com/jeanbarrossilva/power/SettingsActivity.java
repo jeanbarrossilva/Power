@@ -99,8 +99,6 @@ public class SettingsActivity extends AppCompatActivity {
         settingSendFeedback();
         settingCollaborate();
 
-        rememberSettingHiddenMode();
-
         version();
     }
 
