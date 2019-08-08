@@ -6,9 +6,15 @@
     
     <color name="background">@android:color/black</color>
     <color name="settings">#2B2B2B</color>
+    <color name="settings_pressed">#313335</color>
     <color name="setting">#2B2B2B</color>
+    <color name="setting_pressed">#313335</color>
+    <color name="background_add">#181818</color>
+    <color name="icon_add">@android:color/white</color>
     <color name="activity_additional_info">#2B2B2B</color>
-    <color name="calculator">#CACACA</color>
+    <color name="calculator">#101010</color>
+    <color name="clear_all">#E05B5B</color>
+    <color name="delete">#E05B5B</color>
     <color name="operator">#181818</color>
     <color name="number">#181818</color>
     <color name="equal">@android:color/white</color>

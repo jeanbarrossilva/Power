@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -30,6 +29,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import id.voela.actrans.AcTrans;
 
 public class MainActivity extends AppCompatActivity {
     String appName;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     int theme;
     boolean isHiddenModeEnabled;
+
+    AcTrans.Builder acTrans;
 
     Button settings;
 
@@ -145,7 +148,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            acTrans = new AcTrans.Builder(MainActivity.this);
+
             settings = findViewById(R.id.settings);
+            hiddenModePassword = preferences.getString("hiddenModePassword", null);
 
             inputHorizontalScrollView = findViewById(R.id.input_horizontal_scroll_view);
             input = findViewById(R.id.input);
@@ -232,16 +238,14 @@ public class MainActivity extends AppCompatActivity {
         if (data != null) {
             switch (requestCode) {
                 case HIDDEN_MODE:
-                    Toast.makeText(this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
-                    hiddenModePassword = data.getStringExtra("password");
+                    preferencesEditor.putString("hiddenModePassword", data.getStringExtra("password"))
+                            .apply();
 
-                    dialogHiddenMode();
+                    Toast.makeText(MainActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
                     isHiddenModeEnabled = true;
 
                     break;
             }
-        } else {
-            Toast.makeText(MainActivity.this, "Activity returned null.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -249,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration configuration) {
         theme = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
-        // Changes the app theme based on if the system dark mode is enabled or not.
+        // Changes the app theme based on if the Android Oreo (Android 8, API 26) Night mode is enabled or not.
         switch(theme) {
             case Configuration.UI_MODE_NIGHT_YES:
                 night(true);
@@ -323,25 +327,12 @@ public class MainActivity extends AppCompatActivity {
         dialogOK.show();
     }
 
-    private void dialogHiddenMode() {
-        dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
-        dialogYesNoMessage.setText(getString(R.string.hidden_mode_enter_dialog_message));
-
-        dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, HiddenMode.class));
-            }
-        });
-
-        dialogYesNo.show();
-    }
-
     private void settings() {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), HIDDEN_MODE);
+                acTrans.performSlideToBottom();
             }
         });
     }
@@ -365,72 +356,76 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void inputNumber() {
-        if (!inputHasReachedCharLimit()) {
-            View.OnClickListener onClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!inputHasReachedCharLimit()) {
                     number = (Button) view;
                     input.append(number.getText());
 
                     System.out.println("Number '" + number.getText() + "' added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
-            };
-
-            for (int id: numbers) {
-                findViewById(id).setOnClickListener(onClickListener);
             }
+        };
+
+        for (int id: numbers) {
+            findViewById(id).setOnClickListener(onClickListener);
         }
     }
 
     private void inputDecimalSeparator() {
-        if (!inputHasReachedCharLimit()) {
-            decimalSeparator.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        decimalSeparator.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!inputHasReachedCharLimit()) {
                     input.append(decimalSeparator.getText());
                     System.out.println("Decimal separator added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
-            });
-        }
+            }
+        });
     }
 
     private void inputOperator() {
-        if (!inputHasReachedCharLimit()) {
-            View.OnClickListener onClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!inputHasReachedCharLimit()) {
                     operator = (Button) view;
                     input.append(space + operator.getText() + space);
 
                     System.out.println("Operator '" + operator.getText() + "' added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
-            };
-
-            for (int id: operators) {
-                findViewById(id).setOnClickListener(onClickListener);
             }
+        };
+
+        for (int id: operators) {
+            findViewById(id).setOnClickListener(onClickListener);
         }
     }
 
     private void delete() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                input.setText(calc.substring(0, calc.length() - 1));
-                System.out.println("Character deleted.");
-            }
-        });
+        if (!calc.isEmpty()) {
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    input.setText(calc.substring(0, calc.length() - 1));
+                    System.out.println("Character deleted.");
+                }
+            });
+        }
     }
 
     private void clearAll() {
         clearAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                input.setText(empty);
-                System.out.println("Input cleared.");
+                if (!calc.isEmpty()) {
+                    input.setText(empty);
+                    System.out.println("Input cleared.");
+                }
             }
         });
     }
@@ -439,38 +434,51 @@ public class MainActivity extends AppCompatActivity {
         equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
-                    if (calc.contains(plus)) {
-                        calc = calc.replace(space + plus + space, plus);
+                if (!calc.isEmpty()) {
+                    if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
+                        if (calc.contains(plus)) {
+                            calc = calc.replace(space + plus + space, plus);
+                        }
+
+                        if (calc.contains(minus)) {
+                            calc = calc.replace(space + minus + space, minus);
+                        }
+
+                        if (calc.contains(times)) {
+                            calc = calc.replace(space + times + space, "*");
+                        }
+
+                        if (calc.contains(division)) {
+                            calc = calc.replace(space + division + space, "/");
+                        }
+
+                        System.out.println("Transformed calc: " + calc);
                     }
 
-                    if (calc.contains(minus)) {
-                        calc = calc.replace(space + minus + space, minus);
+                    if (isHiddenModeEnabled) {
+                        if (hiddenModePassword != null) {
+                            if (calc.equals(hiddenModePassword)) {
+                                input.setText(empty);
+                                startActivity(new Intent(MainActivity.this, HiddenMode.class));
+                            }
+                        } else {
+                            System.out.println("'hiddenModePassword' is null. Maybe something's wrong?");
+                        }
                     }
 
-                    if (calc.contains(times)) {
-                        calc = calc.replace(space + times + space, "*");
+                    try {
+                        expression = new ExpressionBuilder(calc).build();
+                        result = String.valueOf(expression.evaluate());
+
+                        if (result.endsWith(".0")) {
+                            result = result.replace(".0", empty);
+                        }
+
+                        input.setText(result);
+                        System.out.println("Calc result: " + result);
+                    } catch (Exception exception) {
+                        input.setText(getString(R.string.error));
                     }
-
-                    if (calc.contains(division)) {
-                        calc = calc.replace(space + division + space, "/");
-                    }
-
-                    System.out.println("Transformed calc: " + calc);
-                }
-
-                try {
-                    expression = new ExpressionBuilder(calc).build();
-                    result = String.valueOf(expression.evaluate());
-
-                    if (result.endsWith(".0")) {
-                        result = result.replace(".0", empty);
-                    }
-
-                    input.setText(result);
-                    System.out.println("Calc result: " + result);
-                } catch(Exception exception) {
-                    input.setText(getString(R.string.error));
                 }
             }
         });

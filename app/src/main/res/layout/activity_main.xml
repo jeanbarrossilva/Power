@@ -336,7 +336,7 @@
                 android:alpha="0.8"
                 android:text="@string/equal"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
+                android:textColor="?android:attr/textColorPrimaryInverse"
                 android:textSize="25sp"
                 android:background="@drawable/equal"
                 app:layout_constraintStart_toEndOf="@+id/decimal_separator"

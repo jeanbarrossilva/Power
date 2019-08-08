@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
+import id.voela.actrans.AcTrans;
+
 public class SettingsActivity extends AppCompatActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
@@ -38,6 +40,8 @@ public class SettingsActivity extends AppCompatActivity {
     Button dialogYesNoYesButton;
     Button dialogYesNoNoButton;
 
+    AcTrans.Builder acTrans;
+
     TextView activityTitle;
     TextView activitySubtitle;
 
@@ -45,6 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
     String pin;
 
     ConstraintLayout settingSendFeedback;
+    ConstraintLayout settingCollaborate;
 
     TextView version;
 
@@ -79,81 +84,112 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        acTrans = new AcTrans.Builder(SettingsActivity.this);
+
         activityTitle = findViewById(R.id.activity_title);
         activitySubtitle = findViewById(R.id.activity_subtitle);
 
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_preview_switch);
         settingSendFeedback = findViewById(R.id.setting_send_feedback);
+        settingCollaborate = findViewById(R.id.setting_collaborate);
 
         version = findViewById(R.id.version);
 
         settingHiddenMode();
         settingSendFeedback();
+        settingCollaborate();
 
         rememberSettingHiddenMode();
 
         version();
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+
+        finish();
+        acTrans.performSlideToTop();
+    }
+
     private void settingHiddenMode() {
-        settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        // Hidden mode is temporarily unavailable.
+        settingHiddenMode.setChecked(false);
+        settingHiddenMode.setClickable(false);
+
+        /* settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     preferencesEditor.putBoolean("isHiddenModeEnabled", true)
                             .apply();
 
-                    dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
-                    dialogYesNoMessage.setText(getString(R.string.hidden_mode_dialog_message));
-
-                    dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialogYesNo.dismiss();
-
-                            Dialog dialogInput = new Dialog(SettingsActivity.this);
-                            Objects.requireNonNull(dialogInput.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            dialogInput.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialogInput.setContentView(R.layout.dialog_input);
-
-                            TextView dialogInputTitle = dialogInput.findViewById(R.id.title);
-                            dialogInputTitle.setText(getString(R.string.hidden_mode_set_password_dialog_title));
-
-                            TextView dialogInputMessage = dialogInput.findViewById(R.id.message);
-                            dialogInputMessage.setText(getString(R.string.hidden_mode_set_password_dialog_message));
-
-                            final EditText dialogInputInput = dialogInput.findViewById(R.id.input);
-                            dialogInputInput.setInputType(InputType.TYPE_CLASS_NUMBER);
-
-                            TextView dialogInputButton = dialogInput.findViewById(R.id.ok);
-
-                            dialogInputButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    pin = dialogInputInput.getText().toString();
-
-                                    if (pin.length() == 4) {
-                                        settingsActivityToMainActivity.putExtra("password", pin);
-
-                                        setResult(RESULT_OK, settingsActivityToMainActivity);
-                                        finish();
-                                    } else {
-                                        Toast.makeText(SettingsActivity.this, "The PIN must contain only 4 digits.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-
-                            dialogInput.show();
-                        }
-                    });
-
-                    dialogYesNo.show();
+                    dialogSettingHiddenModeEnable(buttonView);
                 } else {
                     preferencesEditor.putBoolean("isHiddenModeEnabled", false)
                             .apply();
                 }
             }
+        }); */
+    }
+
+    private void dialogSettingHiddenModeEnable(final CompoundButton compoundButton) {
+        dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
+        dialogYesNoMessage.setText(getString(R.string.hidden_mode_dialog_message));
+
+        dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogYesNo.dismiss();
+                dialogSettingHiddenModePassword();
+            }
         });
+
+        dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                compoundButton.setChecked(false);
+                dialogYesNo.dismiss();
+            }
+        });
+
+        dialogYesNo.show();
+    }
+
+    private void dialogSettingHiddenModePassword() {
+        Dialog dialogInput = new Dialog(SettingsActivity.this);
+        Objects.requireNonNull(dialogInput.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogInput.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogInput.setContentView(R.layout.dialog_input);
+
+        TextView dialogInputTitle = dialogInput.findViewById(R.id.title);
+        dialogInputTitle.setText(getString(R.string.hidden_mode_set_password_dialog_title));
+
+        TextView dialogInputMessage = dialogInput.findViewById(R.id.message);
+        dialogInputMessage.setText(getString(R.string.hidden_mode_set_password_dialog_message));
+
+        final EditText dialogInputInput = dialogInput.findViewById(R.id.input);
+        dialogInputInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        TextView dialogInputButton = dialogInput.findViewById(R.id.ok);
+
+        dialogInputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pin = dialogInputInput.getText().toString();
+
+                if (pin.length() == 4) {
+                    settingsActivityToMainActivity.putExtra("password", pin);
+
+                    setResult(RESULT_OK, settingsActivityToMainActivity);
+                    finish();
+                } else {
+                    Toast.makeText(SettingsActivity.this, "The PIN must contain only 4 digits.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        dialogInput.show();
     }
 
     private void rememberSettingHiddenMode() {
@@ -170,9 +206,19 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
-                email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName));
+                email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
 
                 startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
+            }
+        });
+    }
+
+    private void settingCollaborate() {
+        settingCollaborate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
+                startActivity(powerGitHubRepo);
             }
         });
     }

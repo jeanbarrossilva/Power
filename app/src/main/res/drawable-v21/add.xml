@@ -3,9 +3,9 @@
     
     <item android:state_pressed="false">
         <shape>
-            <solid android:color="@color/delete" />
-            <corners android:radius="15dp" />
+            <solid android:color="@color/background_add" />
+            <corners android:radius="100dp" />
         </shape>
     </item>
-    
+
 </selector>
