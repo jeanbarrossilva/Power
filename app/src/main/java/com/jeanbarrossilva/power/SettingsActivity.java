@@ -42,6 +42,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     AcTrans.Builder acTrans;
 
+    Button calculator;
+
     TextView activityTitle;
     TextView activitySubtitle;
 
@@ -86,6 +88,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         acTrans = new AcTrans.Builder(SettingsActivity.this);
 
+        calculator = findViewById(R.id.calculator);
+
         activityTitle = findViewById(R.id.activity_title);
         activitySubtitle = findViewById(R.id.activity_subtitle);
 
@@ -94,6 +98,8 @@ public class SettingsActivity extends AppCompatActivity {
         settingCollaborate = findViewById(R.id.setting_collaborate);
 
         version = findViewById(R.id.version);
+
+        calculator();
 
         settingHiddenMode();
         settingSendFeedback();
@@ -108,6 +114,18 @@ public class SettingsActivity extends AppCompatActivity {
 
         finish();
         acTrans.performSlideToTop();
+    }
+
+    private void calculator() {
+        calculator.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                acTrans.performSlideToTop();
+
+                System.out.println("Calculator opened.");
+            }
+        });
     }
 
     private void settingHiddenMode() {

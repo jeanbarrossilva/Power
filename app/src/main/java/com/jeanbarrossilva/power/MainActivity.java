@@ -331,8 +331,10 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), HIDDEN_MODE);
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 acTrans.performSlideToBottom();
+
+                System.out.println("Settings opened.");
             }
         });
     }
@@ -407,15 +409,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void delete() {
-        if (!calc.isEmpty()) {
-            delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!calc.isEmpty()) {
                     input.setText(calc.substring(0, calc.length() - 1));
                     System.out.println("Character deleted.");
                 }
-            });
-        }
+            }
+        });
     }
 
     private void clearAll() {
