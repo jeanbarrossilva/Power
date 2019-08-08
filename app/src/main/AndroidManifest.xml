@@ -29,8 +29,14 @@
             </intent-filter>
             
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".HiddenMode" />
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".HiddenMode"
+            android:screenOrientation="portrait" />
 
     </application>
 
