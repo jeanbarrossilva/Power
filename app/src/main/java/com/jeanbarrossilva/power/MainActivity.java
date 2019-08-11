@@ -8,9 +8,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -19,6 +21,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.github.nisrulz.sensey.Sensey;
+import com.github.nisrulz.sensey.TouchTypeDetector;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -35,6 +40,8 @@ import id.voela.actrans.AcTrans;
 public class MainActivity extends AppCompatActivity {
     String appName;
     String versionName;
+
+    ConstraintLayout activityMain;
 
     private static final int HIDDEN_MODE = 1;
 
@@ -58,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
     int theme;
     boolean isHiddenModeEnabled;
 
+    Sensey sensey;
     AcTrans.Builder acTrans;
-
-    Button settings;
 
     String hiddenModePassword;
 
@@ -85,10 +91,15 @@ public class MainActivity extends AppCompatActivity {
     String minus;
     String times;
     String division;
+
+    String asterisk;
+    String slash;
+
     int[] operators = {
             R.id.plus, R.id.minus, R.id.times, R.id.division
     };
 
+    ImageButton calculatorMode;
     Button clearAll;
     ImageButton delete;
     Button equal;
@@ -100,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        activityMain = findViewById(R.id.activity_main);
 
         // OK dialog (dialog with an OK neutral button) declaration.
         dialogOK = new Dialog(this);
@@ -148,9 +161,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            sensey = Sensey.getInstance();
             acTrans = new AcTrans.Builder(MainActivity.this);
 
-            settings = findViewById(R.id.settings);
+            Sensey.getInstance().init(this);
+
             hiddenModePassword = preferences.getString("hiddenModePassword", null);
 
             inputHorizontalScrollView = findViewById(R.id.input_horizontal_scroll_view);
@@ -180,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
             decimalFormat = new DecimalFormat(pattern, language);
 
+            calculatorMode = findViewById(R.id.calculator_mode);
             delete = findViewById(R.id.delete);
             clearAll = findViewById(R.id.clear_all);
             decimalSeparator = findViewById(R.id.decimal_separator);
@@ -189,9 +205,13 @@ public class MainActivity extends AppCompatActivity {
             times = getString(R.string.times);
             division = getString(R.string.division);
 
+            asterisk = "*";
+            slash = "/";
+
             equal = findViewById(R.id.equal);
 
             settings();
+            calculatorMode();
 
             inputNumber();
             inputDecimalSeparator();
@@ -204,6 +224,11 @@ public class MainActivity extends AppCompatActivity {
             setContentView(R.layout.activity_blank);
             dialogIncompatibleDevice();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 
     @Override
@@ -327,19 +352,77 @@ public class MainActivity extends AppCompatActivity {
         dialogOK.show();
     }
 
-    private void settings() {
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                acTrans.performSlideToBottom();
-
-                System.out.println("Settings opened.");
-            }
-        });
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        sensey.setupDispatchTouchEvent(event);
+        return super.dispatchTouchEvent(event);
     }
 
-    private void night(boolean isNight) {
+    @SuppressLint("ClickableViewAccessibility")
+    private void settings() {
+        TouchTypeDetector.TouchTypListener touchTypeListener = new TouchTypeDetector.TouchTypListener() {
+            @Override
+            public void onTwoFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onThreeFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onDoubleTap() {
+
+            }
+
+            @Override
+            public void onScroll(int scrollDirection) {
+                switch (scrollDirection) {
+                    case TouchTypeDetector.SCROLL_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_LEFT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_DOWN:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSingleTap() {
+
+            }
+
+            @Override
+            public void onSwipe(int swipeDirection) {
+                switch (swipeDirection) {
+                    case TouchTypeDetector.SWIPE_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_LEFT:
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        acTrans.performSlideToLeft();
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_DOWN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onLongPress() {
+
+            }
+        };
+
+        sensey.startTouchTypeDetection(MainActivity.this, touchTypeListener);
+    }
+
+    public void night(boolean isNight) {
         if (isNight) {
             AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             preferencesEditor.putBoolean("isNight", true);
@@ -352,16 +435,61 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void calculatorMode() {
+        calculatorMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogOKTitle.setText(getString(R.string.unavailable_feature_dialog_title));
+                dialogOKMessage.setText(getString(R.string.unavailable_feature_yet_dialog_message));
+                dialogOK.show();
+            }
+        });
+    }
+
+    private String reformatCalc() {
+        if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
+            if (calc.contains(plus)) {
+                calc = calc.replace(space + plus + space, plus);
+            }
+
+            if (calc.contains(minus)) {
+                calc = calc.replace(space + minus + space, minus);
+            }
+
+            if (calc.contains(times)) {
+                calc = calc.replace(space + times + space, "*");
+            }
+
+            if (calc.contains(division)) {
+                calc = calc.replace(space + division + space, "/");
+            }
+
+            System.out.println("Transformed calc: " + calc);
+        }
+
+        return calc;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean inputHasReachedCharLimit() {
-        return calc.length() > 10;
+        return reformatCalc().length() > 10;
     }
 
     private void inputNumber() {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!inputHasReachedCharLimit()) {
+                if (!calc.equals(getString(R.string.error))) {
+                    if (!inputHasReachedCharLimit()) {
+                        number = (Button) view;
+                        input.append(number.getText());
+
+                        System.out.println("Number '" + number.getText() + "' added.");
+                        System.out.println("Updated 'calc' value: " + calc);
+                    }
+                } else {
+                    input.setText(empty);
+
                     number = (Button) view;
                     input.append(number.getText());
 
@@ -380,11 +508,13 @@ public class MainActivity extends AppCompatActivity {
         decimalSeparator.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!inputHasReachedCharLimit()) {
+            if (!inputHasReachedCharLimit()) {
+                if (isInputLastNumber()) {
                     input.append(decimalSeparator.getText());
                     System.out.println("Decimal separator added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
+            }
             }
         });
     }
@@ -393,13 +523,15 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!inputHasReachedCharLimit()) {
+            if (!inputHasReachedCharLimit()) {
+                if (!isInputLastOperator()) {
                     operator = (Button) view;
                     input.append(space + operator.getText() + space);
 
                     System.out.println("Operator '" + operator.getText() + "' added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
+            }
             }
         };
 
@@ -408,13 +540,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isInputLastNumber() {
+        String[] numbers = {
+                "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+        };
+
+        for (String number: numbers) {
+            if (reformatCalc().endsWith(number)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInputLastOperator() {
+        String[] operators = {
+                plus, minus, asterisk, slash
+        };
+
+        for (String operator: operators) {
+            if (reformatCalc().endsWith(operator)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void delete() {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!calc.isEmpty()) {
-                    input.setText(calc.substring(0, calc.length() - 1));
-                    System.out.println("Character deleted.");
+                    if (isInputLastOperator()) {
+                        input.setText(calc.substring(0, calc.length() - 3));
+                        System.out.println("Operator deleted.");
+                    } else {
+                        input.setText(calc.substring(0, calc.length() - 1));
+                        System.out.println("Number deleted.");
+                    }
                 }
             }
         });
@@ -437,26 +602,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!calc.isEmpty()) {
-                    if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
-                        if (calc.contains(plus)) {
-                            calc = calc.replace(space + plus + space, plus);
-                        }
-
-                        if (calc.contains(minus)) {
-                            calc = calc.replace(space + minus + space, minus);
-                        }
-
-                        if (calc.contains(times)) {
-                            calc = calc.replace(space + times + space, "*");
-                        }
-
-                        if (calc.contains(division)) {
-                            calc = calc.replace(space + division + space, "/");
-                        }
-
-                        System.out.println("Transformed calc: " + calc);
-                    }
-
                     if (isHiddenModeEnabled) {
                         if (hiddenModePassword != null) {
                             if (calc.equals(hiddenModePassword)) {
@@ -468,18 +613,39 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    try {
-                        expression = new ExpressionBuilder(calc).build();
-                        result = String.valueOf(expression.evaluate());
+                    if (!isInputLastOperator()) {
+                        try {
+                            expression = new ExpressionBuilder(reformatCalc()).build();
+                            result = String.valueOf(expression.evaluate());
 
-                        if (result.endsWith(".0")) {
-                            result = result.replace(".0", empty);
+                            if (result.contains("E")) {
+                                result = result.replace("E", "e");
+                            }
+
+                            if (result.endsWith(".0")) {
+                                result = result.replace(".0", empty);
+                            }
+
+                            input.setText(result);
+                            System.out.println("Calc result: " + result);
+                        } catch (Exception exception) {
+                            input.setText(getString(R.string.error));
                         }
+                    } else {
+                        input.append("0");
 
-                        input.setText(result);
-                        System.out.println("Calc result: " + result);
-                    } catch (Exception exception) {
-                        input.setText(getString(R.string.error));
+                        Timer timer = new Timer();
+
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                try {
+                                    equal.callOnClick();
+                                } catch(Exception exception) {
+                                    input.setText(getString(R.string.error));
+                                }
+                            }
+                        }, 900);
                     }
                 }
             }

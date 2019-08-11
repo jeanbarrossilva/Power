@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".SettingsActivity">
+    tools:context=".SettingsActivity"
+    tools:ignore="HardcodedText">
     
     <android.support.constraint.ConstraintLayout
         android:id="@+id/activity_title_layout"
@@ -26,86 +27,39 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-    
+        
         <TextView
             android:id="@+id/activity_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:text="@string/credits"
             android:textSize="17sp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/activity_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-        
+    
     </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/setting_hidden_mode"
-        android:layout_width="330dp"
+        android:id="@+id/credit_andre_luiz_silva"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:paddingTop="20dp"
         android:paddingStart="50dp"
         android:paddingEnd="50dp"
         android:paddingBottom="20dp"
-        android:alpha="0.5"
         android:background="@drawable/setting"
         app:layout_constraintTop_toBottomOf="@+id/activity_title_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         
         <TextView
-            android:id="@+id/setting_hidden_mode_preview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hidden_mode"
-            android:textSize="20sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-        <Switch
-            android:id="@+id/setting_hidden_mode_preview_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-    </android.support.constraint.ConstraintLayout>
-    
-    <TextView
-        android:id="@+id/setting_hidden_mode_preview_disclaimer"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:alpha="0.15"
-        android:text="@string/hidden_mode_disable"
-        android:textAlignment="center"
-        android:textSize="13sp"
-        app:layout_constraintTop_toBottomOf="@+id/setting_hidden_mode"
-        app:layout_constraintStart_toStartOf="@+id/setting_hidden_mode" />
-    
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/setting_send_feedback"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:paddingTop="20dp"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
-        android:paddingBottom="20dp"
-        android:background="@drawable/setting"
-        app:layout_constraintTop_toBottomOf="@+id/setting_hidden_mode_preview_disclaimer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        
-        <TextView
-            android:id="@+id/setting_send_feedback_preview_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send_feedback"
+            android:text="André Luiz Silva"
             android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,8 +68,8 @@
     </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/setting_collaborate"
-        android:layout_width="330dp"
+        android:id="@+id/credit_jean_silva"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:paddingTop="20dp"
@@ -123,15 +77,14 @@
         android:paddingEnd="50dp"
         android:paddingBottom="20dp"
         android:background="@drawable/setting_link"
-        app:layout_constraintTop_toBottomOf="@+id/setting_send_feedback"
+        app:layout_constraintTop_toBottomOf="@+id/credit_andre_luiz_silva"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         
         <TextView
-            android:id="@+id/setting_collaborate_preview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/collaborate"
+            android:text="Jean Silva"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
@@ -141,24 +94,24 @@
     </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/setting_credits"
-        android:layout_width="330dp"
+        android:id="@+id/credit_allan_de_paula"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="70dp"
         android:paddingTop="20dp"
         android:paddingStart="50dp"
         android:paddingEnd="50dp"
         android:paddingBottom="20dp"
-        android:background="@drawable/setting"
-        app:layout_constraintTop_toBottomOf="@+id/setting_collaborate"
+        android:background="@drawable/setting_link"
+        app:layout_constraintTop_toBottomOf="@+id/credit_jean_silva"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         
         <TextView
-            android:id="@+id/setting_credits_preview_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/credits"
+            android:text="Allan de Paula"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -167,37 +120,54 @@
     </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/activity_additional_info"
-        android:layout_width="match_parent"
+        android:id="@+id/credit_joao_pedro_rocha"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:background="@drawable/activity_additional_info"
+        android:layout_marginTop="20dp"
+        android:paddingTop="20dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:paddingBottom="20dp"
+        android:background="@drawable/setting"
+        app:layout_constraintTop_toBottomOf="@+id/credit_allan_de_paula"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-    
+        app:layout_constraintEnd_toEndOf="parent">
+        
         <TextView
-            android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/version"
-            android:textSize="12sp"
+            android:text="João Pedro Rocha"
+            android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent" />
+    
+    </android.support.constraint.ConstraintLayout>
+    
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/credit_joao_vitor_araujo"
+        android:layout_width="390dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingTop="20dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:paddingBottom="20dp"
+        android:background="@drawable/setting_link"
+        app:layout_constraintTop_toBottomOf="@+id/credit_joao_pedro_rocha"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
         
         <TextView
-            android:id="@+id/created_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:alpha="0.5"
-            android:text="@string/created_by"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@+id/version"
+            android:text="João Vitor Araújo"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-        
+            app:layout_constraintBottom_toBottomOf="parent" />
+    
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

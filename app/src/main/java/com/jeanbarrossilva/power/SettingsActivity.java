@@ -8,10 +8,12 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -21,11 +23,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.nisrulz.sensey.Sensey;
+import com.github.nisrulz.sensey.TouchTypeDetector;
+
 import java.util.Objects;
 
 import id.voela.actrans.AcTrans;
 
 public class SettingsActivity extends AppCompatActivity {
+    MainActivity mainActivity;
+
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
 
@@ -33,6 +40,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     String appName;
     String versionName;
+    boolean isBeta;
+
+    String empty;
+    String space;
 
     Dialog dialogYesNo;
     TextView dialogYesNoTitle;
@@ -40,9 +51,8 @@ public class SettingsActivity extends AppCompatActivity {
     Button dialogYesNoYesButton;
     Button dialogYesNoNoButton;
 
+    Sensey sensey;
     AcTrans.Builder acTrans;
-
-    Button calculator;
 
     TextView activityTitle;
     TextView activitySubtitle;
@@ -52,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     ConstraintLayout settingSendFeedback;
     ConstraintLayout settingCollaborate;
+    ConstraintLayout settingCredits;
 
     TextView version;
 
@@ -61,6 +72,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        mainActivity = new MainActivity();
+
         preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
         preferencesEditor = preferences.edit();
 
@@ -68,6 +81,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
+
+        empty = "";
+        space = " ";
 
         dialogYesNo = new Dialog(this);
         Objects.requireNonNull(dialogYesNo.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -86,9 +102,8 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        sensey = Sensey.getInstance();
         acTrans = new AcTrans.Builder(SettingsActivity.this);
-
-        calculator = findViewById(R.id.calculator);
 
         activityTitle = findViewById(R.id.activity_title);
         activitySubtitle = findViewById(R.id.activity_subtitle);
@@ -96,14 +111,24 @@ public class SettingsActivity extends AppCompatActivity {
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_preview_switch);
         settingSendFeedback = findViewById(R.id.setting_send_feedback);
         settingCollaborate = findViewById(R.id.setting_collaborate);
+        settingCredits = findViewById(R.id.setting_credits);
 
         version = findViewById(R.id.version);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            if (mainActivity.preferences.getBoolean("isNight", false)) {
+                settingHiddenMode.setElevation(2);
+                settingSendFeedback.setElevation(2);
+                settingCollaborate.setElevation(2);
+            }
+        }
 
         calculator();
 
         settingHiddenMode();
         settingSendFeedback();
         settingCollaborate();
+        settingCredits();
 
         version();
     }
@@ -113,19 +138,76 @@ public class SettingsActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
 
         finish();
-        acTrans.performSlideToTop();
+        acTrans.performSlideToRight();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        sensey.setupDispatchTouchEvent(event);
+        return super.dispatchTouchEvent(event);
     }
 
     private void calculator() {
-        calculator.setOnClickListener(new View.OnClickListener() {
+        TouchTypeDetector.TouchTypListener touchTypeListener = new TouchTypeDetector.TouchTypListener() {
             @Override
-            public void onClick(View view) {
-                finish();
-                acTrans.performSlideToTop();
+            public void onTwoFingerSingleTap() {
 
-                System.out.println("Calculator opened.");
             }
-        });
+
+            @Override
+            public void onThreeFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onDoubleTap() {
+
+            }
+
+            @Override
+            public void onScroll(int scrollDirection) {
+                switch (scrollDirection) {
+                    case TouchTypeDetector.SCROLL_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_LEFT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_DOWN:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSingleTap() {
+
+            }
+
+            @Override
+            public void onSwipe(int swipeDirection) {
+                switch (swipeDirection) {
+                    case TouchTypeDetector.SWIPE_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_LEFT:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
+                        acTrans.performSlideToRight();
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_DOWN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onLongPress() {
+
+            }
+        };
+
+        sensey.startTouchTypeDetection(SettingsActivity.this, touchTypeListener);
     }
 
     private void settingHiddenMode() {
@@ -222,7 +304,12 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
-                email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+
+                if (isBeta) {
+                    email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
+                } else {
+                    email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+                }
 
                 startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
             }
@@ -239,6 +326,16 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    private void settingCredits() {
+        settingCredits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SettingsActivity.this, CreditsActivity.class));
+                acTrans.performSlideToLeft();
+            }
+        });
+    }
+
     private void version() {
         int dots = 0;
 
@@ -251,8 +348,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (dots == 1) {
             version.setText(String.format(getString(R.string.version), versionName));
+            isBeta = false;
         } else if (dots >= 2) {
             version.setText(String.format(getString(R.string.version_beta), versionName));
+            isBeta = true;
         }
     }
 }

@@ -8,11 +8,14 @@
     <color name="settings">#2B2B2B</color>
     <color name="settings_pressed">#313335</color>
     <color name="setting">#2B2B2B</color>
+    <color name="setting_v21">#2B2B2B</color>
     <color name="setting_pressed">#313335</color>
+    <color name="setting_link">#03A9F4</color>
     <color name="background_add">#181818</color>
     <color name="icon_add">@android:color/white</color>
     <color name="activity_additional_info">#2B2B2B</color>
     <color name="calculator">#101010</color>
+    <color name="calculator_mode">@android:color/white</color>
     <color name="clear_all">#E05B5B</color>
     <color name="delete">#E05B5B</color>
     <color name="operator">#181818</color>
