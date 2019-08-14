@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -57,13 +58,17 @@ public class SettingsActivity extends AppCompatActivity {
     TextView activityTitle;
     TextView activitySubtitle;
 
+    ConstraintLayout settingHiddenModeLayout;
     Switch settingHiddenMode;
     String pin;
 
+    ConstraintLayout settingHapticFeedbackLayout;
+    Switch settingHapticFeedback;
     ConstraintLayout settingSendFeedback;
     ConstraintLayout settingCollaborate;
     ConstraintLayout settingCredits;
 
+    ConstraintLayout activityAdditionalInfo;
     TextView version;
 
     @SuppressLint("CommitPrefEdits")
@@ -108,36 +113,48 @@ public class SettingsActivity extends AppCompatActivity {
         activityTitle = findViewById(R.id.activity_title);
         activitySubtitle = findViewById(R.id.activity_subtitle);
 
-        settingHiddenMode = findViewById(R.id.setting_hidden_mode_preview_switch);
+        settingHiddenModeLayout = findViewById(R.id.setting_hidden_mode);
+        settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
+
+        settingHapticFeedbackLayout = findViewById(R.id.setting_haptic_feedback);
+        settingHapticFeedback = findViewById(R.id.setting_haptic_feedback_switch);
+
         settingSendFeedback = findViewById(R.id.setting_send_feedback);
         settingCollaborate = findViewById(R.id.setting_collaborate);
         settingCredits = findViewById(R.id.setting_credits);
 
+        activityAdditionalInfo = findViewById(R.id.activity_additional_info);
         version = findViewById(R.id.version);
 
         if (Build.VERSION.SDK_INT >= 21) {
             if (mainActivity.preferences.getBoolean("isNight", false)) {
-                settingHiddenMode.setElevation(2);
+                settingHiddenModeLayout.setElevation(2);
+                settingHapticFeedbackLayout.setElevation(2);
                 settingSendFeedback.setElevation(2);
                 settingCollaborate.setElevation(2);
+
+                activityAdditionalInfo.setElevation(1);
             }
         }
 
         calculator();
 
         settingHiddenMode();
+        settingHapticFeedback();
         settingSendFeedback();
         settingCollaborate();
         settingCredits();
+
+        rememberSettingHapticFeedback();
 
         version();
     }
 
     @Override
     public void onBackPressed() {
-        setResult(RESULT_CANCELED);
-
+        setResult(RESULT_OK, settingsActivityToMainActivity);
         finish();
+
         acTrans.performSlideToRight();
     }
 
@@ -191,10 +208,11 @@ public class SettingsActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
+                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
+                        acTrans.performSlideToLeft();
+
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
-                        acTrans.performSlideToRight();
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
@@ -296,6 +314,29 @@ public class SettingsActivity extends AppCompatActivity {
             dialogYesNo.dismiss();
         } else {
             settingHiddenMode.setChecked(false);
+        }
+    }
+
+    private void settingHapticFeedback() {
+        settingHapticFeedback.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    preferencesEditor.putBoolean("isHapticFeedbackEnabled", true)
+                            .apply();
+                } else {
+                    preferencesEditor.putBoolean("isHapticFeedbackEnabled", false)
+                            .apply();
+                }
+            }
+        });
+    }
+
+    private void rememberSettingHapticFeedback() {
+        if (settingsActivityToMainActivity.getBooleanExtra("isHapticFeedbackEnabled", true)) {
+            settingHapticFeedback.setChecked(true);
+        } else {
+            settingHapticFeedback.setChecked(false);
         }
     }
 

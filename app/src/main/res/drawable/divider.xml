@@ -3,10 +3,9 @@
     
     <item>
         <shape>
-            <solid android:color="@color/calculator" />
-            <corners
-                android:radius="20dp" />
+            <solid android:color="@android:color/white" />
+            <corners android:radius="100dp" />
         </shape>
     </item>
-
+    
 </selector>

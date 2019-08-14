@@ -8,19 +8,31 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context=".MainActivity"
-    tools:ignore="ContentDescription">
+    tools:ignore="RtlSymmetry, Autofill, ContentDescription">
+    
+    <TextView
+        android:id="@+id/input_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:alpha="0.45"
+        android:visibility="gone"
+        android:fontFamily="@font/quicksand"
+        android:textStyle="bold"
+        android:textSize="35sp"
+        app:layout_constraintStart_toStartOf="@+id/input_horizontal_scroll_view"
+        app:layout_constraintBottom_toTopOf="@+id/input_horizontal_scroll_view" />
     
     <HorizontalScrollView
         android:id="@+id/input_horizontal_scroll_view"
         android:layout_width="@+id/keypad"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="15dp"
         android:paddingTop="10dp"
-        android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/keypad"
-        app:layout_constraintBottom_toTopOf="@+id/operators">
+        app:layout_constraintStart_toStartOf="@+id/keypad"
+        app:layout_constraintBottom_toTopOf="@+id/keypad">
         
         <EditText
             android:id="@+id/input"
@@ -28,10 +40,9 @@
             android:layout_height="wrap_content"
             android:alpha="0.7"
             android:hint="@string/zero"
-            android:textAlignment="viewEnd"
             android:fontFamily="@font/quicksand"
             android:textStyle="bold"
-            android:textSize="50sp"
+            android:textSize="45sp"
             android:inputType="text"
             android:background="@null"
             app:layout_constraintTop_toTopOf="parent"
@@ -39,125 +50,6 @@
             app:layout_constraintBottom_toBottomOf="parent" />
         
     </HorizontalScrollView>
-    
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/operators"
-        android:layout_width="@+id/keypad"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="20dp"
-        android:alpha="0.6"
-        android:background="@drawable/operators"
-        app:layout_constraintStart_toStartOf="@+id/keypad"
-        app:layout_constraintEnd_toEndOf="@+id/keypad"
-        app:layout_constraintBottom_toTopOf="@+id/others">
-        
-        <Button
-            android:id="@+id/plus"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="@string/plus"
-            android:textSize="25sp"
-            android:background="@drawable/operator"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/minus"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    
-        <Button
-            android:id="@+id/minus"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="10dp"
-            android:text="@string/minus"
-            android:textSize="25sp"
-            android:background="@drawable/operator"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/plus"
-            app:layout_constraintEnd_toStartOf="@+id/times"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    
-        <Button
-            android:id="@+id/times"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="10dp"
-            android:text="@string/times"
-            android:textSize="25sp"
-            android:background="@drawable/operator"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/minus"
-            app:layout_constraintEnd_toStartOf="@+id/division"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    
-        <Button
-            android:id="@+id/division"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="10dp"
-            android:text="@string/division"
-            android:textSize="25sp"
-            android:background="@drawable/operator"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/times"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-    </android.support.constraint.ConstraintLayout>
-    
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/others"
-        android:layout_width="@+id/keypad"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:background="@drawable/others"
-        app:layout_constraintStart_toStartOf="@+id/keypad"
-        app:layout_constraintEnd_toEndOf="@+id/keypad"
-        app:layout_constraintBottom_toTopOf="@+id/keypad">
-    
-        <ImageButton
-            android:id="@+id/calculator_mode"
-            android:layout_width="85dp"
-            android:layout_height="60dp"
-            android:padding="13.5dp"
-            android:src="@drawable/calculator"
-            android:scaleType="fitCenter"
-            android:background="@drawable/calculator_mode"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/clear_all"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-        <Button
-            android:id="@+id/clear_all"
-            android:layout_width="85dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="5dp"
-            android:text="@string/ac"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:background="@drawable/clear_all"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/calculator_mode"
-            app:layout_constraintEnd_toStartOf="@+id/delete"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-        <ImageButton
-            android:id="@+id/delete"
-            android:layout_width="85dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="5dp"
-            android:src="@drawable/backspace"
-            android:background="@drawable/delete"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/clear_all"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-        
-    </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
         android:id="@+id/keypad"
@@ -183,9 +75,9 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/seven"
                 android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toStartOf="parent"
@@ -197,9 +89,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/eight"
                 android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/seven"
@@ -210,9 +102,9 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/four"
                 android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toStartOf="parent"
@@ -224,9 +116,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/nine"
                 android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/eight"
@@ -238,9 +130,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/five"
                 android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/four"
@@ -252,10 +144,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/six"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/five"
@@ -266,10 +157,9 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/one"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toStartOf="parent"
@@ -281,10 +171,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/two"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/one"
@@ -296,10 +185,9 @@
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="15dp"
-                android:alpha="0.6"
                 android:text="@string/three"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/two"
@@ -309,10 +197,9 @@
                 android:id="@+id/zero"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:alpha="0.6"
                 android:text="@string/zero"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toStartOf="parent"
@@ -323,10 +210,9 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
-                android:alpha="0.6"
                 android:text="@string/dot"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:background="@drawable/number"
                 app:layout_constraintStart_toEndOf="@+id/zero"
@@ -337,6 +223,7 @@
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_marginStart="20dp"
+                android:hapticFeedbackEnabled="true"
                 android:text="@string/equal"
                 android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimaryInverse"
@@ -345,6 +232,157 @@
                 app:layout_constraintStart_toEndOf="@+id/decimal_separator"
                 app:layout_constraintBottom_toBottomOf="parent" />
             
+        </android.support.constraint.ConstraintLayout>
+    
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/others"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+        
+            <Button
+                android:id="@+id/plus"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/plus"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="25sp"
+                android:background="@drawable/operator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/minus" />
+        
+            <Button
+                android:id="@+id/left_parenthesis"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/left_parenthesis"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/plus"
+                app:layout_constraintBottom_toTopOf="@+id/minus" />
+        
+            <Button
+                android:id="@+id/minus"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/minus"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="25sp"
+                android:background="@drawable/operator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/times" />
+        
+            <Button
+                android:id="@+id/right_parenthesis"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/right_parenthesis"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/left_parenthesis"
+                app:layout_constraintBottom_toTopOf="@+id/undefined2" />
+        
+            <Button
+                android:id="@+id/undefined1"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/minus"
+                app:layout_constraintBottom_toTopOf="@+id/undefined3" />
+        
+            <Button
+                android:id="@+id/undefined2"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/undefined1"
+                app:layout_constraintBottom_toTopOf="@+id/undefined4" />
+        
+            <Button
+                android:id="@+id/times"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/times"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="25sp"
+                android:background="@drawable/operator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/division" />
+        
+            <Button
+                android:id="@+id/undefined3"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/times"
+                app:layout_constraintBottom_toTopOf="@+id/division" />
+        
+            <Button
+                android:id="@+id/undefined4"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/undefined3"
+                app:layout_constraintBottom_toTopOf="@+id/undefined5" />
+        
+            <Button
+                android:id="@+id/division"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:text="@string/division"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="25sp"
+                android:background="@drawable/operator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        
+            <Button
+                android:id="@+id/undefined5"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/number"
+                app:layout_constraintStart_toEndOf="@+id/division"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        
+            <ImageButton
+                android:id="@+id/back"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="20dp"
+                android:padding="27.5dp"
+                android:src="@drawable/back"
+                android:scaleType="fitCenter"
+                android:background="@drawable/equal"
+                app:layout_constraintStart_toEndOf="@+id/undefined5"
+                app:layout_constraintBottom_toBottomOf="parent" />
+    
         </android.support.constraint.ConstraintLayout>
         
     </android.support.constraint.ConstraintLayout>

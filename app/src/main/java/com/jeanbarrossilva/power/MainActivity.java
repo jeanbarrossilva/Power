@@ -8,10 +8,13 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.TypedValue;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     ConstraintLayout activityMain;
 
-    private static final int HIDDEN_MODE = 1;
+    private static final int SETTINGS = 1;
 
     String empty;
     String space;
@@ -63,13 +66,17 @@ public class MainActivity extends AppCompatActivity {
     Button dialogYesNoYesButton;
 
     int theme;
+
     boolean isHiddenModeEnabled;
+    boolean isHapticFeedbackEnabled;
 
     Sensey sensey;
     AcTrans.Builder acTrans;
 
     String hiddenModePassword;
+    String textAlignment;
 
+    TextView inputResult;
     HorizontalScrollView inputHorizontalScrollView;
     EditText input;
     String calc;
@@ -79,12 +86,19 @@ public class MainActivity extends AppCompatActivity {
     DecimalFormat decimalFormat;
     DecimalFormatSymbols language;
 
+    ImageButton calculatorMode;
+
+    ConstraintLayout keypad;
+
     Button number;
+    ConstraintLayout numbersLayout;
     int[] numbers = {
             R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
     };
 
     Button decimalSeparator;
+
+    ConstraintLayout othersLayout;
 
     Button operator;
     String plus;
@@ -99,10 +113,13 @@ public class MainActivity extends AppCompatActivity {
             R.id.plus, R.id.minus, R.id.times, R.id.division
     };
 
-    ImageButton calculatorMode;
-    Button clearAll;
-    ImageButton delete;
+    Button parenthesis;
+    int[] parenthesis2 = {
+            R.id.left_parenthesis, R.id.right_parenthesis
+    };
+
     Button equal;
+    ImageButton back;
 
     Expression expression;
     String result;
@@ -167,7 +184,9 @@ public class MainActivity extends AppCompatActivity {
             Sensey.getInstance().init(this);
 
             hiddenModePassword = preferences.getString("hiddenModePassword", null);
+            textAlignment = preferences.getString("textAlignment", null);
 
+            inputResult = findViewById(R.id.input_result);
             inputHorizontalScrollView = findViewById(R.id.input_horizontal_scroll_view);
             input = findViewById(R.id.input);
 
@@ -195,9 +214,12 @@ public class MainActivity extends AppCompatActivity {
 
             decimalFormat = new DecimalFormat(pattern, language);
 
-            calculatorMode = findViewById(R.id.calculator_mode);
-            delete = findViewById(R.id.delete);
-            clearAll = findViewById(R.id.clear_all);
+            // calculatorMode = findViewById(R.id.calculator_mode);
+
+            keypad = findViewById(R.id.keypad);
+            numbersLayout = findViewById(R.id.numbers);
+            othersLayout = findViewById(R.id.others);
+
             decimalSeparator = findViewById(R.id.decimal_separator);
 
             plus = getString(R.string.plus);
@@ -209,16 +231,15 @@ public class MainActivity extends AppCompatActivity {
             slash = "/";
 
             equal = findViewById(R.id.equal);
+            back = findViewById(R.id.back);
 
             settings();
-            calculatorMode();
+            // calculatorMode();
 
             inputNumber();
             inputDecimalSeparator();
-            inputOperator();
 
             delete();
-            clearAll();
             equal();
         } else {
             setContentView(R.layout.activity_blank);
@@ -262,12 +283,9 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             switch (requestCode) {
-                case HIDDEN_MODE:
-                    preferencesEditor.putString("hiddenModePassword", data.getStringExtra("password"))
-                            .apply();
-
-                    Toast.makeText(MainActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
-                    isHiddenModeEnabled = true;
+                case SETTINGS:
+                    hiddenMode(data);
+                    hapticFeedback(data);
 
                     break;
             }
@@ -281,12 +299,12 @@ public class MainActivity extends AppCompatActivity {
         // Changes the app theme based on if the Android Oreo (Android 8, API 26) Night mode is enabled or not.
         switch(theme) {
             case Configuration.UI_MODE_NIGHT_YES:
-                night(true);
+                isNight(true);
                 System.out.println("Night mode has been enabled.");
 
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
-                night(false);
+                isNight(false);
                 System.out.println("Night mode has been disabled.");
 
                 break;
@@ -358,9 +376,8 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void settings() {
-        TouchTypeDetector.TouchTypListener touchTypeListener = new TouchTypeDetector.TouchTypListener() {
+        TouchTypeDetector.TouchTypListener settings = new TouchTypeDetector.TouchTypListener() {
             @Override
             public void onTwoFingerSingleTap() {
 
@@ -403,10 +420,11 @@ public class MainActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                        acTrans.performSlideToLeft();
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), SETTINGS);
+                        acTrans.performSlideToRight();
+
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
@@ -419,19 +437,81 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sensey.startTouchTypeDetection(MainActivity.this, touchTypeListener);
+        Sensey.getInstance().startTouchTypeDetection(MainActivity.this, settings);
     }
 
-    public void night(boolean isNight) {
-        if (isNight) {
-            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
-            preferencesEditor.putBoolean("isNight", true);
+    public void isNight(boolean night) {
+        if (night) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+            }
 
+            preferencesEditor.putBoolean("isNight", true);
             System.out.println("Night mode has been enabled.");
         } else {
             AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
             preferencesEditor.putBoolean("isNight", false);
             System.out.println("Night mode has been disabled.");
+        }
+    }
+
+    private void hiddenMode(Intent data) {
+        // Checks if Hidden Mode was enabled.
+        isHiddenModeEnabled = data.getBooleanExtra("isHiddenModeEnabled", false);
+
+        if (isHiddenModeEnabled) {
+            preferencesEditor.putString("hiddenModePassword", data.getStringExtra("password"))
+                    .apply();
+
+            hiddenModePassword = preferences.getString("hiddenModePassword", null);
+
+            Toast.makeText(MainActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
+            isHiddenModeEnabled = true;
+        }
+    }
+
+    private void hapticFeedback(Intent data) {
+        isHapticFeedbackEnabled = data.getBooleanExtra("isHapticFeedbackEnabled", false);
+        preferencesEditor.putBoolean("isHapticFeedbackEnabled", isHapticFeedbackEnabled);
+
+        if (isHapticFeedbackEnabled) {
+            isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", true);
+        } else {
+            isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", false);
+        }
+    }
+
+    private void inputResult(boolean isVisible) {
+        if (isVisible) {
+            if (!calc.isEmpty()) {
+                if (calc.equals(getString(R.string.error))) {
+                    if (inputResult.getVisibility() != View.VISIBLE) {
+                        inputResult.setVisibility(View.VISIBLE);
+
+                        try {
+                            expression = new ExpressionBuilder(reformatCalc(inputResult.getText().toString())).build();
+                            result = String.valueOf(expression.evaluate());
+
+                            if (result.contains("E")) {
+                                result = result.replace("E", "e");
+                            }
+
+                            if (result.endsWith(".0")) {
+                                result = result.replace(".0", empty);
+                            }
+
+                            inputResult.setText(result);
+                            System.out.println("Calc result preview: " + result);
+                        } catch (Exception exception) {
+                            inputResult.setText(getString(R.string.error));
+                        }
+                    }
+                }
+            } else if (inputResult.getVisibility() != View.GONE) {
+                inputResult.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -446,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String reformatCalc() {
+    private String reformatCalc(String calc) {
         if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
             if (calc.contains(plus)) {
                 calc = calc.replace(space + plus + space, plus);
@@ -472,7 +552,11 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean inputHasReachedCharLimit() {
-        return reformatCalc().length() > 10;
+        if (calc.length() > 11) {
+            input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+        }
+
+        return calc.length() == 14;
     }
 
     private void inputNumber() {
@@ -496,6 +580,8 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Number '" + number.getText() + "' added.");
                     System.out.println("Updated 'calc' value: " + calc);
                 }
+
+                inputResult(true);
             }
         };
 
@@ -511,8 +597,11 @@ public class MainActivity extends AppCompatActivity {
             if (!inputHasReachedCharLimit()) {
                 if (isInputLastNumber()) {
                     input.append(decimalSeparator.getText());
+
                     System.out.println("Decimal separator added.");
                     System.out.println("Updated 'calc' value: " + calc);
+
+                    inputResult(true);
                 }
             }
             }
@@ -530,6 +619,8 @@ public class MainActivity extends AppCompatActivity {
 
                     System.out.println("Operator '" + operator.getText() + "' added.");
                     System.out.println("Updated 'calc' value: " + calc);
+
+                    inputResult(true);
                 }
             }
             }
@@ -540,13 +631,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void inputParenthesis() {
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!inputHasReachedCharLimit()) {
+                    parenthesis = (Button) view;
+                    input.append(parenthesis.getText());
+
+                    System.out.println("Parenthesis added.");
+                    System.out.println("Updated 'calc' value: " + calc);
+                }
+            }
+        };
+
+        for (int id: parenthesis2) {
+            findViewById(id).setOnClickListener(listener);
+        }
+    }
+
     private boolean isInputLastNumber() {
         String[] numbers = {
                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
         };
 
         for (String number: numbers) {
-            if (reformatCalc().endsWith(number)) {
+            if (reformatCalc(calc).endsWith(number)) {
                 return true;
             }
         }
@@ -560,7 +670,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         for (String operator: operators) {
-            if (reformatCalc().endsWith(operator)) {
+            if (reformatCalc(calc).endsWith(operator)) {
+                inputResult(false);
                 return true;
             }
         }
@@ -569,32 +680,76 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void delete() {
-        delete.setOnClickListener(new View.OnClickListener() {
+        TouchTypeDetector.TouchTypListener delete = new TouchTypeDetector.TouchTypListener() {
             @Override
-            public void onClick(View view) {
-                if (!calc.isEmpty()) {
-                    if (isInputLastOperator()) {
-                        input.setText(calc.substring(0, calc.length() - 3));
-                        System.out.println("Operator deleted.");
-                    } else {
-                        input.setText(calc.substring(0, calc.length() - 1));
-                        System.out.println("Number deleted.");
-                    }
-                }
-            }
-        });
-    }
+            public void onTwoFingerSingleTap() {
 
-    private void clearAll() {
-        clearAll.setOnClickListener(new View.OnClickListener() {
+            }
+
             @Override
-            public void onClick(View view) {
-                if (!calc.isEmpty()) {
-                    input.setText(empty);
-                    System.out.println("Input cleared.");
+            public void onThreeFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onDoubleTap() {
+
+            }
+
+            @Override
+            public void onScroll(int scrollDirection) {
+                switch (scrollDirection) {
+                    case TouchTypeDetector.SCROLL_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_LEFT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
+                        break;
+                    case TouchTypeDetector.SCROLL_DIR_DOWN:
+                        break;
+                    default:
+                        break;
                 }
             }
-        });
+
+            @Override
+            public void onSingleTap() {
+
+            }
+
+            @Override
+            public void onSwipe(int swipeDirection) {
+                switch (swipeDirection) {
+                    case TouchTypeDetector.SWIPE_DIR_UP:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_LEFT:
+                        if (!calc.isEmpty()) {
+                            if (isInputLastOperator()) {
+                                input.setText(calc.substring(0, calc.length() - 3));
+                                System.out.println("Operator deleted.");
+                            } else {
+                                input.setText(calc.substring(0, calc.length() - 1));
+                                System.out.println("Number deleted.");
+                            }
+
+                            inputResult(true);
+                        }
+
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        break;
+                    case TouchTypeDetector.SWIPE_DIR_DOWN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onLongPress() {
+
+            }
+        };
+
+        Sensey.getInstance().startTouchTypeDetection(input.getContext(), delete);
     }
 
     private void equal() {
@@ -609,13 +764,13 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(new Intent(MainActivity.this, HiddenMode.class));
                             }
                         } else {
-                            System.out.println("'hiddenModePassword' is null. Maybe something's wrong?");
+                            System.out.println("'hiddenModePassword' is null.");
                         }
                     }
 
                     if (!isInputLastOperator()) {
                         try {
-                            expression = new ExpressionBuilder(reformatCalc()).build();
+                            expression = new ExpressionBuilder(reformatCalc(calc)).build();
                             result = String.valueOf(expression.evaluate());
 
                             if (result.contains("E")) {
@@ -633,21 +788,35 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         input.append("0");
-
-                        Timer timer = new Timer();
-
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                try {
-                                    equal.callOnClick();
-                                } catch(Exception exception) {
-                                    input.setText(getString(R.string.error));
-                                }
-                            }
-                        }, 900);
                     }
+
+                    inputResult(false);
                 }
+            }
+        });
+
+        equal.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (isHapticFeedbackEnabled) {
+                    equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                }
+
+                numbersLayout.setVisibility(View.GONE);
+                othersLayout.setVisibility(View.VISIBLE);
+
+                inputOperator();
+                inputParenthesis();
+
+                back.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        othersLayout.setVisibility(View.GONE);
+                        numbersLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                return true;
             }
         });
     }

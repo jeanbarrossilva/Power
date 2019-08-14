@@ -3,11 +3,11 @@
     
     <item>
         <shape>
-            <solid android:color="@color/calculator" />
+            <solid android:color="@color/activity_additional_info_v21" />
             <corners
-                android:topLeftRadius="40dp"
-                android:topRightRadius="40dp" />
+                android:topLeftRadius="50dp"
+                android:topRightRadius="50dp" />
         </shape>
     </item>
-
+    
 </selector>
