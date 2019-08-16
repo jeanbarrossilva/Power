@@ -18,6 +18,8 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -90,15 +92,16 @@ public class MainActivity extends AppCompatActivity {
 
     ConstraintLayout keypad;
 
+    BounceInterpolator bounceInterpolator;
+    Animation bounceIn;
+    Animation bounceOut;
+
     Button number;
-    ConstraintLayout numbersLayout;
     int[] numbers = {
             R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
     };
 
     Button decimalSeparator;
-
-    ConstraintLayout othersLayout;
 
     Button operator;
     String plus;
@@ -118,8 +121,9 @@ public class MainActivity extends AppCompatActivity {
             R.id.left_parenthesis, R.id.right_parenthesis
     };
 
+    ImageButton delete;
+
     Button equal;
-    ImageButton back;
 
     Expression expression;
     String result;
@@ -216,11 +220,19 @@ public class MainActivity extends AppCompatActivity {
 
             // calculatorMode = findViewById(R.id.calculator_mode);
 
-            keypad = findViewById(R.id.keypad);
-            numbersLayout = findViewById(R.id.numbers);
-            othersLayout = findViewById(R.id.others);
+            bounceInterpolator = new BounceInterpolator(0.1, 15);
 
+            bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
+            bounceIn.setInterpolator(bounceInterpolator);
+
+            bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
+            bounceOut.setInterpolator(bounceInterpolator);
+
+            keypad = findViewById(R.id.keypad);
             decimalSeparator = findViewById(R.id.decimal_separator);
+            equal = findViewById(R.id.equal);
+
+            delete = findViewById(R.id.delete);
 
             plus = getString(R.string.plus);
             minus = getString(R.string.minus);
@@ -230,14 +242,13 @@ public class MainActivity extends AppCompatActivity {
             asterisk = "*";
             slash = "/";
 
-            equal = findViewById(R.id.equal);
-            back = findViewById(R.id.back);
-
             settings();
             // calculatorMode();
 
             inputNumber();
             inputDecimalSeparator();
+            inputOperator();
+            inputParenthesis();
 
             delete();
             equal();
@@ -299,12 +310,12 @@ public class MainActivity extends AppCompatActivity {
         // Changes the app theme based on if the Android Oreo (Android 8, API 26) Night mode is enabled or not.
         switch(theme) {
             case Configuration.UI_MODE_NIGHT_YES:
-                isNight(true);
+                night(true);
                 System.out.println("Night mode has been enabled.");
 
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
-                isNight(false);
+                night(false);
                 System.out.println("Night mode has been disabled.");
 
                 break;
@@ -420,11 +431,11 @@ public class MainActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
+                        startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), SETTINGS);
+                        acTrans.performSlideToLeft();
+
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), SETTINGS);
-                        acTrans.performSlideToRight();
-
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
@@ -440,8 +451,8 @@ public class MainActivity extends AppCompatActivity {
         Sensey.getInstance().startTouchTypeDetection(MainActivity.this, settings);
     }
 
-    public void isNight(boolean night) {
-        if (night) {
+    public void night(boolean isNight) {
+        if (isNight) {
             if (Build.VERSION.SDK_INT >= 28) {
                 AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             } else {
@@ -452,13 +463,14 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Night mode has been enabled.");
         } else {
             AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
+
             preferencesEditor.putBoolean("isNight", false);
             System.out.println("Night mode has been disabled.");
         }
     }
 
     private void hiddenMode(Intent data) {
-        // Checks if Hidden Mode was enabled.
+        // Checks if Hidden Mode is enabled.
         isHiddenModeEnabled = data.getBooleanExtra("isHiddenModeEnabled", false);
 
         if (isHiddenModeEnabled) {
@@ -486,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
     private void inputResult(boolean isVisible) {
         if (isVisible) {
             if (!calc.isEmpty()) {
-                if (calc.equals(getString(R.string.error))) {
+                if (!calc.equals(getString(R.string.error))) {
                     if (inputResult.getVisibility() != View.VISIBLE) {
                         inputResult.setVisibility(View.VISIBLE);
 
@@ -507,10 +519,10 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception exception) {
                             inputResult.setText(getString(R.string.error));
                         }
+                    } else if (inputResult.getVisibility() != View.GONE) {
+                        inputResult.setVisibility(View.GONE);
                     }
                 }
-            } else if (inputResult.getVisibility() != View.GONE) {
-                inputResult.setVisibility(View.GONE);
             }
         }
     }
@@ -556,78 +568,125 @@ public class MainActivity extends AppCompatActivity {
             input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
         }
 
-        return calc.length() == 14;
+        switch (String.valueOf(input.getTextSize())) {
+            case "45":
+                return calc.length() == 10;
+            case "35":
+                return calc.length() == 16;
+        }
+
+        return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void inputNumber() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (!calc.equals(getString(R.string.error))) {
-                    if (!inputHasReachedCharLimit()) {
-                        number = (Button) view;
-                        input.append(number.getText());
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 10);
+                number = (Button) view;
 
-                        System.out.println("Number '" + number.getText() + "' added.");
-                        System.out.println("Updated 'calc' value: " + calc);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        number.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        number.startAnimation(bounceOut);
+
+                        if (!calc.equals(getString(R.string.error))) {
+                            if (!inputHasReachedCharLimit()) {
+                                input.append(number.getText());
+
+                                System.out.println("Number '" + number.getText() + "' added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+                            }
+                        } else {
+                            input.setText(empty);
+
+                            number = (Button) view;
+                            input.append(number.getText());
+
+                            System.out.println("Number '" + number.getText() + "' added.");
+                            System.out.println("Updated 'calc' value: " + calc);
+                        }
+
+                        // inputResult(true);
                     }
-                } else {
-                    input.setText(empty);
 
-                    number = (Button) view;
-                    input.append(number.getText());
-
-                    System.out.println("Number '" + number.getText() + "' added.");
-                    System.out.println("Updated 'calc' value: " + calc);
-                }
-
-                inputResult(true);
+                return true;
             }
         };
 
-        for (int id: numbers) {
-            findViewById(id).setOnClickListener(onClickListener);
+        for (int number: numbers) {
+            findViewById(number).setOnTouchListener(onTouchListener);
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void inputDecimalSeparator() {
-        decimalSeparator.setOnClickListener(new View.OnClickListener() {
+        decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-            if (!inputHasReachedCharLimit()) {
-                if (isInputLastNumber()) {
-                    input.append(decimalSeparator.getText());
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 10);
 
-                    System.out.println("Decimal separator added.");
-                    System.out.println("Updated 'calc' value: " + calc);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        decimalSeparator.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        decimalSeparator.startAnimation(bounceOut);
 
-                    inputResult(true);
+                        if (!inputHasReachedCharLimit()) {
+                            if (isInputLastNumber()) {
+                                input.append(decimalSeparator.getText());
+
+                                System.out.println("Decimal separator added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+
+                                // inputResult(true);
+                            }
+                        }
+
+                        break;
                 }
-            }
+
+                return true;
             }
         });
     }
 
     private void inputOperator() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-            if (!inputHasReachedCharLimit()) {
-                if (!isInputLastOperator()) {
-                    operator = (Button) view;
-                    input.append(space + operator.getText() + space);
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 5);
+                operator = (Button) view;
 
-                    System.out.println("Operator '" + operator.getText() + "' added.");
-                    System.out.println("Updated 'calc' value: " + calc);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        operator.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        operator.startAnimation(bounceOut);
 
-                    inputResult(true);
+                        if (!inputHasReachedCharLimit()) {
+                            if (!isInputLastOperator()) {
+                                input.append(space + operator.getText() + space);
+
+                                System.out.println("Operator '" + operator.getText() + "' added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+
+                                // inputResult(true);
+                            }
+                        }
                 }
-            }
+
+                return true;
             }
         };
 
-        for (int id: operators) {
-            findViewById(id).setOnClickListener(onClickListener);
+        for (int operator: operators) {
+            findViewById(operator).setOnTouchListener(onTouchListener);
         }
     }
 
@@ -664,6 +723,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isInputLastOperator() {
         String[] operators = {
                 plus, minus, asterisk, slash
@@ -671,7 +731,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (String operator: operators) {
             if (reformatCalc(calc).endsWith(operator)) {
-                inputResult(false);
+                // inputResult(false);
                 return true;
             }
         }
@@ -679,142 +739,111 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void delete() {
-        TouchTypeDetector.TouchTypListener delete = new TouchTypeDetector.TouchTypListener() {
+        delete.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onTwoFingerSingleTap() {
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 1.5);
 
-            }
-
-            @Override
-            public void onThreeFingerSingleTap() {
-
-            }
-
-            @Override
-            public void onDoubleTap() {
-
-            }
-
-            @Override
-            public void onScroll(int scrollDirection) {
-                switch (scrollDirection) {
-                    case TouchTypeDetector.SCROLL_DIR_UP:
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        delete.startAnimation(bounceIn);
                         break;
-                    case TouchTypeDetector.SCROLL_DIR_LEFT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_DOWN:
-                        break;
-                    default:
-                        break;
-                }
-            }
+                    case MotionEvent.ACTION_UP:
+                        delete.startAnimation(bounceOut);
 
-            @Override
-            public void onSingleTap() {
-
-            }
-
-            @Override
-            public void onSwipe(int swipeDirection) {
-                switch (swipeDirection) {
-                    case TouchTypeDetector.SWIPE_DIR_UP:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_LEFT:
                         if (!calc.isEmpty()) {
-                            if (isInputLastOperator()) {
-                                input.setText(calc.substring(0, calc.length() - 3));
-                                System.out.println("Operator deleted.");
-                            } else {
-                                input.setText(calc.substring(0, calc.length() - 1));
-                                System.out.println("Number deleted.");
-                            }
-
-                            inputResult(true);
+                            input.setText(calc.substring(0, calc.length() - 1));
                         }
 
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
                 }
-            }
 
-            @Override
-            public void onLongPress() {
-
-            }
-        };
-
-        Sensey.getInstance().startTouchTypeDetection(input.getContext(), delete);
-    }
-
-    private void equal() {
-        equal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!calc.isEmpty()) {
-                    if (isHiddenModeEnabled) {
-                        if (hiddenModePassword != null) {
-                            if (calc.equals(hiddenModePassword)) {
-                                input.setText(empty);
-                                startActivity(new Intent(MainActivity.this, HiddenMode.class));
-                            }
-                        } else {
-                            System.out.println("'hiddenModePassword' is null.");
-                        }
-                    }
-
-                    if (!isInputLastOperator()) {
-                        try {
-                            expression = new ExpressionBuilder(reformatCalc(calc)).build();
-                            result = String.valueOf(expression.evaluate());
-
-                            if (result.contains("E")) {
-                                result = result.replace("E", "e");
-                            }
-
-                            if (result.endsWith(".0")) {
-                                result = result.replace(".0", empty);
-                            }
-
-                            input.setText(result);
-                            System.out.println("Calc result: " + result);
-                        } catch (Exception exception) {
-                            input.setText(getString(R.string.error));
-                        }
-                    } else {
-                        input.append("0");
-                    }
-
-                    inputResult(false);
-                }
+                return true;
             }
         });
 
-        equal.setOnLongClickListener(new View.OnLongClickListener() {
+        /* delete.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                Timer timer = new Timer();
+
                 if (isHapticFeedbackEnabled) {
-                    equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                    delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 }
 
-                numbersLayout.setVisibility(View.GONE);
-                othersLayout.setVisibility(View.VISIBLE);
+                delete.setImageResource(R.drawable.clear_all);
+                input.setText(empty);
 
-                inputOperator();
-                inputParenthesis();
-
-                back.setOnClickListener(new View.OnClickListener() {
+                timer.schedule(new TimerTask() {
                     @Override
-                    public void onClick(View view) {
-                        othersLayout.setVisibility(View.GONE);
-                        numbersLayout.setVisibility(View.VISIBLE);
+                    public void run() {
+                        delete.setImageResource(R.drawable.delete);
                     }
-                });
+                }, 1000);
+
+                return true;
+            }
+        }); */
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void equal() {
+        equal.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (isHapticFeedbackEnabled) {
+                            equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        }
+
+                        equal.startAnimation(bounceIn);
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        equal.startAnimation(bounceOut);
+
+                        if (!calc.isEmpty()) {
+                            if (isHiddenModeEnabled) {
+                                if (hiddenModePassword != null) {
+                                    if (calc.equals(hiddenModePassword)) {
+                                        input.setText(empty);
+                                        startActivity(new Intent(MainActivity.this, HiddenMode.class));
+                                    }
+                                } else {
+                                    System.out.println("'hiddenModePassword' is null.");
+                                }
+                            }
+
+                            if (!isInputLastOperator()) {
+                                try {
+                                    expression = new ExpressionBuilder(reformatCalc(calc)).build();
+                                    result = String.valueOf(expression.evaluate());
+
+                                    if (result.contains("E")) {
+                                        result = result.replace("E", "e");
+                                    }
+
+                                    if (result.endsWith(".0")) {
+                                        result = result.replace(".0", empty);
+                                    }
+
+                                    input.setText(result);
+                                    System.out.println("Calc result: " + result);
+                                } catch (Exception exception) {
+                                    input.setText(getString(R.string.error));
+                                }
+                            } else {
+                                input.append("0");
+                            }
+
+                            // inputResult(false);
+                        }
+
+                        break;
+                }
 
                 return true;
             }

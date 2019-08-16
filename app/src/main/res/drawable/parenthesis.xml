@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item android:state_pressed="false">
+    <item>
         <shape>
-            <solid android:color="@color/delete" />
+            <solid android:color="@color/parenthesis" />
             <corners
+                android:topLeftRadius="20dp"
                 android:topRightRadius="30dp"
-                android:bottomRightRadius="50dp" />
+                android:bottomLeftRadius="20dp"
+                android:bottomRightRadius="30dp" />
         </shape>
     </item>
-    
+
 </selector>

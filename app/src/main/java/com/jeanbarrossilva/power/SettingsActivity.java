@@ -153,9 +153,9 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         setResult(RESULT_OK, settingsActivityToMainActivity);
-        finish();
-
         acTrans.performSlideToRight();
+
+        finish();
     }
 
     @Override
@@ -208,11 +208,11 @@ public class SettingsActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
-                        acTrans.performSlideToLeft();
-
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
+                        acTrans.performSlideToRight();
+
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
