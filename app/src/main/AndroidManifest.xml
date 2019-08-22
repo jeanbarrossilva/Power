@@ -20,7 +20,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         
         <activity
-            android:name=".MainActivity"
+            android:name=".CalculatorActivity"
             android:screenOrientation="portrait">
             
             <intent-filter>
@@ -38,6 +38,7 @@
             android:name=".HiddenMode"
             android:screenOrientation="portrait" />
         <activity android:name=".CreditsActivity" />
+        <activity android:name=".TemperatureActivity" />
 
     </application>
 

@@ -4,7 +4,10 @@
     <item>
         <shape>
             <solid android:color="@color/activity_additional_info" />
+            <corners
+                android:topLeftRadius="50dp"
+                android:topRightRadius="50dp" />
         </shape>
     </item>
-    
+
 </selector>

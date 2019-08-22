@@ -9,7 +9,7 @@
     <string name="maybe_later">Talvez mais tarde</string>
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
-    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nInterface da calculadora redesenhada.\nAnimações de botões adicionadas na calculadora.</string>
+    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nAdição do conversor de temperatura.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>
@@ -46,4 +46,12 @@
     <string name="unavailable_feature_dialog_title">Recurso indisponível</string>
     <string name="night">Noite</string>
     <string name="haptic_feedback">Retorno háptico</string>
+    <string name="infinity">Infinito</string>
+    <string name="unit">Unidade</string>
+    <string name="units">Unidades</string>
+    <string name="temperature">Temperatura</string>
+    <string name="source_code">Código-fonte</string>
+    <string name="from">De</string>
+    <string name="to">Para</string>
+    <string name="hidden_mode_unavailable">O Modo Oculto está temporariamente indisponível.</string>
 </resources>

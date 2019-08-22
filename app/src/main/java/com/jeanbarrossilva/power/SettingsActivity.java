@@ -13,10 +13,11 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -32,8 +33,6 @@ import java.util.Objects;
 import id.voela.actrans.AcTrans;
 
 public class SettingsActivity extends AppCompatActivity {
-    MainActivity mainActivity;
-
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
 
@@ -42,6 +41,10 @@ public class SettingsActivity extends AppCompatActivity {
     String appName;
     String versionName;
     boolean isBeta;
+
+    BounceInterpolator bounceInterpolator;
+    Animation bounceIn;
+    Animation bounceOut;
 
     String empty;
     String space;
@@ -60,12 +63,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     ConstraintLayout settingHiddenModeLayout;
     Switch settingHiddenMode;
+    TextView settingHiddenModeDisclaimer;
     String pin;
 
     ConstraintLayout settingHapticFeedbackLayout;
     Switch settingHapticFeedback;
     ConstraintLayout settingSendFeedback;
+
     ConstraintLayout settingCollaborate;
+    TextView settingCollaborateTitle;
+
     ConstraintLayout settingCredits;
 
     ConstraintLayout activityAdditionalInfo;
@@ -77,15 +84,21 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        mainActivity = new MainActivity();
-
         preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
         preferencesEditor = preferences.edit();
 
-        settingsActivityToMainActivity = new Intent(this, MainActivity.class);
+        settingsActivityToMainActivity = new Intent(this, CalculatorActivity.class);
 
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
+
+        bounceInterpolator = new BounceInterpolator(0.1, 15);
+
+        bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
+        bounceIn.setInterpolator(bounceInterpolator);
+
+        bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
+        bounceOut.setInterpolator(bounceInterpolator);
 
         empty = "";
         space = " ";
@@ -115,19 +128,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         settingHiddenModeLayout = findViewById(R.id.setting_hidden_mode);
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
+        settingHiddenModeDisclaimer = findViewById(R.id.setting_hidden_mode_disclaimer);
 
         settingHapticFeedbackLayout = findViewById(R.id.setting_haptic_feedback);
         settingHapticFeedback = findViewById(R.id.setting_haptic_feedback_switch);
 
         settingSendFeedback = findViewById(R.id.setting_send_feedback);
+
         settingCollaborate = findViewById(R.id.setting_collaborate);
+        settingCollaborateTitle = findViewById(R.id.setting_collaborate_title);
+
         settingCredits = findViewById(R.id.setting_credits);
 
         activityAdditionalInfo = findViewById(R.id.activity_additional_info);
         version = findViewById(R.id.version);
 
         if (Build.VERSION.SDK_INT >= 21) {
-            if (mainActivity.preferences.getBoolean("isNight", false)) {
+            if (new CalculatorActivity().preferences.getBoolean("isNight", false)) {
                 settingHiddenModeLayout.setElevation(2);
                 settingHapticFeedbackLayout.setElevation(2);
                 settingSendFeedback.setElevation(2);
@@ -210,7 +227,7 @@ public class SettingsActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
+                        startActivity(new Intent(SettingsActivity.this, CalculatorActivity.class));
                         acTrans.performSlideToRight();
 
                         break;
@@ -225,13 +242,19 @@ public class SettingsActivity extends AppCompatActivity {
             }
         };
 
-        sensey.startTouchTypeDetection(SettingsActivity.this, touchTypeListener);
+        Sensey.getInstance().startTouchTypeDetection(SettingsActivity.this, touchTypeListener);
     }
 
     private void settingHiddenMode() {
         // Hidden mode is temporarily unavailable.
         settingHiddenMode.setChecked(false);
         settingHiddenMode.setClickable(false);
+
+        if (!(settingHiddenMode.isChecked() & settingHiddenMode.isClickable())) {
+            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_unavailable));
+        } else {
+            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_disable));
+        }
 
         /* settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -340,39 +363,74 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void settingSendFeedback() {
-        settingSendFeedback.setOnClickListener(new View.OnClickListener() {
+        settingSendFeedback.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
+            public boolean onTouch(View view, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        settingSendFeedback.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        settingSendFeedback.startAnimation(bounceOut);
 
-                if (isBeta) {
-                    email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
-                } else {
-                    email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
+
+                        if (isBeta) {
+                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
+                        } else {
+                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+                        }
+
+                        startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
                 }
 
-                startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
+                return true;
             }
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void settingCollaborate() {
-        settingCollaborate.setOnClickListener(new View.OnClickListener() {
+        settingCollaborate.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
-                startActivity(powerGitHubRepo);
+            public boolean onTouch(View view, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        settingCollaborate.startAnimation(bounceIn);
+                        settingCollaborateTitle.setText(getString(R.string.source_code));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        settingCollaborate.startAnimation(bounceOut);
+                        settingCollaborateTitle.setText(getString(R.string.collaborate));
+
+                        Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
+                        startActivity(powerGitHubRepo);
+                }
+
+                return true;
             }
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void settingCredits() {
-        settingCredits.setOnClickListener(new View.OnClickListener() {
+        settingCredits.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SettingsActivity.this, CreditsActivity.class));
-                acTrans.performSlideToLeft();
+            public boolean onTouch(View view, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        settingCredits.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        settingCredits.startAnimation(bounceOut);
+
+                        startActivity(new Intent(SettingsActivity.this, CreditsActivity.class));
+                        acTrans.performSlideToLeft();
+                }
+
+                return true;
             }
         });
     }

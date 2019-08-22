@@ -8,65 +8,69 @@ import android.support.constraint.ConstraintLayout;
 import android.view.View;
 
 public class CreditsActivity extends SettingsActivity {
-    ConstraintLayout creditAndreLuizSilva;
-    ConstraintLayout creditJeanSilva;
-    ConstraintLayout creditAllanDePaula;
-    ConstraintLayout creditJoaoPedroRocha;
-    ConstraintLayout creditJoaoVitorAraujo;
+  CalculatorActivity calculatorActivity;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings_credits);
+  ConstraintLayout creditAndreLuizSilva;
+  ConstraintLayout creditJeanSilva;
+  ConstraintLayout creditAllanDePaula;
+  ConstraintLayout creditJoaoPedroRocha;
+  ConstraintLayout creditJoaoVitorAraujo;
 
-        creditAndreLuizSilva = findViewById(R.id.credit_andre_luiz_silva);
-        creditJeanSilva = findViewById(R.id.credit_jean_silva);
-        creditAllanDePaula = findViewById(R.id.credit_allan_de_paula);
-        creditJoaoPedroRocha = findViewById(R.id.credit_joao_pedro_rocha);
-        creditJoaoVitorAraujo = findViewById(R.id.credit_joao_vitor_araujo);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_settings_credits);
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            if (mainActivity.preferences.getBoolean("isNight", false)) {
-                creditAndreLuizSilva.setElevation(2);
-                creditJeanSilva.setElevation(2);
-                creditAllanDePaula.setElevation(2);
-                creditJoaoPedroRocha.setElevation(2);
-                creditJoaoVitorAraujo.setElevation(2);
-            }
-        }
+    calculatorActivity = new CalculatorActivity();
 
-        creditJeanSilva();
-        creditAllanDePaula();
-        creditJoaoVitorAraujo();
+    creditAndreLuizSilva = findViewById(R.id.credit_andre_luiz_silva);
+    creditJeanSilva = findViewById(R.id.credit_jean_silva);
+    creditAllanDePaula = findViewById(R.id.credit_allan_de_paula);
+    creditJoaoPedroRocha = findViewById(R.id.credit_joao_pedro_rocha);
+    creditJoaoVitorAraujo = findViewById(R.id.credit_joao_vitor_araujo);
+
+    if (Build.VERSION.SDK_INT >= 21) {
+      if (calculatorActivity.preferences.getBoolean("isNight", false)) {
+        creditAndreLuizSilva.setElevation(2);
+        creditJeanSilva.setElevation(2);
+        creditAllanDePaula.setElevation(2);
+        creditJoaoPedroRocha.setElevation(2);
+        creditJoaoVitorAraujo.setElevation(2);
+      }
     }
 
-    private void creditJeanSilva() {
-        creditJeanSilva.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent jeanSilvaTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva"));
-                startActivity(jeanSilvaTwitter);
-            }
-        });
-    }
+    creditJeanSilva();
+    creditAllanDePaula();
+    creditJoaoVitorAraujo();
+  }
 
-    private void creditAllanDePaula() {
-        creditAllanDePaula.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent allanDePaulaTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/allanrigodepau2"));
-                startActivity(allanDePaulaTwitter);
-            }
-        });
-    }
+  private void creditJeanSilva() {
+    creditJeanSilva.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent jeanSilvaTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva"));
+        startActivity(jeanSilvaTwitter);
+      }
+    });
+  }
 
-    private void creditJoaoVitorAraujo() {
-        creditJoaoVitorAraujo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent joaoVitorAraujoTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/joovito32974920"));
-                startActivity(joaoVitorAraujoTwitter);
-            }
-        });
-    }
+  private void creditAllanDePaula() {
+    creditAllanDePaula.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent allanDePaulaTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/allanrigodepau2"));
+        startActivity(allanDePaulaTwitter);
+      }
+    });
+  }
+
+  private void creditJoaoVitorAraujo() {
+    creditJoaoVitorAraujo.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent joaoVitorAraujoTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/joovito32974920"));
+        startActivity(joaoVitorAraujoTwitter);
+      }
+    });
+  }
 }

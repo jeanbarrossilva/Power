@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -24,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,20 +36,17 @@ import com.github.nisrulz.sensey.TouchTypeDetector;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import id.voela.actrans.AcTrans;
 
-public class MainActivity extends AppCompatActivity {
+public class CalculatorActivity extends AppCompatActivity {
     String appName;
     String versionName;
 
-    ConstraintLayout activityMain;
+    ConstraintLayout activityCalculator;
 
     private static final int SETTINGS = 1;
 
@@ -72,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isHiddenModeEnabled;
     boolean isHapticFeedbackEnabled;
 
-    Sensey sensey;
-    AcTrans.Builder acTrans;
+    public AcTrans.Builder acTrans;
 
     String hiddenModePassword;
     String textAlignment;
@@ -82,11 +81,6 @@ public class MainActivity extends AppCompatActivity {
     HorizontalScrollView inputHorizontalScrollView;
     EditText input;
     String calc;
-
-    String pattern;
-    String country;
-    DecimalFormat decimalFormat;
-    DecimalFormatSymbols language;
 
     ImageButton calculatorMode;
 
@@ -133,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        activityMain = findViewById(R.id.activity_main);
+        activityCalculator = findViewById(R.id.activity_main);
 
         // OK dialog (dialog with an OK neutral button) declaration.
         dialogOK = new Dialog(this);
@@ -182,8 +176,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            sensey = Sensey.getInstance();
-            acTrans = new AcTrans.Builder(MainActivity.this);
+            acTrans = new AcTrans.Builder(CalculatorActivity.this);
 
             Sensey.getInstance().init(this);
 
@@ -209,15 +202,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 0, 100);
 
-            pattern = "###,###";
-            country = getResources().getConfiguration().locale.getCountry();
-
-            language = new DecimalFormatSymbols(new Locale("en"));
-            language.setDecimalSeparator('.');
-            language.setGroupingSeparator(',');
-
-            decimalFormat = new DecimalFormat(pattern, language);
-
             // calculatorMode = findViewById(R.id.calculator_mode);
 
             bounceInterpolator = new BounceInterpolator(0.1, 15);
@@ -242,8 +226,10 @@ public class MainActivity extends AppCompatActivity {
             asterisk = "*";
             slash = "/";
 
+            calculatorMode = findViewById(R.id.calculator_mode);
+
             settings();
-            // calculatorMode();
+            calculatorMode();
 
             inputNumber();
             inputDecimalSeparator();
@@ -383,11 +369,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        sensey.setupDispatchTouchEvent(event);
+        Sensey.getInstance().setupDispatchTouchEvent(event);
         return super.dispatchTouchEvent(event);
     }
 
-    private void settings() {
+    void settings() {
         TouchTypeDetector.TouchTypListener settings = new TouchTypeDetector.TouchTypListener() {
             @Override
             public void onTwoFingerSingleTap() {
@@ -418,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
+
             }
 
             @Override
@@ -431,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), SETTINGS);
+                        startActivityForResult(new Intent(CalculatorActivity.this, SettingsActivity.class), SETTINGS);
                         acTrans.performSlideToLeft();
 
                         break;
@@ -448,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Sensey.getInstance().startTouchTypeDetection(MainActivity.this, settings);
+        Sensey.getInstance().startTouchTypeDetection(CalculatorActivity.this, settings);
     }
 
     public void night(boolean isNight) {
@@ -456,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= 28) {
                 AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             } else {
-                Toast.makeText(MainActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+                Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
             }
 
             preferencesEditor.putBoolean("isNight", true);
@@ -479,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
 
             hiddenModePassword = preferences.getString("hiddenModePassword", null);
 
-            Toast.makeText(MainActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
+            Toast.makeText(CalculatorActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
             isHiddenModeEnabled = true;
         }
     }
@@ -527,13 +514,45 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void calculatorMode() {
-        calculatorMode.setOnClickListener(new View.OnClickListener() {
+    @SuppressLint("ClickableViewAccessibility")
+    void calculatorMode() {
+        calculatorMode.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                dialogOKTitle.setText(getString(R.string.unavailable_feature_dialog_title));
-                dialogOKMessage.setText(getString(R.string.unavailable_feature_yet_dialog_message));
-                dialogOK.show();
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 5);
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        calculatorMode.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        final PopupMenu calculatorModes;
+                        MenuInflater inflater;
+
+                        calculatorModes = new PopupMenu(CalculatorActivity.this, calculatorMode);
+                        inflater = calculatorModes.getMenuInflater();
+
+                        inflater.inflate(R.menu.calculator_modes, calculatorModes.getMenu());
+                        calculatorModes.show();
+
+                        calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                if (item.getTitle().equals(getString(R.string.calculator))) {
+                                    calculatorModes.dismiss();
+                                } else if (item.getTitle().equals(getString(R.string.temperature))) {
+                                    startActivity(new Intent(CalculatorActivity.this, TemperatureActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                }
+
+                                return true;
+                            }
+                        });
+
+                        break;
+                }
+
+                return true;
             }
         });
     }
@@ -563,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean inputHasReachedCharLimit() {
+    public boolean inputHasReachedCharLimit() {
         if (calc.length() > 11) {
             input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
         }
@@ -655,6 +674,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void inputOperator() {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
@@ -690,26 +710,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void inputParenthesis() {
-        View.OnClickListener listener = new View.OnClickListener() {
+        View.OnTouchListener listener = new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (!inputHasReachedCharLimit()) {
-                    parenthesis = (Button) view;
-                    input.append(parenthesis.getText());
+            public boolean onTouch(View view, MotionEvent event) {
+                bounceInterpolator = new BounceInterpolator(0.1, 5);
+                parenthesis = (Button) view;
 
-                    System.out.println("Parenthesis added.");
-                    System.out.println("Updated 'calc' value: " + calc);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        parenthesis.startAnimation(bounceIn);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        parenthesis.startAnimation(bounceOut);
+
+                        if (!inputHasReachedCharLimit()) {
+                            input.append(parenthesis.getText());
+
+                            System.out.println("Parenthesis added.");
+                            System.out.println("Updated 'calc' value: " + calc);
+                        }
+
+                        break;
                 }
+
+                return true;
             }
         };
 
-        for (int id: parenthesis2) {
-            findViewById(id).setOnClickListener(listener);
+        for (int parenthesis: parenthesis2) {
+            findViewById(parenthesis).setOnTouchListener(listener);
         }
     }
 
-    private boolean isInputLastNumber() {
+    boolean isInputLastNumber() {
         String[] numbers = {
                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
         };
@@ -810,7 +845,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (hiddenModePassword != null) {
                                     if (calc.equals(hiddenModePassword)) {
                                         input.setText(empty);
-                                        startActivity(new Intent(MainActivity.this, HiddenMode.class));
+                                        startActivity(new Intent(CalculatorActivity.this, HiddenMode.class));
                                     }
                                 } else {
                                     System.out.println("'hiddenModePassword' is null.");
@@ -828,6 +863,14 @@ public class MainActivity extends AppCompatActivity {
 
                                     if (result.endsWith(".0")) {
                                         result = result.replace(".0", empty);
+                                    }
+
+                                    if (result.contains("Infinity")) {
+                                        result = result.replace("Infinity", getString(R.string.infinity));
+                                    }
+
+                                    if (result.length() > 16) {
+                                        result = result.substring(17, result.length() - 1);
                                     }
 
                                     input.setText(result);
