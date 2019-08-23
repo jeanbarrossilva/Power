@@ -164,7 +164,7 @@ public class TimeActivity extends CalculatorActivity {
                                     preferencesEditor.putString("convertTo", "minute")
                                             .apply();
 
-                                    conversionSymbolResult.setText(getString(R.string.fahrenheit_symbol));
+                                    conversionSymbolResult.setText(getString(R.string.minute_symbol));
                                     unit.setText(getString(R.string.minute));
                                 } else if (item.getTitle().equals(getString(R.string.second))) {
                                     preferencesEditor.putString("convertTo", "second")
@@ -640,10 +640,10 @@ public class TimeActivity extends CalculatorActivity {
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 30.417));
                                 break;
                             case "hour":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 30.417));
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 730.001));
                                 break;
                             case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 730.001));
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 43800.048));
                                 break;
                             case "second":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 2628002.88));

@@ -22,7 +22,7 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t allow switching from the time converter to the temperature converter;\nFixed a bug that displayed a negative result in the time converter when converting second to minute.</string>
+    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t calculate the conversion from hour to month in the time converter.</string>
     <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
     
     <string name="ok" translatable="false">OK</string>
