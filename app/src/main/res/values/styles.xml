@@ -16,6 +16,7 @@
         <item name="android:lineHeight" tools:targetApi="28">22dp</item>
         <item name="android:buttonStyle">?android:attr/borderlessButtonStyle</item>
         <item name="android:scrollbars">none</item>
+        <item name="android:scrollbarStyle">insideOverlay</item>
         
     </style>
 

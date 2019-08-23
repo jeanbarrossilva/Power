@@ -488,13 +488,13 @@ public class TimeActivity extends CalculatorActivity {
                         calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(getString(R.string.temperature))) {
+                                if (item.getTitle().equals(getString(R.string.time))) {
                                     calculatorModes.dismiss();
                                 } else if (item.getTitle().equals(getString(R.string.calculator))) {
                                     startActivity(new Intent(TimeActivity.this, CalculatorActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                } else if (item.getTitle().equals(getString(R.string.time))) {
-                                    startActivity(new Intent(TimeActivity.this, TimeActivity.class));
+                                } else if (item.getTitle().equals(getString(R.string.temperature))) {
+                                    startActivity(new Intent(TimeActivity.this, TemperatureActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 }
 
@@ -742,7 +742,7 @@ public class TimeActivity extends CalculatorActivity {
                                 conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) / 3600));
                                 break;
                             case "minute":
-                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 273.15) / 60));
+                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString())) / 60));
                                 break;
                             case "second":
                                 conversionResult.setText(input.getText().toString());

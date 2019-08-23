@@ -13,7 +13,7 @@
     <string name="delete_dialog_title">Delete</string>
     
     <string name="message">Message</string>
-    <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap "OK" to the app.</string>
+    <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap \"OK\" to close the app.</string>
     <string name="welcome_to_dialog_message">%1$s is a powerful calculator that lets you easily calculate expressions and convert units like Celsius to Fahrenheit, meter to kilometer, liter to barrel and much more! This is CalcOne, but taken to a whole new level.\n\nHope you enjoy it!</string>
     <string name="beta_version_dialog_message">You are using a beta version of %1$s. That means there may be some bugs, crashes and/or missing features.</string>
     <string name="unavailable_feature_yet_dialog_message">This feature is not available yet.</string>
@@ -22,7 +22,7 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t calculate time conversion from/to milliseconds.</string>
+    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t allow switching from the time converter to the temperature converter;\nFixed a bug that displayed a negative result in the time converter when converting second to minute.</string>
     <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
     
     <string name="ok" translatable="false">OK</string>
@@ -96,7 +96,7 @@
     <string name="kelvin_symbol" translatable="false">K</string>
     
     <string name="year">Year</string>
-    <string name="year_symbol" translatable="false">y</string>
+    <string name="year_symbol">y</string>
     
     <string name="month">Month</string>
     <string name="month_symbol" translatable="false">m</string>
