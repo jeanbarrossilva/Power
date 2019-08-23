@@ -9,7 +9,7 @@
     <string name="maybe_later">Talvez mais tarde</string>
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
-    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nSubstituição do gesto de deslize para a esquerda pelo gesto de deslize para cima de \"Ajustes\";\nAdição do conversor de tempo.</string>
+    <string name="release_notes_dialog_message">%1$s foi atualizado para a versão %2$s. Aqui está o que há de novo:\n\nCorreção de um bug que não calculava a conversão de tempo de/para milissegundos.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>

@@ -238,6 +238,9 @@ public class TimeActivity extends CalculatorActivity {
                 case "second":
                     unit = "second";
                     break;
+                case "millisecond":
+                    unit = "millisecond";
+                    break;
             }
         }
 
@@ -266,6 +269,9 @@ public class TimeActivity extends CalculatorActivity {
                     break;
                 case "second":
                     unit = "second";
+                    break;
+                case "millisecond":
+                    unit = "millisecond";
                     break;
             }
         }
