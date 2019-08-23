@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/year"
+        android:title="@string/year" />
+    
+    <item
+        android:id="@+id/month"
+        android:title="@string/month" />
+    
+    <item
+        android:id="@+id/day"
+        android:title="@string/day" />
+    
+    <item
+        android:id="@+id/hour"
+        android:title="@string/hour" />
+    
+    <item
+        android:id="@+id/minute"
+        android:title="@string/minute" />
+    
+    <item
+        android:id="@+id/second"
+        android:title="@string/second" />
+    
+    <item
+        android:id="@+id/millisecond"
+        android:title="@string/millisecond" />
+
+</menu>

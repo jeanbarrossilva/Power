@@ -1,6 +1,7 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -418,13 +419,13 @@ public class CalculatorActivity extends AppCompatActivity {
                     case TouchTypeDetector.SWIPE_DIR_UP:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        startActivityForResult(new Intent(CalculatorActivity.this, SettingsActivity.class), SETTINGS);
-                        acTrans.performSlideToLeft();
-
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
+                        startActivityForResult(new Intent(CalculatorActivity.this, SettingsActivity.class), SETTINGS);
+                        acTrans.performSlideToBottom();
+
                         break;
                 }
             }
@@ -542,6 +543,9 @@ public class CalculatorActivity extends AppCompatActivity {
                                     calculatorModes.dismiss();
                                 } else if (item.getTitle().equals(getString(R.string.temperature))) {
                                     startActivity(new Intent(CalculatorActivity.this, TemperatureActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                } else if (item.getTitle().equals(getString(R.string.time))) {
+                                    startActivity(new Intent(CalculatorActivity.this, TimeActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 }
 

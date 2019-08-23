@@ -154,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
 
-        calculator();
+        back();
 
         settingHiddenMode();
         settingHapticFeedback();
@@ -181,7 +181,7 @@ public class SettingsActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    private void calculator() {
+    private void back() {
         TouchTypeDetector.TouchTypListener touchTypeListener = new TouchTypeDetector.TouchTypListener() {
             @Override
             public void onTwoFingerSingleTap() {
@@ -223,13 +223,13 @@ public class SettingsActivity extends AppCompatActivity {
             public void onSwipe(int swipeDirection) {
                 switch (swipeDirection) {
                     case TouchTypeDetector.SWIPE_DIR_UP:
+                        startActivity(new Intent(SettingsActivity.this, CalculatorActivity.class));
+                        acTrans.performSlideToTop();
+
                         break;
                     case TouchTypeDetector.SWIPE_DIR_LEFT:
                         break;
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        startActivity(new Intent(SettingsActivity.this, CalculatorActivity.class));
-                        acTrans.performSlideToRight();
-
                         break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         break;
@@ -399,11 +399,11 @@ public class SettingsActivity extends AppCompatActivity {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         settingCollaborate.startAnimation(bounceIn);
-                        settingCollaborateTitle.setText(getString(R.string.source_code));
+                        settingCollaborateTitle.setText(getString(R.string.collaborate));
                         break;
                     case MotionEvent.ACTION_UP:
                         settingCollaborate.startAnimation(bounceOut);
-                        settingCollaborateTitle.setText(getString(R.string.collaborate));
+                        settingCollaborateTitle.setText(getString(R.string.source_code));
 
                         Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
                         startActivity(powerGitHubRepo);

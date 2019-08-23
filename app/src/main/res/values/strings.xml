@@ -22,7 +22,7 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nTemperature converter added.</string>
+    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nReplacement of the \"Settings\" left swipe gesture to a down swipe gesture;\nTime converter added.</string>
     <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
     
     <string name="ok" translatable="false">OK</string>
@@ -80,6 +80,7 @@
     <string name="unit">Unit</string>
     
     <string name="calculator">Calculator</string>
+    <string name="time">Time</string>
     <string name="temperature">Temperature</string>
     
     <string name="from">From</string>
@@ -94,10 +95,32 @@
     <string name="kelvin" translatable="false">Kelvin</string>
     <string name="kelvin_symbol" translatable="false">K</string>
     
+    <string name="year">Year</string>
+    <string name="year_symbol" translatable="false">y</string>
+    
+    <string name="month">Month</string>
+    <string name="month_symbol" translatable="false">m</string>
+    
+    <string name="day">Day</string>
+    <string name="day_symbol" translatable="false">d</string>
+    
+    <string name="hour">Hour</string>
+    <string name="hour_symbol" translatable="false">h</string>
+    
+    <string name="minute">Minute</string>
+    <string name="minute_symbol" translatable="false">min</string>
+    
+    <string name="second">Second</string>
+    <string name="second_symbol" translatable="false">s</string>
+    
+    <string name="millisecond">Millisecond</string>
+    <string name="millisecond_symbol" translatable="false">ms</string>
+    
     <string name="infinity">Infinity</string>
     
     <string name="hidden_mode_set_up_success">Hidden Mode was successfully set up. Type in your PIN and hit \"=\" to enter.</string>
     
     <string name="error">Error</string>
+    <string name="an_error_occurred">An error occurred.</string>
     <string name="night_incompatibility">Your device is not compatible with Night mode.</string>
 </resources>

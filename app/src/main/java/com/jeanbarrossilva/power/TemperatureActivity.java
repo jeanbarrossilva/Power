@@ -118,7 +118,7 @@ public class TemperatureActivity extends CalculatorActivity {
                         units = new PopupMenu(TemperatureActivity.this, unit);
                         inflater = units.getMenuInflater();
 
-                        inflater.inflate(R.menu.units, units.getMenu());
+                        inflater.inflate(R.menu.units_temperature, units.getMenu());
                         units.show();
 
                         units.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -159,6 +159,7 @@ public class TemperatureActivity extends CalculatorActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
+    // The options Button[] must contain all options available, including the selected one.
     private void selectOption(final Button selectedOption, final Button[] options) {
         int selectedOptionId = selectedOption.getId();
 
@@ -170,11 +171,9 @@ public class TemperatureActivity extends CalculatorActivity {
                 if (option.getId() != selectedOptionId) {
                     option.setTextColor(Color.WHITE);
                     option.setBackgroundResource(R.drawable.option);
-
-                    System.out.println("[useless] Unselected option text color: " + option.getCurrentTextColor());
                 }
             } catch(NullPointerException nullPointerException) {
-                Toast.makeText(TemperatureActivity.this, "An error occurred.", Toast.LENGTH_LONG).show();
+                Toast.makeText(TemperatureActivity.this, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
                 nullPointerException.printStackTrace();
             }
         }
@@ -330,6 +329,9 @@ public class TemperatureActivity extends CalculatorActivity {
                                 } else if (item.getTitle().equals(getString(R.string.calculator))) {
                                     startActivity(new Intent(TemperatureActivity.this, CalculatorActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                } else if (item.getTitle().equals(getString(R.string.time))) {
+                                    startActivity(new Intent(TemperatureActivity.this, TimeActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 }
 
                                 return true;
@@ -447,6 +449,7 @@ public class TemperatureActivity extends CalculatorActivity {
                                 break;
                             case "kelvin":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) + 273.15));
+                                break;
                         }
 
                         break;
@@ -460,6 +463,7 @@ public class TemperatureActivity extends CalculatorActivity {
                                 break;
                             case "kelvin":
                                 conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 32) * 5 / 9 + 273.15));
+                                break;
                         }
 
                         break;
@@ -473,6 +477,7 @@ public class TemperatureActivity extends CalculatorActivity {
                                 break;
                             case "kelvin":
                                 conversionResult.setText(input.getText().toString());
+                                break;
                         }
 
                         break;
