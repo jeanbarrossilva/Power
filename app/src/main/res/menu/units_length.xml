@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/kilometer"
+        android:title="@string/kilometer" />
+    
+    <item
+        android:id="@+id/hectometer"
+        android:title="@string/hectometer" />
+    
+    <item
+        android:id="@+id/decameter"
+        android:title="@string/decameter" />
+    
+    <item
+        android:id="@+id/meter"
+        android:title="@string/meter" />
+    
+    <item
+        android:id="@+id/decimeter"
+        android:title="@string/decimeter" />
+    
+    <item
+        android:id="@+id/centimeter"
+        android:title="@string/centimeter" />
+    
+    <item
+        android:id="@+id/millimeter"
+        android:title="@string/millimeter" />
+    
+</menu>

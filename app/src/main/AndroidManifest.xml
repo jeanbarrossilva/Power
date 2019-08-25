@@ -37,9 +37,16 @@
         <activity
             android:name=".HiddenMode"
             android:screenOrientation="portrait" />
-        <activity android:name=".CreditsActivity" />
-        <activity android:name=".TemperatureActivity" />
-        <activity android:name=".TimeActivity" />
+        
+        <activity android:name=".CreditsActivity"
+            android:screenOrientation="portrait" />
+        
+        <activity android:name=".TemperatureActivity"
+            android:screenOrientation="portrait" />
+        
+        <activity android:name=".TimeActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".LengthActivity" />
 
     </application>
 

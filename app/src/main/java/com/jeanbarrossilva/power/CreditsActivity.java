@@ -8,8 +8,6 @@ import android.support.constraint.ConstraintLayout;
 import android.view.View;
 
 public class CreditsActivity extends SettingsActivity {
-  CalculatorActivity calculatorActivity;
-
   ConstraintLayout creditAndreLuizSilva;
   ConstraintLayout creditJeanSilva;
   ConstraintLayout creditAllanDePaula;
@@ -21,8 +19,6 @@ public class CreditsActivity extends SettingsActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_settings_credits);
 
-    calculatorActivity = new CalculatorActivity();
-
     creditAndreLuizSilva = findViewById(R.id.credit_andre_luiz_silva);
     creditJeanSilva = findViewById(R.id.credit_jean_silva);
     creditAllanDePaula = findViewById(R.id.credit_allan_de_paula);
@@ -30,7 +26,7 @@ public class CreditsActivity extends SettingsActivity {
     creditJoaoVitorAraujo = findViewById(R.id.credit_joao_vitor_araujo);
 
     if (Build.VERSION.SDK_INT >= 21) {
-      if (calculatorActivity.preferences.getBoolean("isNight", false)) {
+      if (preferences.getBoolean("isNight", false)) {
         creditAndreLuizSilva.setElevation(2);
         creditJeanSilva.setElevation(2);
         creditAllanDePaula.setElevation(2);

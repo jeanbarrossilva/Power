@@ -3,196 +3,308 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_temperature"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".CalculatorActivity"
-    tools:ignore="RtlSymmetry, Autofill, ContentDescription">
+    tools:context=".LengthActivity"
+    tools:ignore="RtlSymmetry, Autofill, ContentDescription, HardcodedText">
     
-    <TextView
-        android:id="@+id/input_result"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:alpha="0.45"
-        android:visibility="gone"
-        android:fontFamily="@font/quicksand"
-        android:textStyle="bold"
-        android:textSize="35sp"
-        app:layout_constraintStart_toStartOf="@+id/input_horizontal_scroll_view"
-        app:layout_constraintBottom_toTopOf="@+id/input_horizontal_scroll_view" />
-    
-    <HorizontalScrollView
-        android:id="@+id/input_horizontal_scroll_view"
-        android:layout_width="@+id/calculator"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="15dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="10dp"
         app:layout_constraintStart_toStartOf="@+id/calculator"
         app:layout_constraintBottom_toTopOf="@+id/calculator">
         
-        <EditText
-            android:id="@+id/input"
+        <HorizontalScrollView
+            android:id="@+id/input_horizontal_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            
+            <EditText
+                android:id="@+id/input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:hint="@string/zero"
+                android:fontFamily="@font/quicksand"
+                android:textStyle="bold"
+                android:textSize="45sp"
+                android:inputType="text"
+                android:background="@null"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        
+        </HorizontalScrollView>
+        
+        <TextView
+            android:id="@+id/input_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:alpha="0.7"
-            android:hint="@string/zero"
+            android:alpha="0.3"
+            android:text="@string/kilometer_symbol"
             android:fontFamily="@font/quicksand"
             android:textStyle="bold"
             android:textSize="45sp"
-            android:inputType="text"
-            android:background="@null"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/input_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="parent" />
     
-    </HorizontalScrollView>
+    </android.support.constraint.ConstraintLayout>
     
     <android.support.constraint.ConstraintLayout
         android:id="@+id/calculator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    
+        app:layout_constraintBottom_toBottomOf="parent">
+        
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/option_conversion"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/others"
+            android:paddingTop="10dp"
+            android:paddingStart="30dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/others_horizontal_scroll_view"
+            app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
+            app:layout_constraintStart_toStartOf="@+id/others_horizontal_scroll_view">
+            
+            <TextView
+                android:id="@+id/to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/to"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+            
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/to"
+                app:layout_constraintTop_toTopOf="parent">
+                
+                <TextView
+                    android:id="@+id/option_conversion_number_result"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand"
+                    android:text="@string/zero"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+                
+                <TextView
+                    android:id="@+id/option_conversion_symbol_result"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/quicksand"
+                    android:text="@string/meter_symbol"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
+                    app:layout_constraintTop_toTopOf="parent" />
+            
+            </android.support.constraint.ConstraintLayout>
+            
+            <Button
+                android:id="@+id/unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:background="@drawable/unit"
+                android:text="@string/millimeter"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        
+        </android.support.constraint.ConstraintLayout>
+        
         <HorizontalScrollView
             android:id="@+id/others_horizontal_scroll_view"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
-            android:paddingStart="20dp"
             android:paddingTop="10dp"
             android:paddingEnd="20dp"
             android:paddingBottom="10dp"
-            android:scrollbarSize="5dp"
             app:layout_constraintBottom_toTopOf="@+id/keypad_delete"
             app:layout_constraintEnd_toEndOf="@+id/keypad_delete"
             app:layout_constraintStart_toStartOf="@+id/keypad_delete">
-        
+            
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="175dp">
-            
-                <Button
-                    android:id="@+id/plus"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:text="@string/plus"
+                android:paddingEnd="180dp">
+                
+                <TextView
+                    android:id="@+id/from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="@string/from"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/minus"
+                    android:textSize="15sp"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            
+                    app:layout_constraintBottom_toBottomOf="parent" />
+                
                 <Button
-                    android:id="@+id/minus"
-                    android:layout_width="50dp"
+                    android:id="@+id/kilometer"
+                    android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="2.5dp"
-                    android:background="@null"
-                    android:text="@string/minus"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/kilometer"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/times"
-                    app:layout_constraintStart_toEndOf="@+id/plus"
+                    app:layout_constraintEnd_toStartOf="@+id/hectometer"
+                    app:layout_constraintStart_toEndOf="@+id/from"
+                    app:layout_constraintTop_toTopOf="parent" />
+                
+                <Button
+                    android:id="@+id/hectometer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/hectometer"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/decameter"
+                    app:layout_constraintStart_toEndOf="@+id/kilometer"
+                    app:layout_constraintTop_toTopOf="parent" />
+                
+                <Button
+                    android:id="@+id/decameter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/decameter"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/meter"
+                    app:layout_constraintStart_toEndOf="@+id/hectometer"
+                    app:layout_constraintTop_toTopOf="parent" />
+                
+                <Button
+                    android:id="@+id/meter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/meter"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/decimeter"
+                    app:layout_constraintStart_toEndOf="@+id/decameter"
+                    app:layout_constraintTop_toTopOf="parent" />
+                
+                <Button
+                    android:id="@+id/decimeter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/decimeter"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/centimeter"
+                    app:layout_constraintStart_toEndOf="@+id/meter"
                     app:layout_constraintTop_toTopOf="parent" />
     
                 <Button
-                    android:id="@+id/times"
-                    android:layout_width="50dp"
+                    android:id="@+id/centimeter"
+                    android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="2.5dp"
-                    android:background="@null"
-                    android:text="@string/times"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/centimeter"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/division"
-                    app:layout_constraintStart_toEndOf="@+id/minus"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-    
+                    app:layout_constraintEnd_toStartOf="@+id/millimeter"
+                    app:layout_constraintStart_toEndOf="@+id/decimeter"
+                    app:layout_constraintTop_toTopOf="parent" />
+                
                 <Button
-                    android:id="@+id/division"
-                    android:layout_width="50dp"
+                    android:id="@+id/millimeter"
+                    android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="2.5dp"
-                    android:background="@null"
-                    android:text="@string/division"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/millimeter"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/divider"
-                    app:layout_constraintStart_toEndOf="@+id/times"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-            
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="1dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:alpha="0.25"
-                    android:background="@drawable/divider"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/left_parenthesis"
-                    app:layout_constraintStart_toEndOf="@+id/division"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/centimeter"
                     app:layout_constraintTop_toTopOf="parent" />
             
-                <Button
-                    android:id="@+id/left_parenthesis"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:text="@string/left_parenthesis"
-                    android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/right_parenthesis"
-                    app:layout_constraintStart_toEndOf="@+id/divider"
-                    app:layout_constraintTop_toTopOf="parent" />
-            
-                <Button
-                    android:id="@+id/right_parenthesis"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="2.5dp"
-                    android:background="@null"
-                    android:text="@string/right_parenthesis"
-                    android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/left_parenthesis"
-                    app:layout_constraintTop_toTopOf="parent" />
-        
             </android.support.constraint.ConstraintLayout>
-    
+        
         </HorizontalScrollView>
         
         <ImageButton
             android:id="@+id/calculator_mode"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:background="@drawable/calculator_mode"
             android:paddingStart="55dp"
             android:paddingTop="5dp"
             android:paddingEnd="55dp"
             android:paddingBottom="5dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/calculator"
+            android:src="@drawable/length"
+            android:background="@drawable/calculator_mode"
             app:layout_constraintTop_toTopOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view" />
@@ -204,7 +316,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
-    
+            
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/keypad"
                 android:layout_width="wrap_content"
@@ -215,7 +327,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/delete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-        
+                
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/numbers"
                     android:layout_width="wrap_content"
@@ -223,7 +335,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
-            
+                    
                     <Button
                         android:id="@+id/seven"
                         android:layout_width="75dp"
@@ -236,7 +348,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/four"
                         app:layout_constraintStart_toStartOf="parent" />
-            
+                    
                     <Button
                         android:id="@+id/eight"
                         android:layout_width="75dp"
@@ -250,7 +362,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/four"
                         app:layout_constraintStart_toEndOf="@+id/seven" />
-            
+                    
                     <Button
                         android:id="@+id/four"
                         android:layout_width="75dp"
@@ -263,7 +375,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/one"
                         app:layout_constraintStart_toStartOf="parent" />
-            
+                    
                     <Button
                         android:id="@+id/nine"
                         android:layout_width="75dp"
@@ -277,7 +389,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/six"
                         app:layout_constraintStart_toEndOf="@+id/eight" />
-            
+                    
                     <Button
                         android:id="@+id/five"
                         android:layout_width="75dp"
@@ -291,7 +403,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/two"
                         app:layout_constraintStart_toEndOf="@+id/four" />
-            
+                    
                     <Button
                         android:id="@+id/six"
                         android:layout_width="75dp"
@@ -305,7 +417,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/three"
                         app:layout_constraintStart_toEndOf="@+id/five" />
-            
+                    
                     <Button
                         android:id="@+id/one"
                         android:layout_width="75dp"
@@ -318,7 +430,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/zero"
                         app:layout_constraintStart_toStartOf="parent" />
-            
+                    
                     <Button
                         android:id="@+id/two"
                         android:layout_width="75dp"
@@ -332,7 +444,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/zero"
                         app:layout_constraintStart_toEndOf="@+id/one" />
-            
+                    
                     <Button
                         android:id="@+id/three"
                         android:layout_width="75dp"
@@ -346,19 +458,21 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/decimal_separator"
                         app:layout_constraintStart_toEndOf="@+id/two" />
-            
+                    
                     <Button
                         android:id="@+id/zero"
-                        android:layout_width="75dp"
+                        android:layout_width="170dp"
                         android:layout_height="75dp"
+                        android:paddingStart="30dp"
                         android:background="@drawable/number"
                         android:text="@string/zero"
+                        android:textAlignment="viewStart"
                         android:textColor="@android:color/white"
                         android:textSize="25sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
-            
+                    
                     <Button
                         android:id="@+id/decimal_separator"
                         android:layout_width="75dp"
@@ -371,29 +485,15 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/zero" />
-            
-                    <Button
-                        android:id="@+id/equal"
-                        android:layout_width="75dp"
-                        android:layout_height="75dp"
-                        android:layout_marginStart="20dp"
-                        android:background="@drawable/equal"
-                        android:hapticFeedbackEnabled="true"
-                        android:text="@string/equal"
-                        android:textColor="?android:attr/textColorPrimaryInverse"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/decimal_separator" />
-        
+                
                 </android.support.constraint.ConstraintLayout>
-    
+            
             </android.support.constraint.ConstraintLayout>
-    
+            
             <ImageButton
                 android:id="@+id/delete"
                 android:layout_width="wrap_content"
-                android:layout_height="@+id/keypad"
+                android:layout_height="0dp"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/delete"
                 android:paddingStart="22.5dp"
@@ -403,9 +503,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/keypad"
                 app:layout_constraintTop_toTopOf="@+id/keypad" />
-
+        
         </android.support.constraint.ConstraintLayout>
     
     </android.support.constraint.ConstraintLayout>
-    
+
 </android.support.constraint.ConstraintLayout>

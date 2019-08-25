@@ -22,8 +22,8 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">%1$s has been updated to version %2$s. Here\'s what is new:\n\nFixed a bug that didn\'t calculate the conversion from hour to month in the time converter.</string>
-    <string name="delete_dialog_message">Are you sure you want to delete? Once you do it, there\'s no going back.</string>
+    <string name="release_notes_dialog_message">• Fixed a bug that made the app crash when opening Settings.\n• Fixed a bug that didn\'t change the navigation bar color when switching from day mode to night mode and vice versa.\n• Fixed a bug that allowed screen rotation.\n• Fixed a bug that didn\'t show the icon for some modes other than Calculator in night mode.\n• Fixed a bug that didn\'t calculate the conversion from hour to month in the time converter.\n• Fixed a bug that didn\'t calculate the conversion from day to month in the time converter.\n\n• Fixed a bug that displayed the decameter abbreviation as \"dm\" instead of \"dam\".\n\n• App adaption to some screen sizes added.\n• Length converter added.</string>
+    <string name="delete_dialog_message">Are you sure you want to delete?</string>
     
     <string name="ok" translatable="false">OK</string>
     <string name="yes">Yes</string>
@@ -80,20 +80,33 @@
     <string name="unit">Unit</string>
     
     <string name="calculator">Calculator</string>
+    <string name="length">Length</string>
     <string name="time">Time</string>
     <string name="temperature">Temperature</string>
     
     <string name="from">From</string>
     <string name="to">To</string>
     
-    <string name="celsius" translatable="false">Celsius</string>
-    <string name="celsius_symbol" translatable="false">°C</string>
+    <string name="kilometer">Kilometer</string>
+    <string name="kilometer_symbol" translatable="false">km</string>
     
-    <string name="fahrenheit" translatable="false">Fahrenheit</string>
-    <string name="fahrenheit_symbol" translatable="false">°F</string>
+    <string name="hectometer">Hectometer</string>
+    <string name="hectometer_symbol" translatable="false">hm</string>
     
-    <string name="kelvin" translatable="false">Kelvin</string>
-    <string name="kelvin_symbol" translatable="false">K</string>
+    <string name="decameter">Decameter</string>
+    <string name="decameter_symbol" translatable="false">dam</string>
+    
+    <string name="meter">Meter</string>
+    <string name="meter_symbol" translatable="false">m</string>
+    
+    <string name="decimeter">Decimeter</string>
+    <string name="decimeter_symbol" translatable="false">dm</string>
+    
+    <string name="centimeter">Centimeter</string>
+    <string name="centimeter_symbol" translatable="false">cm</string>
+    
+    <string name="millimeter">Millimeter</string>
+    <string name="millimeter_symbol" translatable="false">mm</string>
     
     <string name="year">Year</string>
     <string name="year_symbol">y</string>
@@ -115,6 +128,15 @@
     
     <string name="millisecond">Millisecond</string>
     <string name="millisecond_symbol" translatable="false">ms</string>
+    
+    <string name="celsius" translatable="false">Celsius</string>
+    <string name="celsius_symbol" translatable="false">°C</string>
+    
+    <string name="fahrenheit" translatable="false">Fahrenheit</string>
+    <string name="fahrenheit_symbol" translatable="false">°F</string>
+    
+    <string name="kelvin" translatable="false">Kelvin</string>
+    <string name="kelvin_symbol" translatable="false">K</string>
     
     <string name="infinity">Infinity</string>
     

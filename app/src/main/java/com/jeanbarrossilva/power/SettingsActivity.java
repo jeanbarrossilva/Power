@@ -11,16 +11,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +31,7 @@ import java.util.Objects;
 
 import id.voela.actrans.AcTrans;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends CalculatorActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
 
@@ -49,22 +48,22 @@ public class SettingsActivity extends AppCompatActivity {
     String empty;
     String space;
 
-    Dialog dialogYesNo;
-    TextView dialogYesNoTitle;
-    TextView dialogYesNoMessage;
-    Button dialogYesNoYesButton;
-    Button dialogYesNoNoButton;
-
     Sensey sensey;
     AcTrans.Builder acTrans;
 
     TextView activityTitle;
     TextView activitySubtitle;
 
+    ScrollView settingsScrollView;
+    ConstraintLayout settings;
+
     ConstraintLayout settingHiddenModeLayout;
     Switch settingHiddenMode;
     TextView settingHiddenModeDisclaimer;
     String pin;
+
+    ConstraintLayout settingNightLayout;
+    Switch settingNight;
 
     ConstraintLayout settingHapticFeedbackLayout;
     Switch settingHapticFeedback;
@@ -104,21 +103,6 @@ public class SettingsActivity extends AppCompatActivity {
         space = " ";
 
         dialogYesNo = new Dialog(this);
-        Objects.requireNonNull(dialogYesNo.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogYesNo.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogYesNo.setContentView(R.layout.dialog_yes_no);
-
-        dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
-        dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
-        dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
-        dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
-
-        dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogYesNo.dismiss();
-            }
-        });
 
         sensey = Sensey.getInstance();
         acTrans = new AcTrans.Builder(SettingsActivity.this);
@@ -126,9 +110,17 @@ public class SettingsActivity extends AppCompatActivity {
         activityTitle = findViewById(R.id.activity_title);
         activitySubtitle = findViewById(R.id.activity_subtitle);
 
+        settingsScrollView = findViewById(R.id.settings_scroll_view);
+        settingsScrollView.setVerticalScrollBarEnabled(false);
+
+        settings = findViewById(R.id.settings);
+
         settingHiddenModeLayout = findViewById(R.id.setting_hidden_mode);
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
         settingHiddenModeDisclaimer = findViewById(R.id.setting_hidden_mode_disclaimer);
+
+        settingNightLayout = findViewById(R.id.setting_night);
+        settingNight = findViewById(R.id.setting_night_switch);
 
         settingHapticFeedbackLayout = findViewById(R.id.setting_haptic_feedback);
         settingHapticFeedback = findViewById(R.id.setting_haptic_feedback_switch);
@@ -144,19 +136,28 @@ public class SettingsActivity extends AppCompatActivity {
         version = findViewById(R.id.version);
 
         if (Build.VERSION.SDK_INT >= 21) {
-            if (new CalculatorActivity().preferences.getBoolean("isNight", false)) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                settingNightLayout.setVisibility(View.VISIBLE);
+            } else {
+                settingNightLayout.setVisibility(View.GONE);
+                settingHapticFeedbackLayout.setPadding(settingHapticFeedbackLayout.getPaddingLeft(), 0, settingHapticFeedbackLayout.getPaddingRight(), settingHapticFeedbackLayout.getPaddingBottom());
+            }
+
+            if (preferences.getBoolean("isNight", false)) {
                 settingHiddenModeLayout.setElevation(2);
+                settingNight.setElevation(2);
                 settingHapticFeedbackLayout.setElevation(2);
                 settingSendFeedback.setElevation(2);
                 settingCollaborate.setElevation(2);
-
-                activityAdditionalInfo.setElevation(1);
             }
         }
+
+        version.setText(version());
 
         back();
 
         settingHiddenMode();
+        settingNight();
         settingHapticFeedback();
         settingSendFeedback();
         settingCollaborate();
@@ -340,6 +341,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    private void settingNight() {
+        settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    night(true);
+                } else {
+                    night(false);
+                }
+            }
+        });
+    }
+
     private void settingHapticFeedback() {
         settingHapticFeedback.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -370,17 +384,17 @@ public class SettingsActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        settingSendFeedback.startAnimation(bounceIn);
+                        bounceIn(settingSendFeedback, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         settingSendFeedback.startAnimation(bounceOut);
 
                         Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
 
-                        if (isBeta) {
-                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
-                        } else {
+                        if (!isBeta) {
                             email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+                        } else {
+                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
                         }
 
                         startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
@@ -398,7 +412,7 @@ public class SettingsActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        settingCollaborate.startAnimation(bounceIn);
+                        bounceIn(settingCollaborate, true);
                         settingCollaborateTitle.setText(getString(R.string.collaborate));
                         break;
                     case MotionEvent.ACTION_UP:
@@ -421,7 +435,7 @@ public class SettingsActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        settingCredits.startAnimation(bounceIn);
+                        bounceIn(settingCredits, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         settingCredits.startAnimation(bounceOut);
@@ -433,24 +447,5 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
-
-    private void version() {
-        int dots = 0;
-
-        // Counts how many dots are there in 'versionName'.
-        for (char dot: versionName.toCharArray()) {
-            if (dot == '.') {
-                dots ++;
-            }
-        }
-
-        if (dots == 1) {
-            version.setText(String.format(getString(R.string.version), versionName));
-            isBeta = false;
-        } else if (dots >= 2) {
-            version.setText(String.format(getString(R.string.version_beta), versionName));
-            isBeta = true;
-        }
     }
 }

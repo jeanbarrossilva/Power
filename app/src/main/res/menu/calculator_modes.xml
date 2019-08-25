@@ -6,6 +6,10 @@
         android:title="@string/calculator" />
     
     <item
+        android:id="@+id/length"
+        android:title="@string/length" />
+    
+    <item
         android:id="@+id/time"
         android:title="@string/time" />
     

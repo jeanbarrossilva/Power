@@ -64,6 +64,9 @@ public class TemperatureActivity extends CalculatorActivity {
         conversionResult = findViewById(R.id.option_conversion_number_result);
         conversionSymbolResult = findViewById(R.id.option_conversion_symbol_result);
 
+        othersHorizontalScrollView = findViewById(R.id.others_horizontal_scroll_view);
+        othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
+
         celsius = findViewById(R.id.celsius);
         fahrenheit = findViewById(R.id.fahrenheit);
         kelvin = findViewById(R.id.kelvin);
@@ -105,11 +108,9 @@ public class TemperatureActivity extends CalculatorActivity {
         unit.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        unit.startAnimation(bounceIn);
+                        bounceIn(unit, false, "0.1, 5");
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -224,11 +225,9 @@ public class TemperatureActivity extends CalculatorActivity {
         celsius.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        celsius.startAnimation(bounceIn);
+                        bounceIn(celsius, false, "0.1, 5");
                         break;
                     case MotionEvent.ACTION_UP:
                         celsius.startAnimation(bounceOut);
@@ -250,11 +249,9 @@ public class TemperatureActivity extends CalculatorActivity {
         fahrenheit.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        fahrenheit.startAnimation(bounceIn);
+                        bounceIn(fahrenheit, false, "0.1, 5");
                         break;
                     case MotionEvent.ACTION_UP:
                         fahrenheit.startAnimation(bounceOut);
@@ -276,11 +273,9 @@ public class TemperatureActivity extends CalculatorActivity {
         kelvin.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        kelvin.startAnimation(bounceIn);
+                        bounceIn(kelvin, false, "0.1, 5");
                         break;
                     case MotionEvent.ACTION_UP:
                         kelvin.startAnimation(bounceOut);
@@ -309,7 +304,7 @@ public class TemperatureActivity extends CalculatorActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        calculatorMode.startAnimation(bounceIn);
+                        bounceIn(calculatorMode, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu calculatorModes;
@@ -351,12 +346,11 @@ public class TemperatureActivity extends CalculatorActivity {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 10);
                 number = (Button) view;
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        number.startAnimation(bounceIn);
+                        bounceIn(number, false, LOW_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         number.startAnimation(bounceOut);
@@ -379,11 +373,9 @@ public class TemperatureActivity extends CalculatorActivity {
         decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 10);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        decimalSeparator.startAnimation(bounceIn);
+                        bounceIn(decimalSeparator, false, LOW_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         decimalSeparator.startAnimation(bounceOut);
@@ -406,11 +398,9 @@ public class TemperatureActivity extends CalculatorActivity {
         delete.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 1.5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        delete.startAnimation(bounceIn);
+                        bounceIn(delete, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         delete.startAnimation(bounceOut);

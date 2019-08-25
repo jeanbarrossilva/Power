@@ -1,7 +1,6 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +36,7 @@ import com.github.nisrulz.sensey.TouchTypeDetector;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,10 +49,16 @@ public class CalculatorActivity extends AppCompatActivity {
 
     ConstraintLayout activityCalculator;
 
-    private static final int SETTINGS = 1;
+    static final int DIALOG_MAX_HEIGHT = 500;
+
+    private static final int GET_VERSION_TYPE = 1;
+    private static final int SETTINGS = 2;
 
     String empty;
     String space;
+    String leftSquareBracket;
+    String rightSquareBracket;
+    String comma;
 
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
@@ -83,6 +89,8 @@ public class CalculatorActivity extends AppCompatActivity {
     EditText input;
     String calc;
 
+    HorizontalScrollView othersHorizontalScrollView;
+
     ImageButton calculatorMode;
 
     ConstraintLayout keypad;
@@ -90,6 +98,10 @@ public class CalculatorActivity extends AppCompatActivity {
     BounceInterpolator bounceInterpolator;
     Animation bounceIn;
     Animation bounceOut;
+
+    static final String LOW_BOUNCE_IN_SETTING = "0.1, 10";
+    static final String NORMAL_BOUNCE_IN_SETTING = "0.5, 15";
+    static final String HIGH_BOUNCE_IN_SETTING = "1, 20";
 
     Button number;
     int[] numbers = {
@@ -123,6 +135,8 @@ public class CalculatorActivity extends AppCompatActivity {
     Expression expression;
     String result;
 
+    boolean isBeta = false;
+
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,13 +155,16 @@ public class CalculatorActivity extends AppCompatActivity {
         dialogOKButton = dialogOK.findViewById(R.id.ok);
 
         if (!screenSize().equals("small")) {
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.activity_calculator);
 
             appName = getString(R.string.app_name);
             versionName = BuildConfig.VERSION_NAME;
 
             empty = "";
             space = " ";
+            leftSquareBracket = "[";
+            rightSquareBracket = "]";
+            comma = ",";
 
             preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
             preferencesEditor = preferences.edit();
@@ -203,15 +220,15 @@ public class CalculatorActivity extends AppCompatActivity {
                 }
             }, 0, 100);
 
-            // calculatorMode = findViewById(R.id.calculator_mode);
-
-            bounceInterpolator = new BounceInterpolator(0.1, 15);
+            calculatorMode = findViewById(R.id.calculator_mode);
 
             bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
-            bounceIn.setInterpolator(bounceInterpolator);
 
             bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
             bounceOut.setInterpolator(bounceInterpolator);
+
+            othersHorizontalScrollView = findViewById(R.id.others_horizontal_scroll_view);
+            othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
 
             keypad = findViewById(R.id.keypad);
             decimalSeparator = findViewById(R.id.decimal_separator);
@@ -228,6 +245,16 @@ public class CalculatorActivity extends AppCompatActivity {
             slash = "/";
 
             calculatorMode = findViewById(R.id.calculator_mode);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    if (preferences.getBoolean("isNight", true)) {
+                        getWindow().setNavigationBarColor(Color.BLACK);
+                    } else {
+                        getWindow().setNavigationBarColor(Color.WHITE);
+                    }
+                }
+            }
 
             settings();
             calculatorMode();
@@ -269,7 +296,8 @@ public class CalculatorActivity extends AppCompatActivity {
 
         // Checks if this is the first time the app is being launched since it was last updated.
         if (preferences.getBoolean("firstLaunchSinceLastUpdate", true)) {
-            dialogReleaseNotes();
+            /* ACTIVATE IN THE NEXT RELEASE!!!
+            dialogReleaseNotes(); */
 
             // Declares that, from now on, it won't be the first time the app is launched since the last update.
             preferencesEditor.putBoolean("firstLaunchSinceLastUpdate", false)
@@ -280,12 +308,14 @@ public class CalculatorActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
-            switch (requestCode) {
-                case SETTINGS:
-                    hiddenMode(data);
-                    hapticFeedback(data);
+            if (resultCode == RESULT_OK) {
+                switch (requestCode) {
+                    case SETTINGS:
+                        hiddenMode(data);
+                        hapticFeedback(data);
 
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -294,7 +324,7 @@ public class CalculatorActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration configuration) {
         theme = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
-        // Changes the app theme based on if the Android Oreo (Android 8, API 26) Night mode is enabled or not.
+        // Changes the app theme based on if the Android Pie (Android 9, API 28) night mode is enabled or not.
         switch(theme) {
             case Configuration.UI_MODE_NIGHT_YES:
                 night(true);
@@ -364,7 +394,8 @@ public class CalculatorActivity extends AppCompatActivity {
 
     private void dialogReleaseNotes() {
         dialogOKTitle.setText(getString(R.string.release_notes_dialog_title));
-        dialogOKMessage.setText(String.format(getString(R.string.release_notes_dialog_message), appName, versionName));
+        setContentView(R.layout.activity_calculator);
+        dialogOKMessage.setText(getString(R.string.release_notes_dialog_message));
         dialogOK.show();
     }
 
@@ -444,7 +475,11 @@ public class CalculatorActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= 28) {
                 AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             } else {
-                Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+                try {
+                    AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+                } catch(Exception exception) {
+                    Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+                }
             }
 
             preferencesEditor.putBoolean("isNight", true);
@@ -480,6 +515,96 @@ public class CalculatorActivity extends AppCompatActivity {
             isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", true);
         } else {
             isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", false);
+        }
+    }
+
+    private boolean hasSquareBracket(String text) {
+        return (text.contains(leftSquareBracket) || text.contains(rightSquareBracket));
+    }
+
+    private String squareBracket(String text) {
+        String squareBracket = null;
+
+        if (hasSquareBracket(text)) {
+            if (text.contains(leftSquareBracket)) {
+                squareBracket = "left";
+            } else if (text.contains(rightSquareBracket)) {
+                squareBracket = "right";
+            } else if (text.contains(leftSquareBracket) && text.contains(rightSquareBracket)) {
+                squareBracket = "both";
+            } else {
+                squareBracket = null;
+            }
+        }
+
+        return squareBracket;
+    }
+
+    // Meant to be implemented into MotionEvent.ACTION_DOWN as 'bounceIn(view, false, "amplitude, frequency")' or 'bounceIn(view, true)'. e. g., bounceIn(number, false, NORMAL_BOUNCE_IN_SETTING).
+    void bounceIn(View view, boolean useDefaultSetting, String... customSetting) {
+        // Default amplitude and frequency values that are replaced by custom settings if useDefaultSetting is false.
+        double amplitude = 0.2;
+        double frequency = 20;
+
+        if (!useDefaultSetting) {
+            if (Arrays.toString(customSetting).contains(comma + space)) {
+                String[] parts = Arrays.toString(customSetting).split(comma + space);
+                String formatParts = null;
+
+                if (hasSquareBracket(Arrays.toString(parts))) {
+                    switch (squareBracket(Arrays.toString(parts))) {
+                        case "left":
+                            formatParts = Arrays.toString(parts).replace(leftSquareBracket, empty);
+                            break;
+                        case "right":
+                            formatParts = Arrays.toString(parts).replace(rightSquareBracket, empty);
+                            break;
+                        case "both":
+                            formatParts = Arrays.toString(parts).replaceAll(leftSquareBracket, rightSquareBracket);
+                            break;
+                    }
+
+                    assert formatParts != null;
+                    String[] formatValues = formatParts.split(comma + space);
+
+                    String formatAmplitude = formatValues[0];
+                    String formatFrequency = formatValues[1];
+
+                    // For some unknown reason, formatFrequency has "]]" at its end.
+                    if (formatFrequency.endsWith(rightSquareBracket + rightSquareBracket)) {
+                        formatFrequency = formatFrequency.substring(0, formatFrequency.length() - 2);
+                    }
+
+                    amplitude = Double.parseDouble(formatAmplitude);
+                    frequency = Double.parseDouble(formatFrequency);
+                } else {
+                    amplitude = Double.parseDouble(parts[1]);
+                    frequency = Double.parseDouble(parts[2]);
+                }
+            } else {
+                System.out.println("bounceInterpolator was incorrectly set and doesn't contain '" + comma + space + "'.");
+            }
+        }
+
+        view.setAnimation(bounceIn);
+
+        bounceInterpolator = new BounceInterpolator(amplitude, frequency);
+
+        view.startAnimation(bounceIn);
+        bounceIn.setInterpolator(bounceInterpolator);
+
+        if (String.valueOf(amplitude).endsWith(".0")) {
+            String amplitudeString = String.valueOf(amplitude).replace(".0", empty);
+            System.out.println("Amplitude: " + amplitudeString);
+        } else {
+            System.out.println("Amplitude: " + amplitude);
+        }
+
+        if (String.valueOf(frequency).endsWith(".0")) {
+            String frequencyString = String.valueOf(frequency).replace(".0", empty);
+            System.out.println("Frequency: " + frequencyString);
+        } else {
+            System.out.println("Frequency: " + frequency);
         }
     }
 
@@ -524,7 +649,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        calculatorMode.startAnimation(bounceIn);
+                        bounceIn(view, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu calculatorModes;
@@ -541,6 +666,9 @@ public class CalculatorActivity extends AppCompatActivity {
                             public boolean onMenuItemClick(MenuItem item) {
                                 if (item.getTitle().equals(getString(R.string.calculator))) {
                                     calculatorModes.dismiss();
+                                } else if (item.getTitle().equals(getString(R.string.length))) {
+                                    startActivity(new Intent(CalculatorActivity.this, LengthActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 } else if (item.getTitle().equals(getString(R.string.temperature))) {
                                     startActivity(new Intent(CalculatorActivity.this, TemperatureActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -606,12 +734,11 @@ public class CalculatorActivity extends AppCompatActivity {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 10);
                 number = (Button) view;
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        number.startAnimation(bounceIn);
+                        bounceIn(view, false, NORMAL_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         number.startAnimation(bounceOut);
@@ -654,7 +781,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        decimalSeparator.startAnimation(bounceIn);
+                        bounceIn(view, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         decimalSeparator.startAnimation(bounceOut);
@@ -688,7 +815,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        operator.startAnimation(bounceIn);
+                        bounceIn(view, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         operator.startAnimation(bounceOut);
@@ -724,7 +851,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        parenthesis.startAnimation(bounceIn);
+                        bounceIn(view, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         parenthesis.startAnimation(bounceOut);
@@ -787,7 +914,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        delete.startAnimation(bounceIn);
+                        bounceIn(view, true);
                         break;
                     case MotionEvent.ACTION_UP:
                         delete.startAnimation(bounceOut);
@@ -838,7 +965,7 @@ public class CalculatorActivity extends AppCompatActivity {
                             equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         }
 
-                        equal.startAnimation(bounceIn);
+                        bounceIn(view, true);
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -895,5 +1022,28 @@ public class CalculatorActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    String version() {
+        String version = null;
+        int dots = 0;
+
+        // Counts how many dots are there in 'versionName'.
+        for (char dot: versionName.toCharArray()) {
+            if (dot == '.') {
+                dots ++;
+            }
+        }
+
+        if (dots == 1) {
+            version = String.format(getString(R.string.version), versionName);
+            isBeta = false;
+        } else if (dots >= 2) {
+            version = String.format(getString(R.string.version_beta), versionName);
+            isBeta = true;
+        }
+
+        return version;
     }
 }
