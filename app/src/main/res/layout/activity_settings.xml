@@ -115,6 +115,7 @@
                 android:paddingStart="50dp"
                 android:paddingEnd="50dp"
                 android:paddingBottom="20dp"
+                android:alpha="0.5"
                 android:background="@drawable/setting"
                 app:layout_constraintTop_toBottomOf="@+id/setting_hidden_mode_disclaimer"
                 app:layout_constraintStart_toStartOf="parent"

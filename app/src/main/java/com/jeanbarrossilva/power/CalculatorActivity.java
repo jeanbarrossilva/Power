@@ -2,6 +2,7 @@ package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -476,6 +477,38 @@ public class CalculatorActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             } else {
                 try {
+                    getDelegate().applyDayNight();
+
+                    UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+                    uiModeManager.setNightMode(uiModeManager.getNightMode());
+
+                    AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+                } catch(Exception exception) {
+                    Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            preferencesEditor.putBoolean("isNight", true);
+            System.out.println("Night mode has been enabled.");
+        } else {
+            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
+
+            preferencesEditor.putBoolean("isNight", false);
+            System.out.println("Night mode has been disabled.");
+        }
+    }
+
+    public void night(Intent data, boolean isNight) {
+        if (isNight) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+            } else {
+                try {
+                    getDelegate().applyDayNight();
+
+                    UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+                    uiModeManager.setNightMode(uiModeManager.getNightMode());
+
                     AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
                 } catch(Exception exception) {
                     Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();

@@ -342,7 +342,11 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void settingNight() {
-        settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        // Night is temporarily unavailable.
+        settingNight.setChecked(false);
+        settingNight.setClickable(false);
+
+        /* settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -351,7 +355,7 @@ public class SettingsActivity extends CalculatorActivity {
                     night(false);
                 }
             }
-        });
+        }); */
     }
 
     private void settingHapticFeedback() {
