@@ -22,7 +22,7 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">• Fixed a bug that made the app crash when opening Settings.\n• Fixed a bug that didn\'t change the navigation bar color when switching from day mode to night mode and vice versa.\n• Fixed a bug that allowed screen rotation.\n• Fixed a bug that didn\'t show the icon for some modes other than Calculator in night mode.\n• Fixed a bug that didn\'t calculate the conversion from hour to month in the time converter.\n• Fixed a bug that didn\'t calculate the conversion from day to month in the time converter.\n\n• Fixed a bug that displayed the decameter abbreviation as \"dm\" instead of \"dam\".\n\n• App adaption to some screen sizes added.\n• Length converter added.</string>
+    <string name="release_notes_dialog_message">• Micrometer unit added in the length converter.</string>
     <string name="delete_dialog_message">Are you sure you want to delete?</string>
     
     <string name="ok" translatable="false">OK</string>
@@ -87,6 +87,9 @@
     <string name="from">From</string>
     <string name="to">To</string>
     
+    <string name="light_year">Light-year</string>
+    <string name="light_year_symbol">ly</string>
+    
     <string name="kilometer">Kilometer</string>
     <string name="kilometer_symbol" translatable="false">km</string>
     
@@ -107,6 +110,9 @@
     
     <string name="millimeter">Millimeter</string>
     <string name="millimeter_symbol" translatable="false">mm</string>
+
+    <string name="micrometer">Micrometer</string>
+    <string name="micrometer_symbol" translatable="false">μm</string>
     
     <string name="year">Year</string>
     <string name="year_symbol">y</string>

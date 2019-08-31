@@ -31,6 +31,7 @@ import java.util.Objects;
 
 import id.voela.actrans.AcTrans;
 
+@SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class SettingsActivity extends CalculatorActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
@@ -61,9 +62,6 @@ public class SettingsActivity extends CalculatorActivity {
     Switch settingHiddenMode;
     TextView settingHiddenModeDisclaimer;
     String pin;
-
-    ConstraintLayout settingNightLayout;
-    Switch settingNight;
 
     ConstraintLayout settingHapticFeedbackLayout;
     Switch settingHapticFeedback;
@@ -119,9 +117,6 @@ public class SettingsActivity extends CalculatorActivity {
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
         settingHiddenModeDisclaimer = findViewById(R.id.setting_hidden_mode_disclaimer);
 
-        settingNightLayout = findViewById(R.id.setting_night);
-        settingNight = findViewById(R.id.setting_night_switch);
-
         settingHapticFeedbackLayout = findViewById(R.id.setting_haptic_feedback);
         settingHapticFeedback = findViewById(R.id.setting_haptic_feedback_switch);
 
@@ -136,16 +131,8 @@ public class SettingsActivity extends CalculatorActivity {
         version = findViewById(R.id.version);
 
         if (Build.VERSION.SDK_INT >= 21) {
-            if (Build.VERSION.SDK_INT >= 28) {
-                settingNightLayout.setVisibility(View.VISIBLE);
-            } else {
-                settingNightLayout.setVisibility(View.GONE);
-                settingHapticFeedbackLayout.setPadding(settingHapticFeedbackLayout.getPaddingLeft(), 0, settingHapticFeedbackLayout.getPaddingRight(), settingHapticFeedbackLayout.getPaddingBottom());
-            }
-
             if (preferences.getBoolean("isNight", false)) {
                 settingHiddenModeLayout.setElevation(2);
-                settingNight.setElevation(2);
                 settingHapticFeedbackLayout.setElevation(2);
                 settingSendFeedback.setElevation(2);
                 settingCollaborate.setElevation(2);
@@ -157,12 +144,12 @@ public class SettingsActivity extends CalculatorActivity {
         back();
 
         settingHiddenMode();
-        settingNight();
         settingHapticFeedback();
         settingSendFeedback();
         settingCollaborate();
         settingCredits();
 
+        rememberSettingHiddenMode();
         rememberSettingHapticFeedback();
 
         version();
@@ -201,18 +188,7 @@ public class SettingsActivity extends CalculatorActivity {
 
             @Override
             public void onScroll(int scrollDirection) {
-                switch (scrollDirection) {
-                    case TouchTypeDetector.SCROLL_DIR_UP:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_LEFT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_DOWN:
-                        break;
-                    default:
-                        break;
-                }
+
             }
 
             @Override
@@ -228,12 +204,6 @@ public class SettingsActivity extends CalculatorActivity {
                         acTrans.performSlideToTop();
 
                         break;
-                    case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_DOWN:
-                        break;
                 }
             }
 
@@ -247,53 +217,47 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void settingHiddenMode() {
-        // Hidden mode is temporarily unavailable.
-        settingHiddenMode.setChecked(false);
-        settingHiddenMode.setClickable(false);
-
-        if (!(settingHiddenMode.isChecked() & settingHiddenMode.isClickable())) {
-            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_unavailable));
-        } else {
+        if (settingHiddenMode.isChecked() & settingHiddenMode.isClickable()) {
+            settingHiddenModeLayout.setAlpha(1);
             settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_disable));
+        } else {
+            settingHiddenModeLayout.setAlpha(0.5f);
+            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_unavailable));
         }
 
-        /* settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     preferencesEditor.putBoolean("isHiddenModeEnabled", true)
                             .apply();
 
-                    dialogSettingHiddenModeEnable(buttonView);
+                    dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
+                    dialogYesNoMessage.setText(getString(R.string.hidden_mode_dialog_message));
+
+                    dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogYesNo.dismiss();
+                            dialogSettingHiddenModePassword();
+                        }
+                    });
+
+                    dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            buttonView.setChecked(false);
+                            dialogYesNo.dismiss();
+                        }
+                    });
+
+                    dialogYesNo.show();
                 } else {
                     preferencesEditor.putBoolean("isHiddenModeEnabled", false)
                             .apply();
                 }
             }
-        }); */
-    }
-
-    private void dialogSettingHiddenModeEnable(final CompoundButton compoundButton) {
-        dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
-        dialogYesNoMessage.setText(getString(R.string.hidden_mode_dialog_message));
-
-        dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogYesNo.dismiss();
-                dialogSettingHiddenModePassword();
-            }
         });
-
-        dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                compoundButton.setChecked(false);
-                dialogYesNo.dismiss();
-            }
-        });
-
-        dialogYesNo.show();
     }
 
     private void dialogSettingHiddenModePassword() {
@@ -339,23 +303,6 @@ public class SettingsActivity extends CalculatorActivity {
         } else {
             settingHiddenMode.setChecked(false);
         }
-    }
-
-    private void settingNight() {
-        // Night is temporarily unavailable.
-        settingNight.setChecked(false);
-        settingNight.setClickable(false);
-
-        /* settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    night(true);
-                } else {
-                    night(false);
-                }
-            }
-        }); */
     }
 
     private void settingHapticFeedback() {

@@ -91,42 +91,51 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-            
-            <android.support.constraint.ConstraintLayout
+    
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="20dp"
                 app:layout_constraintStart_toEndOf="@+id/to"
-                app:layout_constraintTop_toTopOf="parent">
-                
-                <TextView
-                    android:id="@+id/option_conversion_number_result"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+        
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/zero"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-                
-                <TextView
-                    android:id="@+id/option_conversion_symbol_result"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/meter_symbol"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent">
             
-            </android.support.constraint.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/option_conversion_number_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/zero"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+            
+                    <TextView
+                        android:id="@+id/option_conversion_symbol_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/celsius_symbol"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
+                        app:layout_constraintTop_toTopOf="parent" />
+        
+                </android.support.constraint.ConstraintLayout>
+    
+            </HorizontalScrollView>
             
             <Button
                 android:id="@+id/unit"
@@ -151,6 +160,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
             android:paddingTop="10dp"
+            android:paddingStart="5dp"
             android:paddingEnd="20dp"
             android:paddingBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/keypad_delete"
@@ -174,21 +184,37 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
+    
+                <Button
+                    android:id="@+id/light_year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/light_year"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/kilometer"
+                    app:layout_constraintStart_toEndOf="@+id/from"
+                    app:layout_constraintTop_toTopOf="parent" />
                 
                 <Button
                     android:id="@+id/kilometer"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="8.5dp"
+                    android:layout_marginStart="20dp"
                     android:background="@drawable/option"
-                    android:paddingStart="30dp"
+                    android:paddingStart="15dp"
                     android:paddingEnd="20dp"
                     android:text="@string/kilometer"
                     android:textColor="@android:color/white"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/hectometer"
-                    app:layout_constraintStart_toEndOf="@+id/from"
+                    app:layout_constraintStart_toEndOf="@+id/light_year"
                     app:layout_constraintTop_toTopOf="parent" />
                 
                 <Button
@@ -270,7 +296,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/millimeter"
                     app:layout_constraintStart_toEndOf="@+id/decimeter"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/millimeter"
                     android:layout_width="wrap_content"
@@ -283,8 +309,24 @@
                     android:textColor="@android:color/white"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/micrometer"
                     app:layout_constraintStart_toEndOf="@+id/centimeter"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/micrometer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/option"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/micrometer"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/millimeter"
                     app:layout_constraintTop_toTopOf="parent" />
             
             </android.support.constraint.ConstraintLayout>

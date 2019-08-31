@@ -91,42 +91,51 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-            
-            <android.support.constraint.ConstraintLayout
+    
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/to"
-                app:layout_constraintTop_toTopOf="parent">
-                
-                <TextView
-                    android:id="@+id/option_conversion_number_result"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+        
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/zero"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-                
-                <TextView
-                    android:id="@+id/option_conversion_symbol_result"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/celsius_symbol"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent">
             
-            </android.support.constraint.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/option_conversion_number_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/zero"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+            
+                    <TextView
+                        android:id="@+id/option_conversion_symbol_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/celsius_symbol"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
+                        app:layout_constraintTop_toTopOf="parent" />
+        
+                </android.support.constraint.ConstraintLayout>
+    
+            </HorizontalScrollView>
             
             <Button
                 android:id="@+id/unit"
@@ -181,7 +190,7 @@
                     android:layout_height="50dp"
                     android:layout_marginStart="20dp"
                     android:background="@drawable/option"
-                    android:paddingStart="30dp"
+                    android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:text="@string/celsius"
                     android:textColor="@android:color/white"

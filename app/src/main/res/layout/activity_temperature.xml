@@ -74,7 +74,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
             android:paddingTop="10dp"
-            android:paddingStart="30dp"
+            android:paddingStart="35dp"
             android:paddingEnd="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/others_horizontal_scroll_view"
@@ -91,42 +91,51 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-        
-            <android.support.constraint.ConstraintLayout
+    
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="20dp"
                 app:layout_constraintStart_toEndOf="@+id/to"
-                app:layout_constraintTop_toTopOf="parent">
-    
-                <TextView
-                    android:id="@+id/option_conversion_number_result"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+        
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/zero"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent">
+            
+                    <TextView
+                        android:id="@+id/option_conversion_number_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/zero"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+            
+                    <TextView
+                        android:id="@+id/option_conversion_symbol_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="@string/celsius_symbol"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
+                        app:layout_constraintTop_toTopOf="parent" />
+        
+                </android.support.constraint.ConstraintLayout>
     
-                <TextView
-                    android:id="@+id/option_conversion_symbol_result"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/quicksand"
-                    android:text="@string/celsius_symbol"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
+            </HorizontalScrollView>
     
             <Button
                 android:id="@+id/unit"
@@ -151,6 +160,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
             android:paddingTop="10dp"
+            android:paddingStart="5dp"
             android:paddingEnd="20dp"
             android:paddingBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/keypad_delete"

@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item
+        android:id="@+id/light_year"
+        android:title="@string/light_year" />
+    
+    <item
         android:id="@+id/kilometer"
         android:title="@string/kilometer" />
     
@@ -28,5 +32,9 @@
     <item
         android:id="@+id/millimeter"
         android:title="@string/millimeter" />
+
+    <item
+        android:id="@+id/micrometer"
+        android:title="@string/micrometer" />
     
 </menu>

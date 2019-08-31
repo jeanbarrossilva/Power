@@ -2,7 +2,6 @@ package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,6 +43,7 @@ import java.util.TimerTask;
 
 import id.voela.actrans.AcTrans;
 
+@SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class CalculatorActivity extends AppCompatActivity {
     String appName;
     String versionName;
@@ -103,6 +103,8 @@ public class CalculatorActivity extends AppCompatActivity {
     static final String LOW_BOUNCE_IN_SETTING = "0.1, 10";
     static final String NORMAL_BOUNCE_IN_SETTING = "0.5, 15";
     static final String HIGH_BOUNCE_IN_SETTING = "1, 20";
+
+    static final String DEFAULT_OPTION_BOUNCE_IN_SETTING = "0.1, 5";
 
     Button number;
     int[] numbers = {
@@ -297,8 +299,7 @@ public class CalculatorActivity extends AppCompatActivity {
 
         // Checks if this is the first time the app is being launched since it was last updated.
         if (preferences.getBoolean("firstLaunchSinceLastUpdate", true)) {
-            /* ACTIVATE IN THE NEXT RELEASE!!!
-            dialogReleaseNotes(); */
+            dialogReleaseNotes();
 
             // Declares that, from now on, it won't be the first time the app is launched since the last update.
             preferencesEditor.putBoolean("firstLaunchSinceLastUpdate", false)
@@ -425,18 +426,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(int scrollDirection) {
-                switch (scrollDirection) {
-                    case TouchTypeDetector.SCROLL_DIR_UP:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_LEFT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_RIGHT:
-                        break;
-                    case TouchTypeDetector.SCROLL_DIR_DOWN:
-                        break;
-                    default:
-                        break;
-                }
 
             }
 
@@ -448,12 +437,6 @@ public class CalculatorActivity extends AppCompatActivity {
             @Override
             public void onSwipe(int swipeDirection) {
                 switch (swipeDirection) {
-                    case TouchTypeDetector.SWIPE_DIR_UP:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_LEFT:
-                        break;
-                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
-                        break;
                     case TouchTypeDetector.SWIPE_DIR_DOWN:
                         startActivityForResult(new Intent(CalculatorActivity.this, SettingsActivity.class), SETTINGS);
                         acTrans.performSlideToBottom();
@@ -475,48 +458,12 @@ public class CalculatorActivity extends AppCompatActivity {
         if (isNight) {
             if (Build.VERSION.SDK_INT >= 28) {
                 AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+
+                preferencesEditor.putBoolean("isNight", true);
+                System.out.println("Night mode has been enabled.");
             } else {
-                try {
-                    getDelegate().applyDayNight();
-
-                    UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
-                    uiModeManager.setNightMode(uiModeManager.getNightMode());
-
-                    AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
-                } catch(Exception exception) {
-                    Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
             }
-
-            preferencesEditor.putBoolean("isNight", true);
-            System.out.println("Night mode has been enabled.");
-        } else {
-            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
-
-            preferencesEditor.putBoolean("isNight", false);
-            System.out.println("Night mode has been disabled.");
-        }
-    }
-
-    public void night(Intent data, boolean isNight) {
-        if (isNight) {
-            if (Build.VERSION.SDK_INT >= 28) {
-                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
-            } else {
-                try {
-                    getDelegate().applyDayNight();
-
-                    UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
-                    uiModeManager.setNightMode(uiModeManager.getNightMode());
-
-                    AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
-                } catch(Exception exception) {
-                    Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            preferencesEditor.putBoolean("isNight", true);
-            System.out.println("Night mode has been enabled.");
         } else {
             AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
 
@@ -1057,7 +1004,6 @@ public class CalculatorActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressWarnings("ConstantConditions")
     String version() {
         String version = null;
         int dots = 0;

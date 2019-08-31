@@ -33,8 +33,9 @@ public class LengthActivity extends CalculatorActivity {
     TextView conversionSymbolResult;
 
     Button unit;
-    Button[] options =  new Button[7];
+    Button[] options =  new Button[9];
 
+    Button lightYear;
     Button kilometer;
     Button hectometer;
     Button decameter;
@@ -42,6 +43,7 @@ public class LengthActivity extends CalculatorActivity {
     Button decimeter;
     Button centimeter;
     Button millimeter;
+    Button micrometer;
 
     Button decimalSeparator;
 
@@ -71,6 +73,7 @@ public class LengthActivity extends CalculatorActivity {
         othersHorizontalScrollView = findViewById(R.id.others_horizontal_scroll_view);
         othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
 
+        lightYear = findViewById(R.id.light_year);
         kilometer = findViewById(R.id.kilometer);
         hectometer = findViewById(R.id.hectometer);
         decameter = findViewById(R.id.decameter);
@@ -78,14 +81,17 @@ public class LengthActivity extends CalculatorActivity {
         decimeter = findViewById(R.id.decimeter);
         centimeter = findViewById(R.id.centimeter);
         millimeter = findViewById(R.id.millimeter);
+        micrometer = findViewById(R.id.micrometer);
 
-        options[0] = kilometer;
-        options[1] = hectometer;
-        options[2] = decameter;
-        options[3] = meter;
-        options[4] = decimeter;
-        options[5] = centimeter;
-        options[6] = millimeter;
+        options[0] = lightYear;
+        options[1] = kilometer;
+        options[2] = hectometer;
+        options[3] = decameter;
+        options[4] = meter;
+        options[5] = decimeter;
+        options[6] = centimeter;
+        options[7] = millimeter;
+        options[8] = micrometer;
 
         calculatorMode = findViewById(R.id.calculator_mode);
 
@@ -98,7 +104,7 @@ public class LengthActivity extends CalculatorActivity {
 
         // Default configuration (meter to kilometer).
         inputSymbol.setText(getString(R.string.meter_symbol));
-        selectOption(meter, options);
+        selectUnit(meter, options);
         preferencesEditor.putString("convertFrom", "meter")
                 .apply();
 
@@ -122,13 +128,7 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(unit, false, "0.1, 5");
-
-                        if (unit.getAnimation().hasEnded()) {
-                            unit.setScaleX(0.8f);
-                            unit.setScaleY(0.8f);
-                        }
-
+                        bounceIn(unit, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -143,7 +143,12 @@ public class LengthActivity extends CalculatorActivity {
                         units.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(getString(R.string.kilometer))) {
+                                if (item.getTitle().equals(getString(R.string.light_year))) {
+                                    preferencesEditor.putString("convertTo", "lightYear")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.light_year_symbol));
+                                } else if (item.getTitle().equals(getString(R.string.kilometer))) {
                                     preferencesEditor.putString("convertTo", "kilometer")
                                             .apply();
 
@@ -185,6 +190,12 @@ public class LengthActivity extends CalculatorActivity {
 
                                     conversionSymbolResult.setText(getString(R.string.millimeter_symbol));
                                     unit.setText(getString(R.string.millimeter));
+                                } else if (item.getTitle().equals(getString(R.string.micrometer))) {
+                                    preferencesEditor.putString("convertTo", "micrometer")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.micrometer_symbol));
+                                    unit.setText(getString(R.string.micrometer));
                                 }
 
                                 calc();
@@ -203,15 +214,17 @@ public class LengthActivity extends CalculatorActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     // The options Button[] must contain all options available, including the selected one.
-    private void selectOption(final Button selectedOption, final Button[] options) {
-        int selectedOptionId = selectedOption.getId();
+    private void selectUnit(final Button selectedUnit, final Button[] options) {
+        int selectedUnitId = selectedUnit.getId();
 
-        selectedOption.setTextColor(Color.BLACK);
-        selectedOption.setBackgroundResource(R.drawable.option_clicked);
+        selectedUnit.setTextColor(Color.BLACK);
+        selectedUnit.setBackgroundResource(R.drawable.option_clicked);
+
+        System.out.println("Selected 'convertFrom' unit: " + selectedUnit.getText());
 
         for (Button option: options) {
             try {
-                if (option.getId() != selectedOptionId) {
+                if (option.getId() != selectedUnitId) {
                     option.setTextColor(Color.WHITE);
                     option.setBackgroundResource(R.drawable.option);
                 }
@@ -227,6 +240,9 @@ public class LengthActivity extends CalculatorActivity {
 
         if (preferences.getString("convertFrom", null) != null) {
             switch(Objects.requireNonNull(preferences.getString("convertFrom", null))) {
+                case "lightYear":
+                    unit = "lightYear";
+                    break;
                 case "kilometer":
                     unit = "kilometer";
                     break;
@@ -247,6 +263,9 @@ public class LengthActivity extends CalculatorActivity {
                     break;
                 case "millimeter":
                     unit = "millimeter";
+                    break;
+                case "micrometer":
+                    unit = "micrometer";
                     break;
             }
         }
@@ -259,6 +278,9 @@ public class LengthActivity extends CalculatorActivity {
 
         if (preferences.getString("convertTo", null) != null) {
             switch(Objects.requireNonNull(preferences.getString("convertTo", null))) {
+                case "lightYear":
+                    unit = "lightYear";
+                    break;
                 case "kilometer":
                     unit = "kilometer";
                     break;
@@ -280,6 +302,9 @@ public class LengthActivity extends CalculatorActivity {
                 case "millimeter":
                     unit = "millimeter";
                     break;
+                case "micrometer":
+                    unit = "micrometer";
+                    break;
             }
         }
 
@@ -288,17 +313,41 @@ public class LengthActivity extends CalculatorActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void inputOption() {
+        lightYear.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(lightYear, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        lightYear.startAnimation(bounceOut);
+
+                        selectUnit(lightYear, options);
+                        inputSymbol.setText(getString(R.string.light_year_symbol));
+
+                        preferencesEditor.putString("convertFrom", "lightYear")
+                                .apply();
+                        break;
+                }
+
+                calc();
+
+                return true;
+            }
+        });
+
         kilometer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(kilometer, false, "0.1, 5");
+                        bounceIn(kilometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         kilometer.startAnimation(bounceOut);
 
-                        selectOption(kilometer, options);
+                        selectUnit(kilometer, options);
                         inputSymbol.setText(getString(R.string.kilometer_symbol));
 
                         preferencesEditor.putString("convertFrom", "kilometer")
@@ -317,12 +366,12 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(hectometer, false, "0.1, 5");
+                        bounceIn(hectometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         hectometer.startAnimation(bounceOut);
 
-                        selectOption(hectometer, options);
+                        selectUnit(hectometer, options);
                         inputSymbol.setText(getString(R.string.hectometer_symbol));
 
                         preferencesEditor.putString("convertFrom", "hectometer")
@@ -341,12 +390,12 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(decameter, false, "0.1, 5");
+                        bounceIn(decameter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         decameter.startAnimation(bounceOut);
 
-                        selectOption(decameter, options);
+                        selectUnit(decameter, options);
                         inputSymbol.setText(getString(R.string.decameter_symbol));
 
                         preferencesEditor.putString("convertFrom", "decameter")
@@ -365,12 +414,12 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(meter, false, "0.1, 5");
+                        bounceIn(meter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         meter.startAnimation(bounceOut);
 
-                        selectOption(meter, options);
+                        selectUnit(meter, options);
                         inputSymbol.setText(getString(R.string.meter_symbol));
 
                         preferencesEditor.putString("convertFrom", "meter")
@@ -389,12 +438,12 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(decimeter, false, "0.1, 5");
+                        bounceIn(decimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         decimeter.startAnimation(bounceOut);
 
-                        selectOption(decimeter, options);
+                        selectUnit(decimeter, options);
                         inputSymbol.setText(getString(R.string.decimeter_symbol));
 
                         preferencesEditor.putString("convertFrom", "decimeter")
@@ -413,12 +462,12 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(centimeter, false, "0.1, 5");
+                        bounceIn(centimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         centimeter.startAnimation(bounceOut);
 
-                        selectOption(centimeter, options);
+                        selectUnit(centimeter, options);
                         inputSymbol.setText(getString(R.string.centimeter_symbol));
 
                         preferencesEditor.putString("convertFrom", "centimeter")
@@ -437,15 +486,39 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(millimeter, false, "0.1, 5");
+                        bounceIn(millimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         millimeter.startAnimation(bounceOut);
 
-                        selectOption(millimeter, options);
+                        selectUnit(millimeter, options);
                         inputSymbol.setText(getString(R.string.millimeter_symbol));
 
                         preferencesEditor.putString("convertFrom", "millimeter")
+                                .apply();
+                        break;
+                }
+
+                calc();
+
+                return true;
+            }
+        });
+
+        micrometer.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(micrometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        micrometer.startAnimation(bounceOut);
+
+                        selectUnit(micrometer, options);
+                        inputSymbol.setText(getString(R.string.micrometer_symbol));
+
+                        preferencesEditor.putString("convertFrom", "micrometer")
                                 .apply();
                         break;
                 }
@@ -464,7 +537,7 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(calculatorMode, false, "0.1, 5");
+                        bounceIn(calculatorMode, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu calculatorModes;
@@ -591,8 +664,43 @@ public class LengthActivity extends CalculatorActivity {
         try {
             if (!input.getText().toString().isEmpty()) {
                 switch (convertFrom()) {
+                    case "lightYear":
+                        switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(input.getText().toString());
+                                break;
+                            case "kilometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9461000000000.0));
+                                break;
+                            case "hectometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 94610000000000.0));
+                                break;
+                            case "decameter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 946100000000000.0));
+                                break;
+                            case "meter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9461000000000000.0));
+                                break;
+                            case "decimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 94607304725809376.0));
+                                break;
+                            case "centimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 946073047258093824.0));
+                                break;
+                            case "millimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9460730472580937728.0));
+                                break;
+                            case "micrometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(9.461, 21)));
+                                break;
+                        }
+
+                        break;
                     case "kilometer":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9461000000000.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(input.getText().toString());
                                 break;
@@ -614,11 +722,18 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000000));
                                 break;
+                            case "micrometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 9)));
+                                System.out.println("Math.pow(10, 9): " + Math.pow(10, 9));
+                                break;
                         }
 
                         break;
                     case "hectometer":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 94610000000000.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
                                 break;
@@ -640,11 +755,17 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100000));
                                 break;
+                            case "micrometer":
+                            conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 8)));
+                            break;
                         }
 
                         break;
                     case "decameter":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 946100000000000.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
                                 break;
@@ -666,9 +787,15 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10000));
                                 break;
+                            case "micrometer":
+                            conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 7)));
+                            break;
                         }
                     case "meter":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9461000000000000.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
                                 break;
@@ -690,11 +817,17 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
                                 break;
+                            case "micrometer":
+                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 6)));
+                                break;
                         }
 
                         break;
                     case "decimeter":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 94607304725809376.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10000));
                                 break;
@@ -716,11 +849,17 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
                                 break;
+                            case "micrometer":
+                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 5)));
+                                break;
                         }
 
                         break;
                     case "centimeter":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 946073047258093824.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100000));
                                 break;
@@ -742,11 +881,17 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
                                 break;
+                            case "micrometer":
+                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 4)));
+                                break;
                         }
 
                         break;
                     case "millimeter":
                         switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9460730472580937728.0));
+                                break;
                             case "kilometer":
                                 conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000000));
                                 break;
@@ -768,6 +913,39 @@ public class LengthActivity extends CalculatorActivity {
                             case "millimeter":
                                 conversionResult.setText(input.getText().toString());
                                 break;
+                            case "micrometer":
+                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 3)));
+                                break;
+                        }
+                    case "micrometer":
+                        switch (convertTo()) {
+                            case "lightYear":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -22)));
+                                break;
+                            case "kilometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -9)));
+                                break;
+                            case "hectometer":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -8)));
+                                break;
+                            case "decameter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -7)));
+                                break;
+                            case "meter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -6)));
+                                break;
+                            case "decimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -5)));
+                                break;
+                            case "centimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -4)));
+                                break;
+                            case "millimeter":
+                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -3)));
+                                break;
+                            case "micrometer":
+                            conversionResult.setText(input.getText().toString());
+                            break;
                         }
                 }
 

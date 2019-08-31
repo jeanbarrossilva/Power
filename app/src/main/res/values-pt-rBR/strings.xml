@@ -9,7 +9,7 @@
     <string name="maybe_later">Talvez mais tarde</string>
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
-    <string name="release_notes_dialog_message">• Correção de um bug que fazia o aplicativo fechar ao abrir os Ajustes.\n• Correção de um bug que não alterava a cor da barra de navegação ao trocar do modo dia para o modo noite e vice-versa.\n• Correção de um bug que permitia a rotação da tela.\n• Correção de um bug que não exibia o ícone de alguns modos além do Calculadora no modo noite.\n• Correção de um bug que não calculava a conversão de hora para mês no conversor de tempo.\n• Correção de um bug que não calculava a conversão de dia para mês no conversor de tempo.\n• Correção de um bug que exibia a abreviação de decâmetro como \"dm\" em vez de \"dam\".\n\n• Adição da adaptação do aplicativo para alguns tamanhos de tela.\n• Adição do conversor de comprimento.</string>
+    <string name="release_notes_dialog_message">• Adição da unidade micrômetro no conversor de comprimento.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>
@@ -72,4 +72,7 @@
     <string name="meter">Metro</string>
     <string name="millimeter">Milímetro</string>
     <string name="length">Comprimento</string>
+    <string name="light_year">Ano-luz</string>
+    <string name="light_year_symbol">al</string>
+    <string name="micrometer">Micrômetro</string>
 </resources>
