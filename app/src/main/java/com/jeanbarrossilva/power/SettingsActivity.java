@@ -217,7 +217,10 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void settingHiddenMode() {
-        if (settingHiddenMode.isChecked() & settingHiddenMode.isClickable()) {
+        settingHiddenMode.setChecked(false);
+        settingHiddenMode.setClickable(false);
+
+        if (settingHiddenMode.isClickable()) {
             settingHiddenModeLayout.setAlpha(1);
             settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_disable));
         } else {
@@ -340,7 +343,7 @@ public class SettingsActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         settingSendFeedback.startAnimation(bounceOut);
 
-                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
+                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva.power@gmail.com"));
 
                         if (!isBeta) {
                             email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));

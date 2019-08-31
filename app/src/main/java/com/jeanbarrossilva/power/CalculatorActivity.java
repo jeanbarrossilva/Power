@@ -43,6 +43,13 @@ import java.util.TimerTask;
 
 import id.voela.actrans.AcTrans;
 
+import static android.util.DisplayMetrics.DENSITY_HIGH;
+import static android.util.DisplayMetrics.DENSITY_LOW;
+import static android.util.DisplayMetrics.DENSITY_MEDIUM;
+import static android.util.DisplayMetrics.DENSITY_XHIGH;
+import static android.util.DisplayMetrics.DENSITY_XXHIGH;
+import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
+
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class CalculatorActivity extends AppCompatActivity {
     String appName;
@@ -250,13 +257,13 @@ public class CalculatorActivity extends AppCompatActivity {
             calculatorMode = findViewById(R.id.calculator_mode);
 
             if (Build.VERSION.SDK_INT >= 21) {
-                if (Build.VERSION.SDK_INT >= 28) {
-                    if (preferences.getBoolean("isNight", true)) {
-                        getWindow().setNavigationBarColor(Color.BLACK);
-                    } else {
-                        getWindow().setNavigationBarColor(Color.WHITE);
-                    }
+                if (preferences.getBoolean("isNight", true)) {
+                    getWindow().setNavigationBarColor(Color.BLACK);
+                } else {
+                    getWindow().setNavigationBarColor(Color.WHITE);
                 }
+            } else {
+                night(true);
             }
 
             settings();
@@ -365,6 +372,36 @@ public class CalculatorActivity extends AppCompatActivity {
         return screenLayoutSize;
     }
 
+    private String screenDensity() {
+        String density;
+        int dpi = getResources().getDisplayMetrics().densityDpi;
+
+        switch (dpi) {
+            case DENSITY_LOW:
+                density = "ldpi";
+                break;
+            case DENSITY_MEDIUM:
+                density = "mdpi";
+                break;
+            case DENSITY_HIGH:
+                density = "hdpi";
+                break;
+            case DENSITY_XHIGH:
+                density = "xhdpi";
+                break;
+            case DENSITY_XXHIGH:
+                density = "xxhdpi";
+                break;
+            case DENSITY_XXXHIGH:
+                density = "xxxhdpi";
+                break;
+            default:
+                density = null;
+        }
+
+        return density;
+    }
+
     private void dialogIncompatibleDevice() {
         dialogOKTitle.setText(getString(R.string.incompatible_device_dialog_title));
         dialogOKMessage.setText(String.format(getString(R.string.incompatible_device_dialog_message), appName));
@@ -456,18 +493,24 @@ public class CalculatorActivity extends AppCompatActivity {
 
     public void night(boolean isNight) {
         if (isNight) {
-            if (Build.VERSION.SDK_INT >= 28) {
-                AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+            preferencesEditor.putBoolean("isNight", true);
 
-                preferencesEditor.putBoolean("isNight", true);
-                System.out.println("Night mode has been enabled.");
-            } else {
-                Toast.makeText(CalculatorActivity.this, getString(R.string.night_incompatibility), Toast.LENGTH_LONG).show();
+            if (Build.VERSION.SDK_INT < 21) {
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                getDelegate().applyDayNight();
             }
-        } else {
-            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
 
+            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
+            System.out.println("Night mode has been enabled.");
+        } else {
             preferencesEditor.putBoolean("isNight", false);
+
+            if (Build.VERSION.SDK_INT < 21) {
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                getDelegate().applyDayNight();
+            }
+
+            AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_NO);
             System.out.println("Night mode has been disabled.");
         }
     }
