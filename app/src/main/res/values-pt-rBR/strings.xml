@@ -9,7 +9,7 @@
     <string name="maybe_later">Talvez mais tarde</string>
     <string name="message">Mensagem</string>
     <string name="no">Não</string>
-    <string name="release_notes_dialog_message">• Mudança de aparência sutil nos botões em Ajustes.</string>
+    <string name="release_notes_dialog_message">• Correção de um bug que aumentava o botão de modo da calculadora em alguns modos.\n• Correção de um bug que não abria o conversor de comprimento a partir do conversor de temperatura.\n• Correção de um bug que não exibia os botões de Ajustes corretamente.\n\n• Adição de um novo ícone do aplicativo.\n• Adição de um gesto de voltar de deslize para a direita em alguns ajustes em Ajustes.</string>
     <string name="release_notes_dialog_title">Notas de lançamento</string>
     <string name="title">Título</string>
     <string name="welcome_to_dialog_message">%1$s é uma calculadora poderosa que permite que você calcule expressões facilmente e converta unidades como Celsius para Fahrenheit, metro para quilômetro, litro para barril e muito mais! Esse é o CalcOne, mas elevado a um nível totalmente novo.\n\nEspero que goste!</string>

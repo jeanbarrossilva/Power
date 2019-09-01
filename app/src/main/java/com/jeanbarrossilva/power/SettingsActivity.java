@@ -156,14 +156,6 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        setResult(RESULT_OK, settingsActivityToMainActivity);
-        acTrans.performSlideToRight();
-
-        finish();
-    }
-
-    @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         sensey.setupDispatchTouchEvent(event);
         return super.dispatchTouchEvent(event);
@@ -300,7 +292,7 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void rememberSettingHiddenMode() {
-        if (settingsActivityToMainActivity.getBooleanExtra("isHiddenModeEnabled", true)) {
+        if (preferences.getBoolean("isHiddenModeEnabled", true)) {
             settingHiddenMode.setChecked(true);
             dialogYesNo.dismiss();
         } else {
@@ -324,7 +316,7 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void rememberSettingHapticFeedback() {
-        if (settingsActivityToMainActivity.getBooleanExtra("isHapticFeedbackEnabled", true)) {
+        if (preferences.getBoolean("isHapticFeedbackEnabled", true)) {
             settingHapticFeedback.setChecked(true);
         } else {
             settingHapticFeedback.setChecked(false);
@@ -343,7 +335,7 @@ public class SettingsActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         settingSendFeedback.startAnimation(bounceOut);
 
-                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva.power@gmail.com"));
+                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
 
                         if (!isBeta) {
                             email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
@@ -401,5 +393,52 @@ public class SettingsActivity extends CalculatorActivity {
                 return true;
             }
         });
+    }
+
+    void backToSettingsActivity(final Context context) {
+        TouchTypeDetector.TouchTypListener touchTypeListener = new TouchTypeDetector.TouchTypListener() {
+            @Override
+            public void onTwoFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onThreeFingerSingleTap() {
+
+            }
+
+            @Override
+            public void onDoubleTap() {
+
+            }
+
+            @Override
+            public void onScroll(int scrollDirection) {
+
+            }
+
+            @Override
+            public void onSingleTap() {
+
+            }
+
+            @Override
+            public void onSwipe(int swipeDirection) {
+                switch (swipeDirection) {
+                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        startActivity(new Intent(context, SettingsActivity.class));
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+                        break;
+                }
+            }
+
+            @Override
+            public void onLongPress() {
+
+            }
+        };
+
+        Sensey.getInstance().startTouchTypeDetection(context, touchTypeListener);
     }
 }

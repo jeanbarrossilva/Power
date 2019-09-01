@@ -306,8 +306,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
         // Checks if this is the first time the app is being launched since it was last updated.
         if (preferences.getBoolean("firstLaunchSinceLastUpdate", true)) {
-            dialogReleaseNotes();
-
             // Declares that, from now on, it won't be the first time the app is launched since the last update.
             preferencesEditor.putBoolean("firstLaunchSinceLastUpdate", false)
                     .apply();
@@ -428,13 +426,6 @@ public class CalculatorActivity extends AppCompatActivity {
     private void dialogBetaVersion() {
         dialogOKTitle.setText(getString(R.string.beta_version_dialog_title));
         dialogOKMessage.setText(String.format(getString(R.string.beta_version_dialog_message), appName));
-        dialogOK.show();
-    }
-
-    private void dialogReleaseNotes() {
-        dialogOKTitle.setText(getString(R.string.release_notes_dialog_title));
-        setContentView(R.layout.activity_calculator);
-        dialogOKMessage.setText(getString(R.string.release_notes_dialog_message));
         dialogOK.show();
     }
 

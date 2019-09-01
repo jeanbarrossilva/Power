@@ -324,6 +324,9 @@ public class TemperatureActivity extends CalculatorActivity {
                                 } else if (item.getTitle().equals(getString(R.string.calculator))) {
                                     startActivity(new Intent(TemperatureActivity.this, CalculatorActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                } else if (item.getTitle().equals(getString(R.string.length))) {
+                                    startActivity(new Intent(TemperatureActivity.this, LengthActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                                 } else if (item.getTitle().equals(getString(R.string.time))) {
                                     startActivity(new Intent(TemperatureActivity.this, TimeActivity.class));
                                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

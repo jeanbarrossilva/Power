@@ -22,7 +22,7 @@
     <string name="hidden_mode_set_password_dialog_disclaimer">If you forget the PIN, you won\'t be able to access Hidden Mode anymore. Make sure you annotate it somewhere.</string>
     <string name="hidden_mode_enter_dialog_message">Would you like to enter Hidden Mode now?</string>
     <string name="hidden_mode_disable_dialog_message">Disabling Hidden Mode will remove all the stored files. Would you like to continue?</string>
-    <string name="release_notes_dialog_message">• Minor appearance change in Settings buttons.</string>
+    <string name="release_notes_dialog_message">• Fixed a bug that enlarged the calculator mode button in some modes.\n• Fixed a bug that didn\'t open the length converter from the temperature converter.\n• Fixed a bug that didn\'t show Settings buttons correctly.\n\n• New app icon added.\n• Right swipe back gesture to some settings added in Settings.</string>
     <string name="delete_dialog_message">Are you sure you want to delete?</string>
     
     <string name="ok" translatable="false">OK</string>
