@@ -7,8 +7,8 @@ android {
         applicationId "com.jeanbarrossilva.power"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 28
-        versionName "2019.7"
+        versionCode 29
+        versionName "2019.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

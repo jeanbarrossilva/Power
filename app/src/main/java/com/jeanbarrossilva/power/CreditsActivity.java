@@ -48,7 +48,7 @@ public class CreditsActivity extends SettingsActivity {
         super.onBackPressed();
 
         startActivity(new Intent(this, SettingsActivity.class));
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        acTrans.performSlideToRight();
     }
 
     private void creditJeanSilva() {

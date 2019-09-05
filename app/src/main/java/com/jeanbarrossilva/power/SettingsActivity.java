@@ -63,14 +63,15 @@ public class SettingsActivity extends CalculatorActivity {
     TextView settingHiddenModeDisclaimer;
     String pin;
 
-    ConstraintLayout settingHapticFeedbackLayout;
-    Switch settingHapticFeedback;
-    ConstraintLayout settingSendFeedback;
+    ConstraintLayout sendFeedback;
 
-    ConstraintLayout settingCollaborate;
-    TextView settingCollaborateTitle;
+    ConstraintLayout sourceCode;
+    TextView sourceCodeTitle;
 
-    ConstraintLayout settingCredits;
+    ConstraintLayout credits;
+
+    ConstraintLayout settingNightLayout;
+    Switch settingNight;
 
     ConstraintLayout activityAdditionalInfo;
     TextView version;
@@ -117,25 +118,24 @@ public class SettingsActivity extends CalculatorActivity {
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
         settingHiddenModeDisclaimer = findViewById(R.id.setting_hidden_mode_disclaimer);
 
-        settingHapticFeedbackLayout = findViewById(R.id.setting_haptic_feedback);
-        settingHapticFeedback = findViewById(R.id.setting_haptic_feedback_switch);
+        sendFeedback = findViewById(R.id.send_feedback);
 
-        settingSendFeedback = findViewById(R.id.setting_send_feedback);
+        sourceCode = findViewById(R.id.source_code);
+        sourceCodeTitle = findViewById(R.id.source_code_title);
 
-        settingCollaborate = findViewById(R.id.setting_collaborate);
-        settingCollaborateTitle = findViewById(R.id.setting_collaborate_title);
+        credits = findViewById(R.id.credits);
 
-        settingCredits = findViewById(R.id.setting_credits);
+        settingNightLayout = findViewById(R.id.setting_night);
+        settingNight = findViewById(R.id.setting_night_switch);
 
         activityAdditionalInfo = findViewById(R.id.activity_additional_info);
         version = findViewById(R.id.version);
 
         if (Build.VERSION.SDK_INT >= 21) {
-            if (preferences.getBoolean("isNight", false)) {
+            if (preferences.getBoolean("isNightEnabled", false)) {
                 settingHiddenModeLayout.setElevation(2);
-                settingHapticFeedbackLayout.setElevation(2);
-                settingSendFeedback.setElevation(2);
-                settingCollaborate.setElevation(2);
+                sendFeedback.setElevation(2);
+                sourceCode.setElevation(2);
             }
         }
 
@@ -144,13 +144,18 @@ public class SettingsActivity extends CalculatorActivity {
         back();
 
         settingHiddenMode();
-        settingHapticFeedback();
-        settingSendFeedback();
-        settingCollaborate();
-        settingCredits();
+        sendFeedback();
+        sourceCode();
+        credits();
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            settingNightLayout.setVisibility(View.GONE);
+        } else {
+            settingNightLayout.setVisibility(View.VISIBLE);
+            settingNight();
+        }
 
         rememberSettingHiddenMode();
-        rememberSettingHapticFeedback();
 
         version();
     }
@@ -300,40 +305,17 @@ public class SettingsActivity extends CalculatorActivity {
         }
     }
 
-    private void settingHapticFeedback() {
-        settingHapticFeedback.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    preferencesEditor.putBoolean("isHapticFeedbackEnabled", true)
-                            .apply();
-                } else {
-                    preferencesEditor.putBoolean("isHapticFeedbackEnabled", false)
-                            .apply();
-                }
-            }
-        });
-    }
-
-    private void rememberSettingHapticFeedback() {
-        if (preferences.getBoolean("isHapticFeedbackEnabled", true)) {
-            settingHapticFeedback.setChecked(true);
-        } else {
-            settingHapticFeedback.setChecked(false);
-        }
-    }
-
     @SuppressLint("ClickableViewAccessibility")
-    private void settingSendFeedback() {
-        settingSendFeedback.setOnTouchListener(new View.OnTouchListener() {
+    private void sendFeedback() {
+        sendFeedback.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(settingSendFeedback, true);
+                        bounceIn(sendFeedback, true);
                         break;
                     case MotionEvent.ACTION_UP:
-                        settingSendFeedback.startAnimation(bounceOut);
+                        sendFeedback.startAnimation(bounceOut);
 
                         Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
 
@@ -352,18 +334,18 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void settingCollaborate() {
-        settingCollaborate.setOnTouchListener(new View.OnTouchListener() {
+    private void sourceCode() {
+        sourceCode.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(settingCollaborate, true);
-                        settingCollaborateTitle.setText(getString(R.string.collaborate));
+                        bounceIn(sourceCode, true);
+                        sourceCodeTitle.setText(getString(R.string.source_code));
                         break;
                     case MotionEvent.ACTION_UP:
-                        settingCollaborate.startAnimation(bounceOut);
-                        settingCollaborateTitle.setText(getString(R.string.source_code));
+                        sourceCode.startAnimation(bounceOut);
+                        sourceCodeTitle.setText(getString(R.string.source_code));
 
                         Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
                         startActivity(powerGitHubRepo);
@@ -375,16 +357,16 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void settingCredits() {
-        settingCredits.setOnTouchListener(new View.OnTouchListener() {
+    private void credits() {
+        credits.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(settingCredits, true);
+                        bounceIn(credits, true);
                         break;
                     case MotionEvent.ACTION_UP:
-                        settingCredits.startAnimation(bounceOut);
+                        credits.startAnimation(bounceOut);
 
                         startActivity(new Intent(SettingsActivity.this, CreditsActivity.class));
                         acTrans.performSlideToLeft();
@@ -393,6 +375,25 @@ public class SettingsActivity extends CalculatorActivity {
                 return true;
             }
         });
+    }
+
+    private void settingNight() {
+        settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    night(true);
+                    preferencesEditor.putBoolean("isNightEnabled", true)
+                            .apply();
+                } else {
+                    night(false);
+                    preferencesEditor.putBoolean("isNightEnabled", false)
+                            .apply();
+                }
+            }
+        });
+
+        settingNight.setChecked(isNightEnabled);
     }
 
     void backToSettingsActivity(final Context context) {
@@ -427,7 +428,7 @@ public class SettingsActivity extends CalculatorActivity {
                 switch (swipeDirection) {
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
                         startActivity(new Intent(context, SettingsActivity.class));
-                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        acTrans.performSlideToLeft();
 
                         break;
                 }

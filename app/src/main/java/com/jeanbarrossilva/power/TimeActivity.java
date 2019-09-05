@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -98,7 +96,7 @@ public class TimeActivity extends CalculatorActivity {
 
         // Default configuration (hour to minute).
         inputSymbol.setText(getString(R.string.hour_symbol));
-        selectOption(hour, options);
+        selectUnit(TimeActivity.this, hour, options);
         preferencesEditor.putString("convertFrom", "hour")
                 .apply();
 
@@ -181,7 +179,7 @@ public class TimeActivity extends CalculatorActivity {
                                     unit.setText(getString(R.string.millisecond));
                                 }
 
-                                calc();
+                                calc(input, conversionResult, conversionSymbolResult);
 
                                 return true;
                             }
@@ -193,91 +191,6 @@ public class TimeActivity extends CalculatorActivity {
                 return true;
             }
         });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    // The options Button[] must contain all options available, including the selected one.
-    private void selectOption(final Button selectedOption, final Button[] options) {
-        int selectedOptionId = selectedOption.getId();
-
-        selectedOption.setTextColor(Color.BLACK);
-        selectedOption.setBackgroundResource(R.drawable.option_clicked);
-
-        for (Button option: options) {
-            try {
-                if (option.getId() != selectedOptionId) {
-                    option.setTextColor(Color.WHITE);
-                    option.setBackgroundResource(R.drawable.option);
-                }
-            } catch(NullPointerException nullPointerException) {
-                Toast.makeText(TimeActivity.this, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
-                nullPointerException.printStackTrace();
-            }
-        }
-    }
-
-    private String convertFrom() {
-        String unit = empty;
-
-        if (preferences.getString("convertFrom", null) != null) {
-            switch(Objects.requireNonNull(preferences.getString("convertFrom", null))) {
-                case "year":
-                    unit = "year";
-                    break;
-                case "month":
-                    unit = "month";
-                    break;
-                case "day":
-                    unit = "day";
-                    break;
-                case "hour":
-                    unit = "hour";
-                    break;
-                case "minute":
-                    unit = "minute";
-                    break;
-                case "second":
-                    unit = "second";
-                    break;
-                case "millisecond":
-                    unit = "millisecond";
-                    break;
-            }
-        }
-
-        return unit;
-    }
-
-    private String convertTo() {
-        String unit = empty;
-
-        if (preferences.getString("convertTo", null) != null) {
-            switch(Objects.requireNonNull(preferences.getString("convertTo", null))) {
-                case "year":
-                    unit = "year";
-                    break;
-                case "month":
-                    unit = "month";
-                    break;
-                case "day":
-                    unit = "day";
-                    break;
-                case "hour":
-                    unit = "hour";
-                    break;
-                case "minute":
-                    unit = "minute";
-                    break;
-                case "second":
-                    unit = "second";
-                    break;
-                case "millisecond":
-                    unit = "millisecond";
-                    break;
-            }
-        }
-
-        return unit;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -294,7 +207,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         year.startAnimation(bounceOut);
 
-                        selectOption(year, options);
+                        selectUnit(TimeActivity.this, year, options);
                         inputSymbol.setText(getString(R.string.year_symbol));
 
                         preferencesEditor.putString("convertFrom", "year")
@@ -302,7 +215,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -318,7 +231,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         month.startAnimation(bounceOut);
 
-                        selectOption(month, options);
+                        selectUnit(TimeActivity.this, month, options);
                         inputSymbol.setText(getString(R.string.month_symbol));
 
                         preferencesEditor.putString("convertFrom", "month")
@@ -326,7 +239,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -342,7 +255,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         day.startAnimation(bounceOut);
 
-                        selectOption(day, options);
+                        selectUnit(TimeActivity.this, day, options);
                         inputSymbol.setText(getString(R.string.day_symbol));
 
                         preferencesEditor.putString("convertFrom", "day")
@@ -350,7 +263,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -366,7 +279,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         hour.startAnimation(bounceOut);
 
-                        selectOption(hour, options);
+                        selectUnit(TimeActivity.this, hour, options);
                         inputSymbol.setText(getString(R.string.hour_symbol));
 
                         preferencesEditor.putString("convertFrom", "hour")
@@ -374,7 +287,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -390,7 +303,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         minute.startAnimation(bounceOut);
 
-                        selectOption(minute, options);
+                        selectUnit(TimeActivity.this, minute, options);
                         inputSymbol.setText(getString(R.string.minute_symbol));
 
                         preferencesEditor.putString("convertFrom", "minute")
@@ -398,7 +311,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -414,7 +327,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         second.startAnimation(bounceOut);
 
-                        selectOption(second, options);
+                        selectUnit(TimeActivity.this, second, options);
                         inputSymbol.setText(getString(R.string.second_symbol));
 
                         preferencesEditor.putString("convertFrom", "second")
@@ -422,7 +335,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -438,7 +351,7 @@ public class TimeActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         millisecond.startAnimation(bounceOut);
 
-                        selectOption(millisecond, options);
+                        selectUnit(TimeActivity.this, millisecond, options);
                         inputSymbol.setText(getString(R.string.millisecond_symbol));
 
                         preferencesEditor.putString("convertFrom", "millisecond")
@@ -446,7 +359,7 @@ public class TimeActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -515,7 +428,7 @@ public class TimeActivity extends CalculatorActivity {
                         number.startAnimation(bounceOut);
 
                         input.append(number.getText());
-                        calc();
+                        calc(input, conversionResult, conversionSymbolResult);
                 }
 
                 return true;
@@ -566,7 +479,7 @@ public class TimeActivity extends CalculatorActivity {
 
                         if (!input.getText().toString().isEmpty()) {
                             input.setText(input.getText().toString().substring(0, input.getText().toString().length() - 1));
-                            calc();
+                            calc(input, conversionResult, conversionSymbolResult);
                         }
 
                         if (input.getText().toString().length() < 1) {
@@ -579,212 +492,5 @@ public class TimeActivity extends CalculatorActivity {
                 return true;
             }
         });
-    }
-
-    private void calc() {
-        DecimalFormat format = new DecimalFormat("#.##");
-
-        try {
-            if (!input.getText().toString().isEmpty()) {
-                switch (convertFrom()) {
-                    case "year":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 12));
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 365));
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 8760));
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 525600));
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 31536000));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 31536000000.0));
-                                break;
-                        }
-
-                        break;
-                    case "month":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 12));
-                                break;
-                            case "month":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 30.417));
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 730.001));
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 43800.048));
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 2628002.88));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 2628002880.0));
-                                break;
-                        }
-
-                        break;
-                    case "day":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 365));
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 30.417));
-                                break;
-                            case "day":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 24));
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1440));
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 86400));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 86400000));
-                                break;
-                        }
-                    case "hour":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 8760));
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 730.001));
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 24));
-                                break;
-                            case "hour":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 60));
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 3600));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 3600000));
-                                break;
-                        }
-
-                        break;
-                    case "minute":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 525600));
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 43800.048));
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1440));
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(1.8 / (Double.parseDouble(input.getText().toString())) / 60));
-                                break;
-                            case "minute":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 32) * 60));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 60000));
-                                break;
-                        }
-
-                        break;
-                    case "second":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 31400000));
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 2628000));
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 86400));
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) / 3600));
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString())) / 60));
-                                break;
-                            case "second":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
-                                break;
-                        }
-
-                        break;
-                    case "millisecond":
-                        switch (convertTo()) {
-                            case "year":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 31540000000.0));
-                                break;
-                            case "month":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 2628000000.0));
-                                break;
-                            case "day":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 86400000));
-                                break;
-                            case "hour":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 3600000));
-                                break;
-                            case "minute":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 60000));
-                                break;
-                            case "second":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
-                                break;
-                            case "millisecond":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                        }
-                }
-
-                if (conversionResult.getText().toString().contains(".")) {
-                    conversionResult.setText(String.valueOf(format.format(Double.parseDouble(conversionResult.getText().toString()))));
-                }
-
-                if (conversionResult.getText().toString().endsWith(".0")) {
-                    conversionResult.setText(input.getText().toString().replace(".0", ""));
-                }
-
-                if (conversionResult.getText().toString().endsWith("E")) {
-                    conversionResult.setText(input.getText().toString().replace("E", "e"));
-                }
-
-                System.out.println("Number '" + number.getText() + "' added.");
-                System.out.println("Updated 'input.getText().toString()' value: " + input.getText().toString());
-            }
-        } catch(Exception exception) {
-            conversionResult.setText(getString(R.string.error));
-            conversionSymbolResult.setVisibility(View.GONE);
-        }
     }
 }

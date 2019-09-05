@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -86,7 +84,7 @@ public class TemperatureActivity extends CalculatorActivity {
 
         // Default configuration (Celsius to Fahrenheit).
         inputSymbol.setText(getString(R.string.celsius_symbol));
-        selectOption(celsius, options);
+        selectUnit(TemperatureActivity.this, celsius, options);
         preferencesEditor.putString("convertFrom", "celsius")
                 .apply();
 
@@ -145,7 +143,7 @@ public class TemperatureActivity extends CalculatorActivity {
                                     unit.setText(getString(R.string.kelvin));
                                 }
 
-                                calc();
+                                calc(input, conversionResult, conversionSymbolResult);
 
                                 return true;
                             }
@@ -160,67 +158,6 @@ public class TemperatureActivity extends CalculatorActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    // The options Button[] must contain all options available, including the selected one.
-    private void selectOption(final Button selectedOption, final Button[] options) {
-        int selectedOptionId = selectedOption.getId();
-
-        selectedOption.setTextColor(Color.BLACK);
-        selectedOption.setBackgroundResource(R.drawable.option_clicked);
-
-        for (Button option: options) {
-            try {
-                if (option.getId() != selectedOptionId) {
-                    option.setTextColor(Color.WHITE);
-                    option.setBackgroundResource(R.drawable.option);
-                }
-            } catch(NullPointerException nullPointerException) {
-                Toast.makeText(TemperatureActivity.this, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
-                nullPointerException.printStackTrace();
-            }
-        }
-    }
-
-    private String convertFrom() {
-        String unit = empty;
-
-        if (preferences.getString("convertFrom", null) != null) {
-            switch(Objects.requireNonNull(preferences.getString("convertFrom", null))) {
-                case "celsius":
-                    unit = "celsius";
-                    break;
-                case "fahrenheit":
-                    unit = "fahrenheit";
-                    break;
-                case "kelvin":
-                    unit = "kelvin";
-                    break;
-            }
-        }
-
-        return unit;
-    }
-
-    private String convertTo() {
-        String unit = empty;
-
-        if (preferences.getString("convertTo", null) != null) {
-            switch(Objects.requireNonNull(preferences.getString("convertTo", null))) {
-                case "celsius":
-                    unit = "celsius";
-                    break;
-                case "fahrenheit":
-                    unit = "fahrenheit";
-                    break;
-                case "kelvin":
-                    unit = "kelvin";
-                    break;
-            }
-        }
-
-        return unit;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     private void inputOption() {
         celsius.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -232,7 +169,7 @@ public class TemperatureActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         celsius.startAnimation(bounceOut);
 
-                        selectOption(celsius, options);
+                        selectUnit(TemperatureActivity.this, celsius, options);
                         inputSymbol.setText(getString(R.string.celsius_symbol));
 
                         preferencesEditor.putString("convertFrom", "celsius")
@@ -240,7 +177,7 @@ public class TemperatureActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -256,7 +193,7 @@ public class TemperatureActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         fahrenheit.startAnimation(bounceOut);
 
-                        selectOption(fahrenheit, options);
+                        selectUnit(TemperatureActivity.this, fahrenheit, options);
                         inputSymbol.setText(getString(R.string.fahrenheit_symbol));
 
                         preferencesEditor.putString("convertFrom", "fahrenheit")
@@ -264,7 +201,7 @@ public class TemperatureActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -280,7 +217,7 @@ public class TemperatureActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         kelvin.startAnimation(bounceOut);
 
-                        selectOption(kelvin, options);
+                        selectUnit(TemperatureActivity.this, kelvin, options);
                         inputSymbol.setText(getString(R.string.kelvin_symbol));
 
                         preferencesEditor.putString("convertFrom", "kelvin")
@@ -288,7 +225,7 @@ public class TemperatureActivity extends CalculatorActivity {
                         break;
                 }
 
-                calc();
+                calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -359,7 +296,7 @@ public class TemperatureActivity extends CalculatorActivity {
                         number.startAnimation(bounceOut);
 
                         input.append(number.getText());
-                        calc();
+                        calc(input, conversionResult, conversionSymbolResult);
                 }
 
                 return true;
@@ -410,7 +347,7 @@ public class TemperatureActivity extends CalculatorActivity {
 
                         if (!input.getText().toString().isEmpty()) {
                             input.setText(input.getText().toString().substring(0, input.getText().toString().length() - 1));
-                            calc();
+                            calc(input, conversionResult, conversionSymbolResult);
                         }
 
                         if (input.getText().toString().length() < 1) {
@@ -423,77 +360,5 @@ public class TemperatureActivity extends CalculatorActivity {
                 return true;
             }
         });
-    }
-
-    private void calc() {
-        DecimalFormat format = new DecimalFormat("#.##");
-
-        try {
-            if (!input.getText().toString().isEmpty()) {
-                switch (convertFrom()) {
-                    case "celsius":
-                        switch(convertTo()) {
-                            case "celsius":
-                                conversionResult.setText(input.getText().toString());
-
-                                break;
-                            case "fahrenheit":
-                                conversionResult.setText(String.valueOf((Double.valueOf(input.getText().toString()) * 9 / 5) + 32));
-                                break;
-                            case "kelvin":
-                                conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) + 273.15));
-                                break;
-                        }
-
-                        break;
-                    case "fahrenheit":
-                        switch (convertTo()) {
-                            case "celsius":
-                                conversionResult.setText(String.valueOf(1.8 / (Double.parseDouble(input.getText().toString())) - 32));
-                                break;
-                            case "fahrenheit":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                            case "kelvin":
-                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 32) * 5 / 9 + 273.15));
-                                break;
-                        }
-
-                        break;
-                    case "kelvin":
-                        switch (convertTo()) {
-                            case "celsius":
-                                conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) - 273.15));
-                                break;
-                            case "fahrenheit":
-                                conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 273.15) * 9 / 5 + 32));
-                                break;
-                            case "kelvin":
-                                conversionResult.setText(input.getText().toString());
-                                break;
-                        }
-
-                        break;
-                }
-
-                if (conversionResult.getText().toString().contains(".")) {
-                    conversionResult.setText(String.valueOf(format.format(Double.parseDouble(conversionResult.getText().toString()))));
-                }
-
-                if (conversionResult.getText().toString().endsWith(".0")) {
-                    conversionResult.setText(input.getText().toString().replace(".0", ""));
-                }
-
-                if (conversionResult.getText().toString().endsWith("E")) {
-                    conversionResult.setText(input.getText().toString().replace("E", "e"));
-                }
-
-                System.out.println("Number '" + number.getText() + "' added.");
-                System.out.println("Updated 'input.getText().toString()' value: " + input.getText().toString());
-            }
-        } catch(Exception exception) {
-            conversionResult.setText(getString(R.string.error));
-            conversionSymbolResult.setVisibility(View.GONE);
-        }
     }
 }

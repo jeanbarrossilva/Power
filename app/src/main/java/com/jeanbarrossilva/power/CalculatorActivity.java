@@ -36,6 +36,7 @@ import com.github.nisrulz.sensey.TouchTypeDetector;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Timer;
@@ -57,16 +58,18 @@ public class CalculatorActivity extends AppCompatActivity {
 
     ConstraintLayout activityCalculator;
 
-    static final int DIALOG_MAX_HEIGHT = 500;
-
-    private static final int GET_VERSION_TYPE = 1;
     private static final int SETTINGS = 2;
+
+    String className;
 
     String empty;
     String space;
     String leftSquareBracket;
     String rightSquareBracket;
+
+    String dot;
     String comma;
+    String[] decimalSeparators;
 
     SharedPreferences preferences;
     SharedPreferences.Editor preferencesEditor;
@@ -84,13 +87,16 @@ public class CalculatorActivity extends AppCompatActivity {
 
     int theme;
 
+    boolean isNightEnabled;
     boolean isHiddenModeEnabled;
-    boolean isHapticFeedbackEnabled;
 
     public AcTrans.Builder acTrans;
 
     String hiddenModePassword;
     String textAlignment;
+
+    DecimalFormat format;
+    String unit = null;
 
     TextView inputResult;
     HorizontalScrollView inputHorizontalScrollView;
@@ -109,13 +115,16 @@ public class CalculatorActivity extends AppCompatActivity {
 
     static final String LOW_BOUNCE_IN_SETTING = "0.1, 10";
     static final String NORMAL_BOUNCE_IN_SETTING = "0.5, 15";
-    static final String HIGH_BOUNCE_IN_SETTING = "1, 20";
+    static final String HIGH_BOUNCE_IN_SETTING = "1, 25";
 
     static final String DEFAULT_OPTION_BOUNCE_IN_SETTING = "0.1, 5";
 
     Button number;
     int[] numbers = {
             R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
+    };
+    String[] numbersArray = {
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
     };
 
     Button decimalSeparator;
@@ -170,14 +179,24 @@ public class CalculatorActivity extends AppCompatActivity {
             appName = getString(R.string.app_name);
             versionName = BuildConfig.VERSION_NAME;
 
+            className = getLocalClassName();
+
             empty = "";
             space = " ";
             leftSquareBracket = "[";
             rightSquareBracket = "]";
+
+            dot = ".";
             comma = ",";
+            decimalSeparators = new String[] {
+              dot, comma
+            };
 
             preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
             preferencesEditor = preferences.edit();
+
+            isNightEnabled = preferences.getBoolean("isNightEnabled", false);
+            isHiddenModeEnabled = preferences.getBoolean("isHiddenModeEnabled", false);
 
             dialogOKButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -210,6 +229,8 @@ public class CalculatorActivity extends AppCompatActivity {
 
             hiddenModePassword = preferences.getString("hiddenModePassword", null);
             textAlignment = preferences.getString("textAlignment", null);
+
+            format = new DecimalFormat("#.##");
 
             inputResult = findViewById(R.id.input_result);
             inputHorizontalScrollView = findViewById(R.id.input_horizontal_scroll_view);
@@ -257,14 +278,20 @@ public class CalculatorActivity extends AppCompatActivity {
             calculatorMode = findViewById(R.id.calculator_mode);
 
             if (Build.VERSION.SDK_INT >= 21) {
-                if (preferences.getBoolean("isNight", true)) {
+                if (isNightEnabled) {
                     getWindow().setNavigationBarColor(Color.BLACK);
                 } else {
                     getWindow().setNavigationBarColor(Color.WHITE);
                 }
             } else {
-                night(true);
+                if (isNightEnabled) {
+                    night(true);
+                } else {
+                    night(false);
+                }
             }
+
+            System.out.println("Local class name: " + className);
 
             settings();
             calculatorMode();
@@ -275,7 +302,7 @@ public class CalculatorActivity extends AppCompatActivity {
             inputParenthesis();
 
             delete();
-            equal();
+            calc();
         } else {
             setContentView(R.layout.activity_blank);
             dialogIncompatibleDevice();
@@ -319,8 +346,6 @@ public class CalculatorActivity extends AppCompatActivity {
                 switch (requestCode) {
                     case SETTINGS:
                         hiddenMode(data);
-                        hapticFeedback(data);
-
                         break;
                 }
             }
@@ -332,7 +357,7 @@ public class CalculatorActivity extends AppCompatActivity {
         theme = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
         // Changes the app theme based on if the Android Pie (Android 9, API 28) night mode is enabled or not.
-        switch(theme) {
+        switch (theme) {
             case Configuration.UI_MODE_NIGHT_YES:
                 night(true);
                 System.out.println("Night mode has been enabled.");
@@ -350,7 +375,7 @@ public class CalculatorActivity extends AppCompatActivity {
         String screenLayoutSize;
         int size = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
-        switch(size) {
+        switch (size) {
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
                 screenLayoutSize = "small";
                 break;
@@ -482,9 +507,10 @@ public class CalculatorActivity extends AppCompatActivity {
         Sensey.getInstance().startTouchTypeDetection(CalculatorActivity.this, settings);
     }
 
-    public void night(boolean isNight) {
-        if (isNight) {
-            preferencesEditor.putBoolean("isNight", true);
+    public void night(boolean enableNight) {
+        if (enableNight) {
+            preferencesEditor.putBoolean("isNightEnabled", true)
+                    .apply();
 
             if (Build.VERSION.SDK_INT < 21) {
                 getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -494,7 +520,8 @@ public class CalculatorActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(Configuration.UI_MODE_NIGHT_YES);
             System.out.println("Night mode has been enabled.");
         } else {
-            preferencesEditor.putBoolean("isNight", false);
+            preferencesEditor.putBoolean("isNightEnabled", false)
+                    .apply();
 
             if (Build.VERSION.SDK_INT < 21) {
                 getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -518,17 +545,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
             Toast.makeText(CalculatorActivity.this, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
             isHiddenModeEnabled = true;
-        }
-    }
-
-    private void hapticFeedback(Intent data) {
-        isHapticFeedbackEnabled = data.getBooleanExtra("isHapticFeedbackEnabled", false);
-        preferencesEditor.putBoolean("isHapticFeedbackEnabled", isHapticFeedbackEnabled);
-
-        if (isHapticFeedbackEnabled) {
-            isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", true);
-        } else {
-            isHapticFeedbackEnabled = preferences.getBoolean("isHapticFeedbackEnabled", false);
         }
     }
 
@@ -622,38 +638,6 @@ public class CalculatorActivity extends AppCompatActivity {
         }
     }
 
-    private void inputResult(boolean isVisible) {
-        if (isVisible) {
-            if (!calc.isEmpty()) {
-                if (!calc.equals(getString(R.string.error))) {
-                    if (inputResult.getVisibility() != View.VISIBLE) {
-                        inputResult.setVisibility(View.VISIBLE);
-
-                        try {
-                            expression = new ExpressionBuilder(reformatCalc(inputResult.getText().toString())).build();
-                            result = String.valueOf(expression.evaluate());
-
-                            if (result.contains("E")) {
-                                result = result.replace("E", "e");
-                            }
-
-                            if (result.endsWith(".0")) {
-                                result = result.replace(".0", empty);
-                            }
-
-                            inputResult.setText(result);
-                            System.out.println("Calc result preview: " + result);
-                        } catch (Exception exception) {
-                            inputResult.setText(getString(R.string.error));
-                        }
-                    } else if (inputResult.getVisibility() != View.GONE) {
-                        inputResult.setVisibility(View.GONE);
-                    }
-                }
-            }
-        }
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     void calculatorMode() {
         calculatorMode.setOnTouchListener(new View.OnTouchListener() {
@@ -706,18 +690,22 @@ public class CalculatorActivity extends AppCompatActivity {
     private String reformatCalc(String calc) {
         if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
             if (calc.contains(plus)) {
+                // Replaces " + " by "+".
                 calc = calc.replace(space + plus + space, plus);
             }
 
             if (calc.contains(minus)) {
+                // Replaces " - " by "-".
                 calc = calc.replace(space + minus + space, minus);
             }
 
             if (calc.contains(times)) {
+                // Replaces " × " by "×".
                 calc = calc.replace(space + times + space, "*");
             }
 
             if (calc.contains(division)) {
+                // Replaces " ÷ " by "÷".
                 calc = calc.replace(space + division + space, "/");
             }
 
@@ -729,15 +717,32 @@ public class CalculatorActivity extends AppCompatActivity {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inputHasReachedCharLimit() {
-        if (calc.length() > 11) {
-            input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
-        }
-
-        switch (String.valueOf(input.getTextSize())) {
-            case "45":
-                return calc.length() == 10;
-            case "35":
-                return calc.length() == 16;
+        try {
+            if (screenDensity().equals("ldpi") || screenDensity().equals("mdpi") || screenDensity().equals("hdpi")) {
+                switch (calc.length()) {
+                    case 14:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+                        break;
+                    case 17:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                        break;
+                    case 19:
+                        return true;
+                }
+            } else if (screenDensity().equals("xhdpi") || screenDensity().equals("xxhdpi") || screenDensity().equals("xxxhdpi")) {
+                switch (calc.length()) {
+                    case 12:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+                        break;
+                    case 15:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                        break;
+                    case 17:
+                        return true;
+                }
+            }
+        } catch (NullPointerException nullPointerException) {
+            System.out.println("Couldn't check if the input has reached its limit.");
         }
 
         return false;
@@ -773,8 +778,6 @@ public class CalculatorActivity extends AppCompatActivity {
                             System.out.println("Number '" + number.getText() + "' added.");
                             System.out.println("Updated 'calc' value: " + calc);
                         }
-
-                        // inputResult(true);
                     }
 
                 return true;
@@ -806,8 +809,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
                                 System.out.println("Decimal separator added.");
                                 System.out.println("Updated 'calc' value: " + calc);
-
-                                // inputResult(true);
                             }
                         }
 
@@ -840,8 +841,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
                                 System.out.println("Operator '" + operator.getText() + "' added.");
                                 System.out.println("Updated 'calc' value: " + calc);
-
-                                // inputResult(true);
                             }
                         }
                 }
@@ -852,6 +851,75 @@ public class CalculatorActivity extends AppCompatActivity {
 
         for (int operator: operators) {
             findViewById(operator).setOnTouchListener(onTouchListener);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    // The options Button[] must contain all units available, including the selected one.
+    void selectUnit(Context context, final Button selectedUnit, final Button[] options) {
+        int selectedUnitId = selectedUnit.getId();
+
+        selectedUnit.setTextColor(isNightEnabled ? Color.BLACK : Color.WHITE);
+        selectedUnit.setBackgroundResource(R.drawable.option_clicked);
+
+        System.out.println("Selected 'convertFrom' unit: " + selectedUnit.getText());
+
+        for (Button option: options) {
+            try {
+                if (option.getId() != selectedUnitId) {
+                    option.setTextColor(Color.WHITE);
+                    option.setBackgroundResource(R.drawable.option);
+                }
+            } catch(NullPointerException nullPointerException) {
+                Toast.makeText(context, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
+                nullPointerException.printStackTrace();
+            }
+        }
+    }
+
+    private void inputFormat() {
+        if (!(isInputLastOperator() && isInputLastDecimalSeparator())) {
+            try {
+                expression = new ExpressionBuilder(reformatCalc(calc)).build();
+                result = String.valueOf(expression.evaluate());
+
+                if (result.contains("E")) {
+                    result = result.replace("E", "e");
+                }
+
+                if (result.endsWith(".0")) {
+                    result = result.replace(".0", empty);
+                }
+
+                if (result.contains("Infinity")) {
+                    result = result.replace("Infinity", getString(R.string.infinity));
+                }
+
+                if (result.length() > 16) {
+                    result = result.substring(17, result.length() - 1);
+                }
+
+                input.setText(result);
+                System.out.println("Calc result: " + result);
+            } catch (Exception exception) {
+                input.setText(getString(R.string.error));
+            }
+        } else {
+            input.append("0");
+        }
+    }
+
+    private void inputFormat(TextView conversionResult) {
+        if (conversionResult.getText().toString().contains(".")) {
+            conversionResult.setText(String.valueOf(format.format(Double.parseDouble(conversionResult.getText().toString()))));
+        }
+
+        if (conversionResult.getText().toString().endsWith(".0")) {
+            conversionResult.setText(input.getText().toString().replace(".0", ""));
+        }
+
+        if (conversionResult.getText().toString().endsWith("E")) {
+            conversionResult.setText(input.getText().toString().replace("E", "e"));
         }
     }
 
@@ -890,11 +958,7 @@ public class CalculatorActivity extends AppCompatActivity {
     }
 
     boolean isInputLastNumber() {
-        String[] numbers = {
-                "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        };
-
-        for (String number: numbers) {
+        for (String number: numbersArray) {
             if (reformatCalc(calc).endsWith(number)) {
                 return true;
             }
@@ -903,7 +967,16 @@ public class CalculatorActivity extends AppCompatActivity {
         return false;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    boolean isInputLastDecimalSeparator() {
+        for (String decimalSeparator: decimalSeparators) {
+            if (reformatCalc(calc).endsWith(decimalSeparator)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private boolean isInputLastOperator() {
         String[] operators = {
                 plus, minus, asterisk, slash
@@ -911,7 +984,6 @@ public class CalculatorActivity extends AppCompatActivity {
 
         for (String operator: operators) {
             if (reformatCalc(calc).endsWith(operator)) {
-                // inputResult(false);
                 return true;
             }
         }
@@ -932,9 +1004,21 @@ public class CalculatorActivity extends AppCompatActivity {
                         break;
                     case MotionEvent.ACTION_UP:
                         delete.startAnimation(bounceOut);
+                        delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
                         if (!calc.isEmpty()) {
-                            input.setText(calc.substring(0, calc.length() - 1));
+                            // When calc ends with " " (space), it means that it ends with an operator; the operator is shown as "space + operator + space". e. g., " × " and " + ". So, for example, if the input is "2 + 2", while deleting, the input would be equal to "2 + ", "2 +", "2 " and "2", respectively; with this method, the result would be "2 +" and "2", respectively.
+                            if (calc.endsWith(space)) {
+                                input.setText(calc.substring(0, calc.length() - 2));
+
+                                for (String number: numbersArray) {
+                                    if (calc.substring(0, calc.length() - 1).endsWith(number)) {
+                                        input.setText(calc.substring(0, calc.length() - 1));
+                                    }
+                                }
+                            } else {
+                                input.setText(calc.substring(0, calc.length() - 1));
+                            }
                         }
 
                         break;
@@ -968,74 +1052,513 @@ public class CalculatorActivity extends AppCompatActivity {
         }); */
     }
 
+    String convertFrom() {
+        if (preferences.getString("convertTo", null) != null) {
+            switch (className) {
+                case "LengthActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertFrom", null))) {
+                        case "lightYear":
+                            unit = "lightYear";
+                            break;
+                        case "kilometer":
+                            unit = "kilometer";
+                            break;
+                        case "hectometer":
+                            unit = "hectometer";
+                            break;
+                        case "decameter":
+                            unit = "decameter";
+                            break;
+                        case "meter":
+                            unit = "meter";
+                            break;
+                        case "decimeter":
+                            unit = "decimeter";
+                            break;
+                        case "centimeter":
+                            unit = "centimeter";
+                            break;
+                        case "millimeter":
+                            unit = "millimeter";
+                            break;
+                        case "micrometer":
+                            unit = "micrometer";
+                            break;
+                    }
+
+                    break;
+                case "TimeActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertFrom", null))) {
+                        case "year":
+                            unit = "year";
+                            break;
+                        case "month":
+                            unit = "month";
+                            break;
+                        case "day":
+                            unit = "day";
+                            break;
+                        case "hour":
+                            unit = "hour";
+                            break;
+                        case "minute":
+                            unit = "minute";
+                            break;
+                        case "second":
+                            unit = "second";
+                            break;
+                        case "millisecond":
+                            unit = "millisecond";
+                            break;
+                    }
+
+                    break;
+                case "TemperatureActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertFrom", null))) {
+                        case "celsius":
+                            unit = "celsius";
+                            break;
+                        case "fahrenheit":
+                            unit = "fahrenheit";
+                            break;
+                        case "kelvin":
+                            unit = "kelvin";
+                            break;
+                    }
+
+                    break;
+            }
+        }
+
+        return unit;
+    }
+
+    String convertTo() {
+        if (preferences.getString("convertTo", null) != null) {
+            switch (className) {
+                case "LengthActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertTo", null))) {
+                        case "lightYear":
+                            unit = "lightYear";
+                            break;
+                        case "kilometer":
+                            unit = "kilometer";
+                            break;
+                        case "hectometer":
+                            unit = "hectometer";
+                            break;
+                        case "decameter":
+                            unit = "decameter";
+                            break;
+                        case "meter":
+                            unit = "meter";
+                            break;
+                        case "decimeter":
+                            unit = "decimeter";
+                            break;
+                        case "centimeter":
+                            unit = "centimeter";
+                            break;
+                        case "millimeter":
+                            unit = "millimeter";
+                            break;
+                        case "micrometer":
+                            unit = "micrometer";
+                            break;
+                    }
+
+                    break;
+                case "TimeActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertTo", null))) {
+                        case "year":
+                            unit = "year";
+                            break;
+                        case "month":
+                            unit = "month";
+                            break;
+                        case "day":
+                            unit = "day";
+                            break;
+                        case "hour":
+                            unit = "hour";
+                            break;
+                        case "minute":
+                            unit = "minute";
+                            break;
+                        case "second":
+                            unit = "second";
+                            break;
+                        case "millisecond":
+                            unit = "millisecond";
+                            break;
+                    }
+
+                    break;
+                case "TemperatureActivity":
+                    switch (Objects.requireNonNull(preferences.getString("convertTo", null))) {
+                        case "celsius":
+                            unit = "celsius";
+                            break;
+                        case "fahrenheit":
+                            unit = "fahrenheit";
+                            break;
+                        case "kelvin":
+                            unit = "kelvin";
+                            break;
+                    }
+
+                    break;
+            }
+        }
+
+        return unit;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    private void equal() {
-        equal.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (isHapticFeedbackEnabled) {
-                            equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+    private void calc() {
+        switch (className) {
+            case "CalculatorActivity":
+                equal.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                bounceIn(view, false, HIGH_BOUNCE_IN_SETTING);
+                                equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                equal.startAnimation(bounceOut);
+
+                                if (!calc.isEmpty()) {
+                                    if (isHiddenModeEnabled) {
+                                        if (hiddenModePassword != null) {
+                                            if (calc.equals(hiddenModePassword)) {
+                                                input.setText(empty);
+                                                startActivity(new Intent(CalculatorActivity.this, HiddenMode.class));
+                                            }
+                                        } else {
+                                            System.out.println("'hiddenModePassword' is null.");
+                                        }
+                                    }
+
+                                    inputFormat();
+                                }
+
+                                break;
                         }
 
-                        bounceIn(view, true);
+                        return true;
+                    }
+                });
 
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        equal.startAnimation(bounceOut);
+                break;
+        }
+    }
 
-                        if (!calc.isEmpty()) {
-                            if (isHiddenModeEnabled) {
-                                if (hiddenModePassword != null) {
-                                    if (calc.equals(hiddenModePassword)) {
-                                        input.setText(empty);
-                                        startActivity(new Intent(CalculatorActivity.this, HiddenMode.class));
-                                    }
-                                } else {
-                                    System.out.println("'hiddenModePassword' is null.");
+    void calc(EditText input, TextView conversionResult, TextView conversionSymbolResult) {
+        switch (className) {
+            case "LengthActivity":
+                try {
+                    if (!input.getText().toString().isEmpty()) {
+                        switch (convertFrom()) {
+                            case "lightYear":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9461000000000.0));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 94610000000000.0));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 946100000000000.0));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9461000000000000.0));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 94607304725809376.0));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 946073047258093824.0));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9460730472580937728.0));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(9.461, 21)));
+                                        break;
                                 }
-                            }
 
-                            if (!isInputLastOperator()) {
-                                try {
-                                    expression = new ExpressionBuilder(reformatCalc(calc)).build();
-                                    result = String.valueOf(expression.evaluate());
-
-                                    if (result.contains("E")) {
-                                        result = result.replace("E", "e");
-                                    }
-
-                                    if (result.endsWith(".0")) {
-                                        result = result.replace(".0", empty);
-                                    }
-
-                                    if (result.contains("Infinity")) {
-                                        result = result.replace("Infinity", getString(R.string.infinity));
-                                    }
-
-                                    if (result.length() > 16) {
-                                        result = result.substring(17, result.length() - 1);
-                                    }
-
-                                    input.setText(result);
-                                    System.out.println("Calc result: " + result);
-                                } catch (Exception exception) {
-                                    input.setText(getString(R.string.error));
+                                break;
+                            case "kilometer":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9461000000000.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10000));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100000));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000000));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 9)));
+                                        System.out.println("Math.pow(10, 9): " + Math.pow(10, 9));
+                                        break;
                                 }
-                            } else {
-                                input.append("0");
-                            }
 
-                            // inputResult(false);
+                                break;
+                            case "hectometer":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 94610000000000.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10000));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100000));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 8)));
+                                        break;
+                                }
+
+                                break;
+                            case "decameter":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 946100000000000.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10000));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 7)));
+                                        break;
+                                }
+                            case "meter":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9461000000000000.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 6)));
+                                        break;
+                                }
+
+                                break;
+                            case "decimeter":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 94607304725809376.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10000));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(1.8 / (Double.parseDouble(input.getText().toString())) / 10));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) * 10));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 5)));
+                                        break;
+                                }
+
+                                break;
+                            case "centimeter":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 946073047258093824.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100000));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10000));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) / 100));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString())) / 10));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 4)));
+                                        break;
+                                }
+
+                                break;
+                            case "millimeter":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9460730472580937728.0));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000000));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100000));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10000));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 3)));
+                                        break;
+                                }
+                            case "micrometer":
+                                switch (convertTo()) {
+                                    case "lightYear":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -22)));
+                                        break;
+                                    case "kilometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -9)));
+                                        break;
+                                    case "hectometer":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -8)));
+                                        break;
+                                    case "decameter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -7)));
+                                        break;
+                                    case "meter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -6)));
+                                        break;
+                                    case "decimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -5)));
+                                        break;
+                                    case "centimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -4)));
+                                        break;
+                                    case "millimeter":
+                                        conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -3)));
+                                        break;
+                                    case "micrometer":
+                                        conversionResult.setText(input.getText().toString());
+                                        break;
+                                }
                         }
 
-                        break;
+                        inputFormat(conversionResult);
+
+                        System.out.println("Number '" + number.getText() + "' added.");
+                        System.out.println("Updated 'input.getText().toString()' value: " + input.getText().toString());
+                    }
+                } catch(Exception exception) {
+                    conversionResult.setText(getString(R.string.error));
+                    conversionSymbolResult.setVisibility(View.GONE);
                 }
 
-                return true;
-            }
-        });
+                break;
+        }
     }
 
     String version() {

@@ -108,7 +108,7 @@
                 app:layout_constraintStart_toStartOf="@+id/setting_hidden_mode" />
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/setting_haptic_feedback"
+                android:id="@+id/setting_night"
                 android:layout_width="420dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
@@ -122,17 +122,17 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/setting_haptic_feedback_title"
+                    android:id="@+id/setting_night_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/haptic_feedback"
+                    android:text="@string/night"
                     android:textSize="20sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
                 <Switch
-                    android:id="@+id/setting_haptic_feedback_switch"
+                    android:id="@+id/setting_night_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
@@ -142,7 +142,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/setting_send_feedback"
+                android:id="@+id/send_feedback"
                 android:layout_width="420dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
@@ -151,12 +151,12 @@
                 android:paddingEnd="50dp"
                 android:paddingBottom="20dp"
                 android:background="@drawable/setting"
-                app:layout_constraintTop_toBottomOf="@+id/setting_haptic_feedback"
+                app:layout_constraintTop_toBottomOf="@+id/setting_night"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/setting_send_feedback_preview_title"
+                    android:id="@+id/send_feedback_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/send_feedback"
@@ -168,7 +168,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/setting_collaborate"
+                android:id="@+id/source_code"
                 android:layout_width="420dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -177,12 +177,12 @@
                 android:paddingEnd="50dp"
                 android:paddingBottom="20dp"
                 android:background="@drawable/setting_link"
-                app:layout_constraintTop_toBottomOf="@+id/setting_send_feedback"
+                app:layout_constraintTop_toBottomOf="@+id/send_feedback"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/setting_collaborate_title"
+                    android:id="@+id/source_code_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/source_code"
@@ -195,7 +195,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/setting_credits"
+                android:id="@+id/credits"
                 android:layout_width="420dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -204,12 +204,12 @@
                 android:paddingEnd="50dp"
                 android:paddingBottom="20dp"
                 android:background="@drawable/setting"
-                app:layout_constraintTop_toBottomOf="@+id/setting_collaborate"
+                app:layout_constraintTop_toBottomOf="@+id/source_code"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/setting_credits_preview_title"
+                    android:id="@+id/credits_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/credits"
@@ -229,34 +229,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
         android:paddingBottom="20dp"
         android:background="@drawable/activity_additional_info"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/version"
-            android:textSize="12sp"
-            app:layout_constraintTop_toTopOf="parent"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/app_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/created_by"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0.5"
-            android:text="@string/created_by"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@+id/version"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/version"
+                android:textSize="12sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/created_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:text="@string/created_by"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/version"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
 
