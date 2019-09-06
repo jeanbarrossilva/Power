@@ -154,8 +154,6 @@ public class CalculatorActivity extends AppCompatActivity {
     Expression expression;
     String result;
 
-    boolean isBeta = false;
-
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -835,12 +833,52 @@ public class CalculatorActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         operator.startAnimation(bounceOut);
 
-                        if (!inputHasReachedCharLimit()) {
-                            if (!isInputLastOperator()) {
-                                input.append(space + operator.getText() + space);
+                        if (operator.getText().toString().equals(plus) || operator.getText().toString().equals(minus)) {
+                            if (!inputHasReachedCharLimit()) {
+                                if (!calc.equals(getString(R.string.error))) {
+                                    if (!isInputLastOperator()) {
+                                        if (calc.isEmpty()) {
+                                            input.append(operator.getText());
 
-                                System.out.println("Operator '" + operator.getText() + "' added.");
-                                System.out.println("Updated 'calc' value: " + calc);
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        } else {
+                                            input.append(space + operator.getText() + space);
+
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        }
+                                    }
+                                } else {
+                                    input.setText(empty);
+
+                                    operator = (Button) view;
+                                    input.append(operator.getText());
+
+                                    System.out.println("Operator '" + number.getText() + "' added.");
+                                    System.out.println("Updated 'calc' value: " + calc);
+                                }
+                            }
+                        } else {
+                            if (!calc.isEmpty()) {
+                                if (!inputHasReachedCharLimit()) {
+                                    if (!calc.equals(getString(R.string.error))) {
+                                        if (!isInputLastOperator()) {
+                                            input.append(space + operator.getText() + space);
+
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        }
+                                    } else {
+                                        input.setText(empty);
+
+                                        operator = (Button) view;
+                                        input.append(operator.getText() + space);
+
+                                        System.out.println("Operator '" + number.getText() + "' added.");
+                                        System.out.println("Updated 'calc' value: " + calc);
+                                    }
+                                }
                             }
                         }
                 }
@@ -855,8 +893,8 @@ public class CalculatorActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    // The options Button[] must contain all units available, including the selected one.
-    void selectUnit(Context context, final Button selectedUnit, final Button[] options) {
+    // The units Button[] must contain all units available, including the selected one.
+    void selectUnit(Context context, final Button selectedUnit, final Button[] units) {
         int selectedUnitId = selectedUnit.getId();
 
         selectedUnit.setTextColor(isNightEnabled ? Color.BLACK : Color.WHITE);
@@ -864,13 +902,11 @@ public class CalculatorActivity extends AppCompatActivity {
 
         System.out.println("Selected 'convertFrom' unit: " + selectedUnit.getText());
 
-        for (Button option: options) {
-            try {
-                if (option.getId() != selectedUnitId) {
-                    option.setTextColor(Color.WHITE);
-                    option.setBackgroundResource(R.drawable.option);
-                }
-            } catch(NullPointerException nullPointerException) {
+        for (Button unit: units) {
+            if (unit.getId() != selectedUnitId) try {
+                unit.setTextColor(isNightEnabled ? Color.WHITE : Color.BLACK);
+                unit.setBackgroundResource(R.drawable.option);
+            } catch (NullPointerException nullPointerException) {
                 Toast.makeText(context, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
                 nullPointerException.printStackTrace();
             }
@@ -1487,10 +1523,10 @@ public class CalculatorActivity extends AppCompatActivity {
                         case "millimeter":
                             switch (convertTo()) {
                                 case "lightYear":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 9460730472580937728.0));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -19))));
                                     break;
                                 case "kilometer":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000000));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / Math.pow(10, 6)));
                                     break;
                                 case "hectometer":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100000));
@@ -1517,28 +1553,28 @@ public class CalculatorActivity extends AppCompatActivity {
                         case "micrometer":
                             switch (convertTo()) {
                                 case "lightYear":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -22)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -22))));
                                     break;
                                 case "kilometer":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -9)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -9))));
                                     break;
                                 case "hectometer":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -8)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -8))));
                                     break;
                                 case "decameter":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -7)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -7))));
                                     break;
                                 case "meter":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -6)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -6))));
                                     break;
                                 case "decimeter":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -5)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -5))));
                                     break;
                                 case "centimeter":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -4)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -4))));
                                     break;
                                 case "millimeter":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.057 * Math.pow(10, -3)));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -3))));
                                     break;
                                 case "micrometer":
                                     conversionResult.setText(input.getText().toString());
@@ -1567,10 +1603,10 @@ public class CalculatorActivity extends AppCompatActivity {
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 525600));
                                     break;
                                 case "second":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 31536000));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * (31536 * Math.pow(10, 3))));
                                     break;
                                 case "millisecond":
-                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 31536000000.0));
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * (31536 * Math.pow(10, 6))));
                                     break;
                             }
 
@@ -1730,7 +1766,53 @@ public class CalculatorActivity extends AppCompatActivity {
                     }
 
                     break;
+                case "TemperatureActivity":
+                    switch (convertFrom()) {
+                        case "celsius":
+                            switch(convertTo()) {
+                                case "celsius":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                                case "fahrenheit":
+                                    conversionResult.setText(String.valueOf((Double.valueOf(input.getText().toString()) * 9 / 5) + 32));
+                                    break;
+                                case "kelvin":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) + 273.15));
+                                    break;
+                            }
 
+                            break;
+                        case "fahrenheit":
+                            switch (convertTo()) {
+                                case "celsius":
+                                    conversionResult.setText(String.valueOf(1.8 / (Double.parseDouble(input.getText().toString())) - 32));
+                                    break;
+                                case "fahrenheit":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                                case "kelvin":
+                                    conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 32) * 5 / 9 + 273.15));
+                                    break;
+                            }
+
+                            break;
+                        case "kelvin":
+                            switch (convertTo()) {
+                                case "celsius":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) - 273.15));
+                                    break;
+                                case "fahrenheit":
+                                    conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 273.15) * 9 / 5 + 32));
+                                    break;
+                                case "kelvin":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                            }
+
+                        break;
+                    }
+
+                    break;
             }
 
             inputFormat(conversionResult);
@@ -1738,27 +1820,5 @@ public class CalculatorActivity extends AppCompatActivity {
             conversionResult.setText(getString(R.string.error));
             conversionSymbolResult.setVisibility(View.GONE);
         }
-    }
-
-    String version() {
-        String version = null;
-        int dots = 0;
-
-        // Counts how many dots are there in 'versionName'.
-        for (char dot: versionName.toCharArray()) {
-            if (dot == '.') {
-                dots ++;
-            }
-        }
-
-        if (dots == 1) {
-            version = String.format(getString(R.string.version), versionName);
-            isBeta = false;
-        } else if (dots >= 2) {
-            version = String.format(getString(R.string.version_beta), versionName);
-            isBeta = true;
-        }
-
-        return version;
     }
 }

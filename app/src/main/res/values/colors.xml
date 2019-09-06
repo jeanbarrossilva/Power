@@ -26,7 +26,7 @@
     <color name="calculator_mode">#303030</color>
     <color name="clear_all">#EE4343</color>
     <color name="delete">#EE4343</color>
-    <color name="number">@android:color/white</color>
+    <color name="number">#F1F1F1</color>
     <color name="equal">#03A9F4</color>
     <color name="equal_pressed">#036FF4</color>
     <color name="operator">@android:color/white</color>

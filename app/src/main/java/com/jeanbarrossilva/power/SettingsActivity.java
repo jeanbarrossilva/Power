@@ -139,7 +139,7 @@ public class SettingsActivity extends CalculatorActivity {
             }
         }
 
-        version.setText(version());
+        version.setText(String.format(getString(R.string.version), versionName));
 
         back();
 
@@ -156,8 +156,6 @@ public class SettingsActivity extends CalculatorActivity {
         }
 
         rememberSettingHiddenMode();
-
-        version();
     }
 
     @Override
