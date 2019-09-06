@@ -38,10 +38,6 @@ public class SettingsActivity extends CalculatorActivity {
 
     Intent settingsActivityToMainActivity;
 
-    String appName;
-    String versionName;
-    boolean isBeta;
-
     BounceInterpolator bounceInterpolator;
     Animation bounceIn;
     Animation bounceOut;
@@ -86,9 +82,6 @@ public class SettingsActivity extends CalculatorActivity {
         preferencesEditor = preferences.edit();
 
         settingsActivityToMainActivity = new Intent(this, CalculatorActivity.class);
-
-        appName = getString(R.string.app_name);
-        versionName = BuildConfig.VERSION_NAME;
 
         bounceInterpolator = new BounceInterpolator(0.1, 15);
 
@@ -139,7 +132,7 @@ public class SettingsActivity extends CalculatorActivity {
             }
         }
 
-        version.setText(String.format(getString(R.string.version), versionName));
+        version.setText(String.format(getString(R.string.version), getVersionName()));
 
         back();
 
@@ -316,12 +309,7 @@ public class SettingsActivity extends CalculatorActivity {
                         sendFeedback.startAnimation(bounceOut);
 
                         Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
-
-                        if (!isBeta) {
-                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
-                        } else {
-                            email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName + space + "beta"));
-                        }
+                        email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, getVersionName()));
 
                         startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
                 }

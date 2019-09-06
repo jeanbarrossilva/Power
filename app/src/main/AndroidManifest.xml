@@ -47,6 +47,7 @@
         <activity android:name=".TimeActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".LengthActivity" />
+        <activity android:name=".MainActivity" />
 
     </application>
 

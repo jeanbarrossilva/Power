@@ -1,9 +1,7 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,15 +13,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.util.Objects;
-
 public class LengthActivity extends CalculatorActivity {
-    CalculatorActivity calculatorActivity;
-
-    SharedPreferences preferences;
-    SharedPreferences.Editor preferencesEditor;
-
     EditText input;
     TextView inputSymbol;
 
@@ -53,10 +43,7 @@ public class LengthActivity extends CalculatorActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_length);
 
-        preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
-        preferencesEditor = preferences.edit();
-
-        calculatorActivity = new CalculatorActivity();
+        preferencesEditor = getPreferences().edit();
 
         input = findViewById(R.id.input);
         inputSymbol = findViewById(R.id.input_symbol);
