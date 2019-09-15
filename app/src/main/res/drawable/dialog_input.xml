@@ -3,9 +3,9 @@
     
     <item>
         <shape>
-            <solid android:color="#F1F1F1" />
-            
-            <corners android:radius="30dp" />
+            <solid android:color="@color/dialog_input" />
+            <padding android:left="20dp" />
+            <corners android:radius="10dp" />
         </shape>
     </item>
 

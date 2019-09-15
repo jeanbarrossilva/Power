@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "559757302256",
+    "firebase_url": "https://calcone-5.firebaseio.com",
+    "project_id": "calcone-5",
+    "storage_bucket": "calcone-5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:559757302256:android:28b3f7e0190eac49f52535",
+        "android_client_info": {
+          "package_name": "com.jeanbarrossilva.power"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "559757302256-runu2t51sj0n0ceqjbcm2nes9hg05cbc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanbarrossilva.power",
+            "certificate_hash": "038f553ee8d7efa1f7e0a4ea27521436f3c7c8d5"
+          }
+        },
+        {
+          "client_id": "559757302256-ric67m1orosrm0bo9knir9r361kmrvqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClLix3fpcYnPkApsX-We8bBWIj6iVon5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "559757302256-ric67m1orosrm0bo9knir9r361kmrvqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

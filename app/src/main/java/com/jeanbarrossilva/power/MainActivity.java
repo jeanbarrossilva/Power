@@ -1,66 +1,223 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.provider.Settings;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import android.text.InputType;
+import android.util.TypedValue;
+import android.view.HapticFeedbackConstants;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Timer;
 
+import static android.util.DisplayMetrics.DENSITY_HIGH;
+import static android.util.DisplayMetrics.DENSITY_LOW;
+import static android.util.DisplayMetrics.DENSITY_MEDIUM;
+import static android.util.DisplayMetrics.DENSITY_XHIGH;
+import static android.util.DisplayMetrics.DENSITY_XXHIGH;
+import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
+
+@SuppressWarnings({"FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity {
-    String appName;
-    String versionName;
+    private boolean isAuthentic;
+    String installerPackage;
 
-    SharedPreferences preferences;
-    boolean isNightEnabled;
+    String deviceName;
+    private String deviceInfo;
 
-    DecimalFormat format;
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo[] networkInfo;
 
-    String className;
-    String unit;
+    private boolean isConnected;
+    private boolean isConnectedWiFi;
+    private boolean isConnectedMobile;
 
-    Timer timer;
+    private FirebaseDatabase database;
 
-    String empty;
-    String space;
+    private String appName;
+    private String versionName;
 
-    String[] numbersArray = {
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferencesEditor;
+
+    private boolean didSubscribeToProAvailability;
+    private int proAvailabilityInterestSubscriptions;
+
+    private boolean isHiddenModeUnlocked;
+    private boolean isHiddenModeEnabled;
+
+    private boolean isNightUnlocked;
+    private boolean isNightEnabled;
+
+    private Dialog alertSuccess;
+    private View alertSuccessIcon;
+    private TextView alertSuccessMessage;
+
+    private Dialog[] alerts;
+
+    private Dialog alertInfo;
+    private View alertInfoIcon;
+    private TextView alertInfoMessage;
+
+    private Dialog alertError;
+    private View alertErrorIcon;
+    private TextView alertErrorMessage;
+
+    private Dialog dialogOK;
+    private TextView dialogOKTitle;
+    private TextView dialogOKMessage;
+    private Button dialogOKButton;
+
+    private Dialog dialogUnauthentic;
+
+    private Dialog dialogYesNo;
+    private TextView dialogYesNoTitle;
+    private TextView dialogYesNoMessage;
+    private Button dialogYesNoNoButton;
+    private Button dialogYesNoYesButton;
+
+    private Dialog dialogInput;
+    private TextView dialogInputTitle;
+    private TextView dialogInputMessage;
+    private EditText dialogInputField;
+    private Button dialogInputButton;
+
+    private String pin;
+
+    private BounceInterpolator bounceInterpolator;
+    private Animation bounceIn;
+
+    private DecimalFormat format;
+
+    private String className;
+    private String unit;
+
+    private Timer timer;
+
+    private double bounceAmplitude;
+    private double bounceFrequency;
+
+    static final String SECRET_CODE_LEVEL_1 = "081003";
+    static final String SECRET_CODE_LEVEL_2 = "120318";
+
+    static final String DEFAULT_BOUNCE_IN_SETTING = "0.5, 5";
+
+    private String empty;
+    private String space;
+
+    private Button number;
+    private final int[] numbers = {
+            R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
+    };
+    private final String[] numbersArray = {
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
     };
 
+    private Button parenthesis;
+    private final int[] parenthesisArray = {
+            R.id.left_parenthesis, R.id.right_parenthesis
+    };
+
+    private Button operator;
+    private final int[] operators = {
+            R.id.plus, R.id.minus, R.id.times, R.id.division
+    };
+
+    private String leftSquareBracket;
+    private String rightSquareBracket;
+
     String dot;
-    String comma;
-    String[] decimalSeparators;
+    private String comma;
+    private String[] decimalSeparators;
 
-    String plus;
-    String minus;
-    String times;
-    String division;
+    private String plus;
+    private String minus;
+    private String times;
+    private String division;
 
-    String asterisk;
-    String slash;
+    private String asterisk;
+    private String slash;
+    private String colon;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        try {
+            isAuthentic = authenticity();
+        } catch (Exception exception) {
+            isAuthentic = false;
+            System.out.println("Couldn't verify app authenticity.");
+        }
+
+        deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+        deviceInfo = getString(R.string.name) + deviceName + "\n" + getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL);
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkInfo = connectivityManager.getAllNetworkInfo();
+
+        isConnected = isConnectedWiFi || isConnectedMobile;
+        isConnectedWiFi = connectionWiFi();
+        isConnectedMobile = connectionMobile();
+
+        database = FirebaseDatabase.getInstance();
+
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
 
-        preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        preferencesEditor = preferences.edit();
+
+        didSubscribeToProAvailability = preferences.getBoolean("didSubscribeToProAvailability", false);
+
+        isHiddenModeUnlocked = preferences.getBoolean("isHiddenModeUnlocked", false);
+        isHiddenModeEnabled = preferences.getBoolean("isHiddenModeEnabled", false);
+
+        isNightUnlocked = preferences.getBoolean("isNightUnlocked", false);
         isNightEnabled = preferences.getBoolean("isNightEnabled", false);
+
+        alerts = new Dialog[] {
+                alertSuccess, alertInfo, alertError
+        };
+
+        pin = preferences.getString("pin", null);
+
+        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
+
+        bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
+        bounceIn.setInterpolator(bounceInterpolator);
 
         format = new DecimalFormat("#.##");
 
@@ -71,6 +228,9 @@ public class MainActivity extends AppCompatActivity {
 
         empty = "";
         space = " ";
+
+        leftSquareBracket = "[";
+        rightSquareBracket = "]";
 
         dot = ".";
         comma = ",";
@@ -85,6 +245,40 @@ public class MainActivity extends AppCompatActivity {
 
         asterisk = "*";
         slash = "/";
+        colon = ":";
+
+        alerts();
+        dialogs();
+    }
+
+    boolean authenticity() {
+        installerPackage = getPackageManager().getInstallerPackageName(getPackageName());
+        return installerPackage == null;
+    }
+
+    boolean getIsAuthentic() {
+        return isAuthentic;
+    }
+
+    void unauthentic() {
+        dialogUnauthentic.show();
+    }
+
+    void unauthentic(Switch setting) {
+        setting.setChecked(false);
+        dialogUnauthentic.show();
+    }
+
+    void showStatusBar() {
+        getWindow().clearFlags(View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    void hideStatusBar() {
+        getWindow().addFlags(View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    String getDeviceInfo() {
+        return deviceInfo;
     }
 
     String getAppName() {
@@ -95,12 +289,189 @@ public class MainActivity extends AppCompatActivity {
         return versionName;
     }
 
+    boolean getIsConnected() {
+        return isConnected;
+    }
+
     SharedPreferences getPreferences() {
         return preferences;
     }
 
+    SharedPreferences.Editor getPreferencesEditor() {
+        return preferencesEditor;
+    }
+
+    boolean getDidSubscribeToProAvailability() {
+        return didSubscribeToProAvailability;
+    }
+
+    void setDidSubscribeToProAvailability(boolean didSubscribe) {
+        didSubscribeToProAvailability = didSubscribe;
+        preferencesEditor.putBoolean("didSubscribeToProAvailability", didSubscribeToProAvailability)
+                .apply();
+    }
+
+    void addProAvailabilityInterestSubscription() {
+        proAvailabilityInterestSubscriptions = + 1;
+        database.getReference().child("proAvailabilityInterestSubscriptions").setValue(proAvailabilityInterestSubscriptions);
+    }
+
+    boolean getIsHiddenModeUnlocked() {
+        return isHiddenModeUnlocked;
+    }
+
+    void setIsHiddenModeUnlocked(boolean isUnlocked) {
+        isHiddenModeUnlocked = isUnlocked;
+        preferencesEditor.putBoolean("isHiddenModeUnlocked", isHiddenModeUnlocked)
+                .apply();
+    }
+
+    boolean getIsHiddenModeEnabled() {
+        return isHiddenModeEnabled;
+    }
+
+    void setIsHiddenModeEnabled(boolean isHiddenModeEnabled) {
+        this.isHiddenModeEnabled = isHiddenModeEnabled;
+        preferencesEditor.putBoolean("isHiddenModeEnabled", this.isHiddenModeEnabled)
+                .apply();
+    }
+
+    boolean getIsNightUnlocked() {
+        return isNightUnlocked;
+    }
+
+    void setIsNightUnlocked(boolean isUnlocked) {
+        isNightUnlocked = isUnlocked;
+        preferencesEditor.putBoolean("isNightUnlocked", isNightUnlocked)
+                .apply();
+    }
+
     boolean getIsNightEnabled() {
         return isNightEnabled;
+    }
+
+    void setIsNightEnabled(boolean isNightEnabled) {
+        this.isNightEnabled = isNightEnabled;
+        preferencesEditor.putBoolean("isNightEnabled", this.isNightEnabled)
+                .apply();
+    }
+
+    Dialog getAlertSuccess() {
+        return alertSuccess;
+    }
+
+    void setAlertSuccessIcon(int icon) {
+        alertSuccessIcon.setBackgroundResource(icon);
+    }
+
+    void setAlertSuccessMessage(String message) {
+        alertSuccessMessage.setText(message);
+    }
+
+    Dialog getAlertInfo() {
+        return alertInfo;
+    }
+
+    void setAlertInfoIcon(int icon) {
+        alertInfoIcon.setBackgroundResource(icon);
+    }
+
+    void setAlertInfoMessage(String message) {
+        alertInfoMessage.setText(message);
+    }
+
+    Dialog getAlertError() {
+        return alertError;
+    }
+
+    void setAlertErrorIcon(int icon) {
+        alertErrorIcon.setBackgroundResource(icon);
+    }
+
+    void setAlertErrorMessage(String message) {
+        alertErrorMessage.setText(message);
+    }
+
+    Dialog getDialogOK() {
+        return dialogOK;
+    }
+
+    void setDialogOKTitle(String title) {
+        dialogOKTitle.setText(title);
+    }
+
+    void setDialogOKMessage(String message) {
+        dialogOKMessage.setText(message);
+    }
+
+    void setDialogOKButtonOnClickListener(View.OnClickListener listener) {
+        dialogOKButton.setOnClickListener(listener);
+    }
+
+    Dialog getDialogYesNo() {
+        return dialogYesNo;
+    }
+
+    void setDialogYesNoTitle(String title) {
+        dialogYesNoTitle.setText(title);
+    }
+
+    void setDialogYesNoMessage(String message) {
+        dialogYesNoMessage.setText(message);
+    }
+
+    void setDialogYesNoYesButtonOnClickListener(View.OnClickListener listener) {
+        dialogYesNoYesButton.setOnClickListener(listener);
+    }
+
+    Dialog getDialogInput() {
+        return dialogInput;
+    }
+
+    void setDialogInputTitle(String title) {
+        dialogInputTitle.setText(title);
+    }
+
+    void setDialogInputMessage(String message) {
+        dialogInputMessage.setText(message);
+    }
+
+    void setDialogInputButtonOnClickListener(View.OnClickListener listener) {
+        dialogInputButton.setOnClickListener(listener);
+    }
+
+    void setDialogInputFieldInputType(int type) {
+        dialogInputField.setInputType(type);
+    }
+
+    String getDialogInputFieldText() {
+        return dialogInputField.getText().toString();
+    }
+
+    String getPin() {
+        return pin;
+    }
+
+    void setBounceInterpolatorConfig(double amplitude, double frequency) {
+        this.bounceAmplitude = amplitude;
+        this.bounceFrequency = frequency;
+
+        bounceInterpolator = new BounceInterpolator(this.bounceAmplitude, this.bounceFrequency);
+    }
+
+    Animation getBounceOut() {
+        Animation bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
+
+        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
+        bounceOut.setInterpolator(bounceInterpolator);
+
+        return bounceOut;
+    }
+
+    void setPin(String pin) {
+        this.pin = pin;
+        preferencesEditor.putString("pin", this.pin)
+                .apply();
     }
 
     String getClassName() {
@@ -123,6 +494,10 @@ public class MainActivity extends AppCompatActivity {
         return space;
     }
 
+    String[] getNumbersArray() {
+        return numbersArray;
+    }
+
     String getComma() {
         return comma;
     }
@@ -133,6 +508,299 @@ public class MainActivity extends AppCompatActivity {
 
     String getMinus() {
         return minus;
+    }
+
+    String screenSize() {
+        String screenLayoutSize;
+        int size = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        switch (size) {
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                screenLayoutSize = "small";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                screenLayoutSize = "normal";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                screenLayoutSize = "large";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                screenLayoutSize = "xlarge";
+                break;
+            default:
+                screenLayoutSize = null;
+        }
+
+        return screenLayoutSize;
+    }
+
+    private String screenDensity() {
+        String density;
+        int dpi = getResources().getDisplayMetrics().densityDpi;
+
+        switch (dpi) {
+            case DENSITY_LOW:
+                density = "ldpi";
+                break;
+            case DENSITY_MEDIUM:
+                density = "mdpi";
+                break;
+            case DENSITY_HIGH:
+                density = "hdpi";
+                break;
+            case DENSITY_XHIGH:
+                density = "xhdpi";
+                break;
+            case DENSITY_XXHIGH:
+                density = "xxhdpi";
+                break;
+            case DENSITY_XXXHIGH:
+                density = "xxxhdpi";
+                break;
+            default:
+                density = null;
+        }
+
+        return density;
+    }
+
+    private boolean connectionWiFi() {
+        for (NetworkInfo info: networkInfo) {
+            return info.getTypeName().equalsIgnoreCase("WIFI");
+        }
+
+        return false;
+    }
+
+    private boolean connectionMobile() {
+        for (NetworkInfo info: networkInfo) {
+            return info.getTypeName().equalsIgnoreCase("MOBILE");
+        }
+
+        return false;
+    }
+
+    private void alerts() {
+        // Success alert (alert with a positive message) declaration.
+        alertSuccess = new Dialog(this);
+        Objects.requireNonNull(alertSuccess.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertSuccess.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertSuccess.setContentView(R.layout.alert_success);
+
+        alertSuccessIcon = alertSuccess.findViewById(R.id.icon);
+        alertSuccessMessage = alertSuccess.findViewById(R.id.message);
+
+        // Info alert (alert with a neutral message) declaration.
+        alertInfo = new Dialog(this);
+        Objects.requireNonNull(alertInfo.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertInfo.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertInfo.setContentView(R.layout.alert_info);
+
+        alertInfoIcon = alertInfo.findViewById(R.id.icon);
+        alertInfoMessage = alertInfo.findViewById(R.id.message);
+
+        // Error alert (alert with a negative message) declaration.
+        alertError = new Dialog(this);
+        Objects.requireNonNull(alertError.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertError.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertError.setContentView(R.layout.alert_error);
+
+        alertErrorIcon = alertError.findViewById(R.id.icon);
+        alertErrorMessage = alertError.findViewById(R.id.message);
+    }
+
+    private void dialogs() {
+        // OK Dialog (dialog with an OK neutral button) declaration.
+        dialogOK = new Dialog(this);
+        Objects.requireNonNull(dialogOK.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogOK.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogOK.setContentView(R.layout.dialog_ok);
+
+        dialogOKTitle = dialogOK.findViewById(R.id.title);
+        dialogOKMessage = dialogOK.findViewById(R.id.message);
+        dialogOKButton = dialogOK.findViewById(R.id.ok);
+
+        // Default OK Dialog button click listener, dismisses the dialog.
+        dialogOKButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogOK.dismiss();
+            }
+        });
+
+        // Unauthentic Dialog (an OK Dialog, but with a link to Google Play Store) declaration.
+        dialogUnauthentic = new Dialog(this);
+        Objects.requireNonNull(dialogUnauthentic.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogUnauthentic.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogUnauthentic.setContentView(R.layout.dialog_unauthentic);
+
+        Button dialogUnauthenticButton = dialogUnauthentic.findViewById(R.id.ok);
+
+        // Default Unauthentic Dialog button click listener, opens Google Play.
+        dialogUnauthenticButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent power = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.jeanbarrossilva.power"));
+                startActivity(power);
+
+                dialogUnauthentic.dismiss();
+            }
+        });
+
+        // Yes/No Dialog (dialog with a positive Yes and a negative No buttons) declaration.
+        dialogYesNo = new Dialog(this);
+        Objects.requireNonNull(dialogYesNo.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogYesNo.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogYesNo.setContentView(R.layout.dialog_yes_no);
+
+        dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
+        dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
+        dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
+        dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
+
+        // Default Yes/No dialog No button click listener, dismisses the dialog.
+        dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogYesNo.dismiss();
+            }
+        });
+
+        // Input Dialog (dialog with a text field) declaration.
+        dialogInput = new Dialog(this);
+        Objects.requireNonNull(dialogInput.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogInput.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogInput.setContentView(R.layout.dialog_input);
+
+        dialogInputTitle = dialogInput.findViewById(R.id.title);
+        dialogInputMessage = dialogInput.findViewById(R.id.message);
+
+        dialogInputField = dialogInput.findViewById(R.id.input);
+        setDialogInputFieldInputType(InputType.TYPE_CLASS_TEXT);
+
+        dialogInputButton = dialogInput.findViewById(R.id.ok);
+
+        // Default Input Dialog button click listener, dismisses the dialog.
+        dialogInputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogInput.dismiss();
+            }
+        });
+    }
+
+    private void night(boolean enableNight) {
+        if (enableNight) {
+            setIsNightEnabled(true);
+
+            if (Build.VERSION.SDK_INT < 21) {
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                getDelegate().applyDayNight();
+            }
+
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            System.out.println("Night mode has been enabled.");
+        } else {
+            setIsNightEnabled(false);
+
+            if (Build.VERSION.SDK_INT < 21) {
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                getDelegate().applyDayNight();
+            }
+
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            System.out.println("Night mode has been disabled.");
+        }
+    }
+
+    void setNight(boolean enableNight) {
+        night(enableNight);
+    }
+
+    private boolean hasSquareBracket(String text) {
+        return (text.contains(leftSquareBracket) || text.contains(rightSquareBracket));
+    }
+
+    private String squareBracket(String text) {
+        String squareBracket = null;
+
+        if (hasSquareBracket(text)) {
+            if (text.contains(leftSquareBracket)) {
+                squareBracket = "left";
+            } else if (text.contains(rightSquareBracket)) {
+                squareBracket = "right";
+            } else if (text.contains(leftSquareBracket) && text.contains(rightSquareBracket)) {
+                squareBracket = "both";
+            } else {
+                squareBracket = null;
+            }
+        }
+
+        return squareBracket;
+    }
+
+    // Meant to be implemented into a View.OnTouchListener's MotionEvent.ACTION_DOWN as 'bounceIn(view, "amplitude, frequency")'. e. g., bounceIn(number, DEFAULT_BOUNCE_IN_SETTING).
+    void bounceIn(View view, String... customSetting) {
+        if (!Arrays.toString(customSetting).isEmpty()) {
+            if (Arrays.toString(customSetting).contains(getComma() + getSpace())) {
+                String[] parts = Arrays.toString(customSetting).split(getComma() + getSpace());
+                String formatParts = null;
+
+                if (hasSquareBracket(Arrays.toString(parts))) {
+                    switch (squareBracket(Arrays.toString(parts))) {
+                        case "left":
+                            formatParts = Arrays.toString(parts).replace(leftSquareBracket, getEmpty());
+                            break;
+                        case "right":
+                            formatParts = Arrays.toString(parts).replace(rightSquareBracket, getEmpty());
+                            break;
+                        case "both":
+                            formatParts = Arrays.toString(parts).replaceAll(leftSquareBracket, rightSquareBracket);
+                            break;
+                    }
+
+                    assert formatParts != null;
+                    String[] formatValues = formatParts.split(getComma() + getSpace());
+
+                    String formatAmplitude = formatValues[0];
+                    String formatFrequency = formatValues[1];
+
+                    // For some unknown reason, formatFrequency has "]]" at its end.
+                    if (formatFrequency.endsWith(rightSquareBracket + rightSquareBracket)) {
+                        formatFrequency = formatFrequency.substring(0, formatFrequency.length() - 2);
+                    }
+
+                    bounceAmplitude = Double.parseDouble(formatAmplitude);
+                    bounceFrequency = Double.parseDouble(formatFrequency);
+                } else {
+                    bounceAmplitude = Double.parseDouble(parts[1]);
+                    bounceFrequency = Double.parseDouble(parts[2]);
+                }
+
+                setBounceInterpolatorConfig(bounceAmplitude, bounceFrequency);
+            } else {
+                System.out.println("bounceInterpolator was incorrectly set and doesn't contain '" + getComma() + getSpace() + "'.");
+            }
+        }
+
+        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
+        bounceIn.setInterpolator(bounceInterpolator);
+
+        view.startAnimation(bounceIn);
+
+        if (String.valueOf(bounceAmplitude).endsWith(".0")) {
+            String amplitudeString = String.valueOf(bounceAmplitude).replace(".0", getEmpty());
+            System.out.println("Amplitude: " + amplitudeString);
+        } else {
+            System.out.println("Amplitude: " + bounceAmplitude);
+        }
+
+        if (String.valueOf(bounceFrequency).endsWith(".0")) {
+            String frequencyString = String.valueOf(bounceFrequency).replace(".0", getEmpty());
+            System.out.println("Frequency: " + frequencyString);
+        } else {
+            System.out.println("Frequency: " + bounceFrequency);
+        }
     }
 
     String reformatCalc(String calc) {
@@ -148,13 +816,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (calc.contains(times)) {
-                // Replaces " × " by "×".
-                calc = calc.replace(space + times + space, "*");
+                // Replaces " × " by "*".
+                calc = calc.replace(space + times + space, asterisk);
             }
 
             if (calc.contains(division)) {
-                // Replaces " ÷ " by "÷".
-                calc = calc.replace(space + division + space, "/");
+                // Replaces " ÷ " by "/".
+                calc = calc.replace(space + division + space, slash);
             }
 
             System.out.println("Transformed calc: " + calc);
@@ -229,6 +897,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * "Styles" the result that is shown to the user when pressing the equal button.
+     *
+     * @param input Represents the text field itself.
+     * @param conversionResult Conversion result of the input number'.
+     */
     void inputFormat(EditText input, TextView conversionResult) {
         if (conversionResult.getText().toString().contains(".")) {
             conversionResult.setText(String.valueOf(format.format(Double.parseDouble(conversionResult.getText().toString()))));
@@ -241,6 +915,318 @@ public class MainActivity extends AppCompatActivity {
         if (conversionResult.getText().toString().endsWith("E")) {
             conversionResult.setText(input.getText().toString().replace("E", "e"));
         }
+    }
+
+    /**
+     * Checks if a text field has reached its character length limit. Here, it is defined based on the device screen density, where for 'ldpi', 'mdpi' and 'hdpi' it equals 17 and for 'xhdpi', 'xxhdpi', 'xxxhdpi' it also equals 17, but has a different behavior, as shown below.
+     *
+     * @param input Represents the text field itself.
+     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    boolean inputHasReachedCharLimit(final EditText input, final String calc) {
+        try {
+            if (screenDensity().equals("ldpi") || screenDensity().equals("mdpi") || screenDensity().equals("hdpi")) {
+                switch (calc.length()) {
+                    case 14:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+                        break;
+                    case 17:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                        break;
+                    case 19:
+                        return true;
+                }
+            } else if (screenDensity().equals("xhdpi") || screenDensity().equals("xxhdpi") || screenDensity().equals("xxxhdpi")) {
+                switch (calc.length()) {
+                    case 12:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+                        break;
+                    case 15:
+                        input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                        break;
+                    case 17:
+                        return true;
+                }
+            }
+        } catch (NullPointerException nullPointerException) {
+            System.out.println("Couldn't check if the input has reached its limit.");
+        }
+
+        return false;
+    }
+
+    /**
+     * Inputs a number in a text field.
+     *
+     * @param input Represents the text field itself.
+     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    void inputNumber(final EditText input, final String calc) {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                number = (Button) view;
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        number.startAnimation(getBounceOut());
+
+                        if (!calc.equals(getString(R.string.error))) {
+                            if (!inputHasReachedCharLimit(input, calc)) {
+                                input.append(number.getText());
+
+                                System.out.println("Number '" + number.getText() + "' added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+                            }
+                        } else {
+                            input.setText(getEmpty());
+
+                            number = (Button) view;
+                            input.append(number.getText());
+
+                            System.out.println("Number '" + number.getText() + "' added.");
+                            System.out.println("Updated 'calc' value: " + calc);
+                        }
+
+                        break;
+                }
+
+                return true;
+            }
+        };
+
+        for (int number: numbers) {
+            findViewById(number).setOnTouchListener(onTouchListener);
+        }
+    }
+
+    void inputNumber(final EditText input, final TextView conversionResult, final TextView conversionSymbolResult, final String calc) {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                number = (Button) view;
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        number.startAnimation(getBounceOut());
+
+                        if (!calc.equals(getString(R.string.error))) {
+                            if (!inputHasReachedCharLimit(input, calc)) {
+                                input.append(number.getText());
+
+                                System.out.println("Number '" + number.getText() + "' added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+                            }
+                        } else {
+                            input.setText(getEmpty());
+
+                            number = (Button) view;
+                            input.append(number.getText());
+
+                            System.out.println("Number '" + number.getText() + "' added.");
+                            System.out.println("Updated 'calc' value: " + calc);
+                        }
+
+                        calc(input, conversionResult, conversionSymbolResult);
+
+                        break;
+                }
+
+                return true;
+            }
+        };
+
+        for (int number: numbers) {
+            findViewById(number).setOnTouchListener(onTouchListener);
+        }
+    }
+
+    /**
+     * Inputs a decimal separator in a text field.
+     *
+     * @param input Represents the text field itself.
+     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    void inputDecimalSeparator(final EditText input, final String calc, final Button decimalSeparator) {
+        decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        decimalSeparator.startAnimation(getBounceOut());
+
+                        if (!inputHasReachedCharLimit(input, calc)) {
+                            if (isInputLastNumber(calc)) {
+                                input.append(decimalSeparator.getText());
+
+                                System.out.println("Decimal separator added.");
+                                System.out.println("Updated 'calc' value: " + calc);
+                            }
+                        }
+
+                        break;
+                }
+
+                return true;
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void inputOperator(final EditText input, final String calc) {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                operator = (Button) view;
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        operator.startAnimation(getBounceOut());
+
+                        if (operator.getText().toString().equals(getPlus()) || operator.getText().toString().equals(getMinus())) {
+                            if (!inputHasReachedCharLimit(input, calc)) {
+                                if (!calc.equals(getString(R.string.error))) {
+                                    if (!isInputLastOperator(calc)) {
+                                        if (calc.isEmpty()) {
+                                            input.append(operator.getText());
+
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        } else {
+                                            input.append(getSpace() + operator.getText() + getSpace());
+
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        }
+                                    }
+                                } else {
+                                    input.setText(getEmpty());
+
+                                    operator = (Button) view;
+                                    input.append(operator.getText());
+
+                                    System.out.println("Operator '" + number.getText() + "' added.");
+                                    System.out.println("Updated 'calc' value: " + calc);
+                                }
+                            }
+                        } else {
+                            if (!calc.isEmpty()) {
+                                if (!inputHasReachedCharLimit(input, calc)) {
+                                    if (!calc.equals(getString(R.string.error))) {
+                                        if (!isInputLastOperator(calc)) {
+                                            input.append(getSpace() + operator.getText() + getSpace());
+
+                                            System.out.println("Operator '" + operator.getText() + "' added.");
+                                            System.out.println("Updated 'calc' value: " + calc);
+                                        }
+                                    } else {
+                                        input.setText(getEmpty());
+
+                                        operator = (Button) view;
+                                        input.append(operator.getText() + getSpace());
+
+                                        System.out.println("Operator '" + number.getText() + "' added.");
+                                        System.out.println("Updated 'calc' value: " + calc);
+                                    }
+                                }
+                            }
+                        }
+                }
+
+                return true;
+            }
+        };
+
+        for (int operator: operators) {
+            findViewById(operator).setOnTouchListener(onTouchListener);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void inputParenthesis(final EditText input, final String calc) {
+        View.OnTouchListener listener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                parenthesis = (Button) view;
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        parenthesis.startAnimation(getBounceOut());
+
+                        if (!inputHasReachedCharLimit(input, calc)) {
+                            input.append(parenthesis.getText());
+
+                            System.out.println("Parenthesis added.");
+                            System.out.println("Updated 'calc' value: " + calc);
+                        }
+
+                        break;
+                }
+
+                return true;
+            }
+        };
+
+        for (int parenthesis: parenthesisArray) {
+            findViewById(parenthesis).setOnTouchListener(listener);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void delete(final EditText input, final ImageButton delete) {
+        delete.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                String calc = input.getText().toString();
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        delete.startAnimation(getBounceOut());
+                        delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+                        if (!calc.isEmpty()) {
+                            // When calc ends with " " (getSpace()), it means that it ends with an operator; the operator is shown as "getSpace() + operator + getSpace()". e. g., " × " and " + ". So, for example, if the input is "2 + 2", while deleting, the input would be equal to "2 + ", "2 +", "2 " and "2", respectively; with this method, the result would be "2 +" and "2", respectively.
+                            if (calc.endsWith(getSpace())) {
+                                input.setText(calc.substring(0, calc.length() - 2));
+
+                                for (String number: getNumbersArray()) {
+                                    if (calc.substring(0, calc.length() - 1).endsWith(number)) {
+                                        input.setText(calc.substring(0, calc.length() - 1));
+                                    }
+                                }
+                            } else {
+                                input.setText(calc.substring(0, calc.length() - 1));
+                            }
+                        }
+
+                        break;
+                }
+
+                return true;
+            }
+        });
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -1,9 +1,7 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,15 +13,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.util.Objects;
-
 public class TemperatureActivity extends CalculatorActivity {
-    CalculatorActivity calculatorActivity;
-
-    SharedPreferences preferences;
-    SharedPreferences.Editor preferencesEditor;
-
     EditText input;
     TextView inputSymbol;
 
@@ -46,11 +36,6 @@ public class TemperatureActivity extends CalculatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
-
-        preferences = getSharedPreferences("com.jeanbarrossilva.power", Context.MODE_PRIVATE);
-        preferencesEditor = preferences.edit();
-
-        calculatorActivity = new CalculatorActivity();
 
         input = findViewById(R.id.input);
         inputSymbol = findViewById(R.id.input_symbol);
@@ -85,20 +70,20 @@ public class TemperatureActivity extends CalculatorActivity {
         // Default configuration (Celsius to Fahrenheit).
         inputSymbol.setText(getString(R.string.celsius_symbol));
         selectUnit(TemperatureActivity.this, celsius, options);
-        preferencesEditor.putString("convertFrom", "celsius")
+        getPreferencesEditor().putString("convertFrom", "celsius")
                 .apply();
 
         unit.setText(getString(R.string.fahrenheit));
         conversionSymbolResult.setText(getString(R.string.fahrenheit_symbol));
-        preferencesEditor.putString("convertTo", "fahrenheit")
+        getPreferencesEditor().putString("convertTo", "fahrenheit")
                 .apply();
 
         settings();
         calculatorMode();
 
-        inputNumber();
-        inputDecimalSeparator();
-        delete();
+        inputNumber(input, conversionResult, conversionSymbolResult, calc);
+        inputDecimalSeparator(input, calc, decimalSeparator);
+        delete(input, delete);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -108,7 +93,7 @@ public class TemperatureActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(unit, false, "0.1, 5");
+                        bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -124,19 +109,19 @@ public class TemperatureActivity extends CalculatorActivity {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 if (item.getTitle().equals(getString(R.string.celsius))) {
-                                    preferencesEditor.putString("convertTo", "celsius")
+                                    getPreferencesEditor().putString("convertTo", "celsius")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.celsius_symbol));
                                     unit.setText(getString(R.string.celsius));
                                 } else if (item.getTitle().equals(getString(R.string.fahrenheit))) {
-                                    preferencesEditor.putString("convertTo", "fahrenheit")
+                                    getPreferencesEditor().putString("convertTo", "fahrenheit")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.fahrenheit_symbol));
                                     unit.setText(getString(R.string.fahrenheit));
                                 } else if (item.getTitle().equals(getString(R.string.kelvin))) {
-                                    preferencesEditor.putString("convertTo", "kelvin")
+                                    getPreferencesEditor().putString("convertTo", "kelvin")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.kelvin_symbol));
@@ -164,15 +149,15 @@ public class TemperatureActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(celsius, false, "0.1, 5");
+                        bounceIn(celsius, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        celsius.startAnimation(bounceOut);
+                        celsius.startAnimation(getBounceOut());
 
                         selectUnit(TemperatureActivity.this, celsius, options);
                         inputSymbol.setText(getString(R.string.celsius_symbol));
 
-                        preferencesEditor.putString("convertFrom", "celsius")
+                        getPreferencesEditor().putString("convertFrom", "celsius")
                                 .apply();
                         break;
                 }
@@ -188,15 +173,15 @@ public class TemperatureActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(fahrenheit, false, "0.1, 5");
+                        bounceIn(fahrenheit, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        fahrenheit.startAnimation(bounceOut);
+                        fahrenheit.startAnimation(getBounceOut());
 
                         selectUnit(TemperatureActivity.this, fahrenheit, options);
                         inputSymbol.setText(getString(R.string.fahrenheit_symbol));
 
-                        preferencesEditor.putString("convertFrom", "fahrenheit")
+                        getPreferencesEditor().putString("convertFrom", "fahrenheit")
                                 .apply();
                         break;
                 }
@@ -212,15 +197,15 @@ public class TemperatureActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(kelvin, false, "0.1, 5");
+                        bounceIn(kelvin, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        kelvin.startAnimation(bounceOut);
+                        kelvin.startAnimation(getBounceOut());
 
                         selectUnit(TemperatureActivity.this, kelvin, options);
                         inputSymbol.setText(getString(R.string.kelvin_symbol));
 
-                        preferencesEditor.putString("convertFrom", "kelvin")
+                        getPreferencesEditor().putString("convertFrom", "kelvin")
                                 .apply();
                         break;
                 }
@@ -237,11 +222,9 @@ public class TemperatureActivity extends CalculatorActivity {
         this.calculatorMode.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                bounceInterpolator = new BounceInterpolator(0.1, 5);
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(calculatorMode, true);
+                        bounceIn(calculatorMode, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu calculatorModes;
@@ -272,87 +255,6 @@ public class TemperatureActivity extends CalculatorActivity {
                                 return true;
                             }
                         });
-
-                        break;
-                }
-
-                return true;
-            }
-        });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void inputNumber() {
-        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                number = (Button) view;
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(number, false, LOW_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        number.startAnimation(bounceOut);
-
-                        input.append(number.getText());
-                        calc(input, conversionResult, conversionSymbolResult);
-                }
-
-                return true;
-            }
-        };
-
-        for (int number: numbers) {
-            findViewById(number).setOnTouchListener(onTouchListener);
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void inputDecimalSeparator() {
-        decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(decimalSeparator, false, LOW_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        decimalSeparator.startAnimation(bounceOut);
-
-                        input.append(decimalSeparator.getText());
-
-                        System.out.println("Decimal separator added.");
-                        System.out.println("Updated 'input.getText().toString()' value: " + input.getText().toString());
-
-                        break;
-                }
-
-                return true;
-            }
-        });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    public void delete() {
-        delete.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(delete, true);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        delete.startAnimation(bounceOut);
-
-                        if (!input.getText().toString().isEmpty()) {
-                            input.setText(input.getText().toString().substring(0, input.getText().toString().length() - 1));
-                            calc(input, conversionResult, conversionSymbolResult);
-                        }
-
-                        if (input.getText().toString().length() < 1) {
-                            conversionResult.setText(getString(R.string.zero));
-                        }
 
                         break;
                 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,7 +10,7 @@
     tools:context=".TemperatureActivity"
     tools:ignore="RtlSymmetry, Autofill, ContentDescription, HardcodedText">
     
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -57,9 +57,9 @@
             app:layout_constraintStart_toEndOf="@+id/input_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="parent" />
     
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
     
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calculator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
         
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/option_conversion"
             android:layout_width="0dp"
             android:layout_height="70dp"
@@ -93,7 +93,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
             
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
@@ -127,7 +127,7 @@
                     app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
                     app:layout_constraintTop_toTopOf="parent" />
             
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             
             <Button
                 android:id="@+id/unit"
@@ -143,7 +143,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         
         <HorizontalScrollView
             android:id="@+id/others_horizontal_scroll_view"
@@ -158,7 +158,7 @@
             app:layout_constraintEnd_toEndOf="@+id/keypad_delete"
             app:layout_constraintStart_toStartOf="@+id/keypad_delete">
             
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -288,7 +288,7 @@
                     app:layout_constraintStart_toEndOf="@+id/second"
                     app:layout_constraintTop_toTopOf="parent" />
             
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         
         </HorizontalScrollView>
         
@@ -307,7 +307,7 @@
             app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view" />
         
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/keypad_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
             
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/keypad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -326,7 +326,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
                 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/numbers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -484,9 +484,9 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/zero" />
                 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             
             <ImageButton
                 android:id="@+id/delete"
@@ -502,8 +502,8 @@
                 app:layout_constraintStart_toEndOf="@+id/keypad"
                 app:layout_constraintTop_toTopOf="@+id/keypad" />
         
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

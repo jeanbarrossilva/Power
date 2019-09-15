@@ -1,24 +1,18 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -27,7 +21,7 @@ import android.widget.Toast;
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 
-import java.util.Objects;
+import java.util.TimerTask;
 
 import id.voela.actrans.AcTrans;
 
@@ -37,10 +31,6 @@ public class SettingsActivity extends CalculatorActivity {
     SharedPreferences.Editor preferencesEditor;
 
     Intent settingsActivityToMainActivity;
-
-    BounceInterpolator bounceInterpolator;
-    Animation bounceIn;
-    Animation bounceOut;
 
     String empty;
     String space;
@@ -59,6 +49,10 @@ public class SettingsActivity extends CalculatorActivity {
     TextView settingHiddenModeDisclaimer;
     String pin;
 
+    ConstraintLayout settingNightLayout;
+    Switch settingNight;
+    TextView settingNightDisclaimer;
+
     ConstraintLayout sendFeedback;
 
     ConstraintLayout sourceCode;
@@ -66,8 +60,7 @@ public class SettingsActivity extends CalculatorActivity {
 
     ConstraintLayout credits;
 
-    ConstraintLayout settingNightLayout;
-    Switch settingNight;
+    ConstraintLayout buyPro;
 
     ConstraintLayout activityAdditionalInfo;
     TextView version;
@@ -83,18 +76,8 @@ public class SettingsActivity extends CalculatorActivity {
 
         settingsActivityToMainActivity = new Intent(this, CalculatorActivity.class);
 
-        bounceInterpolator = new BounceInterpolator(0.1, 15);
-
-        bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
-        bounceIn.setInterpolator(bounceInterpolator);
-
-        bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
-        bounceOut.setInterpolator(bounceInterpolator);
-
         empty = "";
         space = " ";
-
-        dialogYesNo = new Dialog(this);
 
         sensey = Sensey.getInstance();
         acTrans = new AcTrans.Builder(SettingsActivity.this);
@@ -111,6 +94,10 @@ public class SettingsActivity extends CalculatorActivity {
         settingHiddenMode = findViewById(R.id.setting_hidden_mode_switch);
         settingHiddenModeDisclaimer = findViewById(R.id.setting_hidden_mode_disclaimer);
 
+        settingNightLayout = findViewById(R.id.setting_night);
+        settingNight = findViewById(R.id.setting_night_switch);
+        settingNightDisclaimer = findViewById(R.id.setting_night_disclaimer);
+
         sendFeedback = findViewById(R.id.send_feedback);
 
         sourceCode = findViewById(R.id.source_code);
@@ -118,21 +105,12 @@ public class SettingsActivity extends CalculatorActivity {
 
         credits = findViewById(R.id.credits);
 
-        settingNightLayout = findViewById(R.id.setting_night);
-        settingNight = findViewById(R.id.setting_night_switch);
+        buyPro = findViewById(R.id.buy_pro);
 
         activityAdditionalInfo = findViewById(R.id.activity_additional_info);
+
         version = findViewById(R.id.version);
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            if (preferences.getBoolean("isNightEnabled", false)) {
-                settingHiddenModeLayout.setElevation(2);
-                sendFeedback.setElevation(2);
-                sourceCode.setElevation(2);
-            }
-        }
-
-        version.setText(String.format(getString(R.string.version), getVersionName()));
+        version.setText(String.format(getString(R.string.version_x), getVersionName()));
 
         back();
 
@@ -140,6 +118,7 @@ public class SettingsActivity extends CalculatorActivity {
         sendFeedback();
         sourceCode();
         credits();
+        buyPro();
 
         if (Build.VERSION.SDK_INT >= 21) {
             settingNightLayout.setVisibility(View.GONE);
@@ -205,92 +184,111 @@ public class SettingsActivity extends CalculatorActivity {
     }
 
     private void settingHiddenMode() {
-        settingHiddenMode.setChecked(false);
-        settingHiddenMode.setClickable(false);
+        if (getIsHiddenModeUnlocked()) {
+            if (getIsAuthentic()) {
+                settingHiddenMode.setClickable(true);
 
-        if (settingHiddenMode.isClickable()) {
-            settingHiddenModeLayout.setAlpha(1);
-            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_disable));
-        } else {
-            settingHiddenModeLayout.setAlpha(0.5f);
-            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_unavailable));
-        }
+                settingHiddenModeLayout.setAlpha(1);
 
-        settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    preferencesEditor.putBoolean("isHiddenModeEnabled", true)
-                            .apply();
+                settingHiddenModeDisclaimer.setVisibility(View.VISIBLE);
+                settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_definition));
 
-                    dialogYesNoTitle.setText(getString(R.string.hidden_mode_dialog_title));
-                    dialogYesNoMessage.setText(getString(R.string.hidden_mode_dialog_message));
+                settingHiddenMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            setIsHiddenModeEnabled(true);
+                            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_disable));
 
-                    dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialogYesNo.dismiss();
-                            dialogSettingHiddenModePassword();
+                            setDialogInputTitle(getString(R.string.hidden_mode));
+                            setDialogInputMessage(getString(R.string.hidden_mode_set_password_dialog_message));
+                            setDialogInputFieldInputType(InputType.TYPE_CLASS_NUMBER);
+
+                            setDialogInputButtonOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    pin = getDialogInputFieldText();
+
+                                    if (!pin.isEmpty()) {
+                                        if (pin.length() == 4) {
+                                            settingsActivityToMainActivity.putExtra("pin", pin);
+
+                                            setResult(RESULT_OK, settingsActivityToMainActivity);
+
+                                            finish();
+                                            acTrans.performSlideToTop();
+                                        } else if (pin.length() < 4) {
+                                            Toast.makeText(SettingsActivity.this, getString(R.string.hidden_mode_pin_at_least_4_digits), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(SettingsActivity.this, getString(R.string.hidden_only_mode_pin_4_digits), Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(SettingsActivity.this, getString(R.string.hidden_mode_pin_empty), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                            getDialogInput().show();
+
+                            getDialogInput().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    settingHiddenMode.setChecked(false);
+                                }
+                            });
                         }
-                    });
-
-                    dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            buttonView.setChecked(false);
-                            dialogYesNo.dismiss();
-                        }
-                    });
-
-                    dialogYesNo.show();
-                } else {
-                    preferencesEditor.putBoolean("isHiddenModeEnabled", false)
-                            .apply();
-                }
+                    }
+                });
             }
-        });
+        } else {
+            settingHiddenMode.setClickable(false);
+
+            settingHiddenModeLayout.setAlpha(0.5f);
+
+            settingHiddenModeDisclaimer.setVisibility(View.VISIBLE);
+            settingHiddenModeDisclaimer.setText(getString(R.string.hidden_mode_pro_only));
+        }
     }
 
-    private void dialogSettingHiddenModePassword() {
-        Dialog dialogInput = new Dialog(SettingsActivity.this);
-        Objects.requireNonNull(dialogInput.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogInput.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogInput.setContentView(R.layout.dialog_input);
+    private void settingNight() {
+        if (getIsAuthentic()) {
+            if (getIsNightUnlocked()) {
+                settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            settingNight.setClickable(true);
+                            settingNightLayout.setAlpha(1);
 
-        TextView dialogInputTitle = dialogInput.findViewById(R.id.title);
-        dialogInputTitle.setText(getString(R.string.hidden_mode_set_password_dialog_title));
+                            setNight(true);
+                        } else {
+                            setNight(false);
+                        }
+                    }
+                });
 
-        TextView dialogInputMessage = dialogInput.findViewById(R.id.message);
-        dialogInputMessage.setText(getString(R.string.hidden_mode_set_password_dialog_message));
+                settingNight.setChecked(getIsNightEnabled());
+            } else {
+                settingNightLayout.setAlpha(0.5f);
 
-        final EditText dialogInputInput = dialogInput.findViewById(R.id.input);
-        dialogInputInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                settingNight.setChecked(false);
+                settingNight.setClickable(false);
 
-        TextView dialogInputButton = dialogInput.findViewById(R.id.ok);
-
-        dialogInputButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pin = dialogInputInput.getText().toString();
-
-                if (pin.length() == 4) {
-                    settingsActivityToMainActivity.putExtra("password", pin);
-
-                    setResult(RESULT_OK, settingsActivityToMainActivity);
-                    finish();
-                } else {
-                    Toast.makeText(SettingsActivity.this, "The PIN must contain only 4 digits.", Toast.LENGTH_SHORT).show();
-                }
+                settingNightDisclaimer.setVisibility(View.VISIBLE);
+                settingNightDisclaimer.setText(getString(R.string.night_pro));
             }
-        });
+        } else {
+            settingNightLayout.setAlpha(1);
+            settingNight.setClickable(true);
 
-        dialogInput.show();
+            settingNightDisclaimer.setVisibility(View.GONE);
+        }
     }
 
     private void rememberSettingHiddenMode() {
-        if (preferences.getBoolean("isHiddenModeEnabled", true)) {
+        if (getIsHiddenModeEnabled()) {
             settingHiddenMode.setChecked(true);
-            dialogYesNo.dismiss();
+            getDialogInput().dismiss();
         } else {
             settingHiddenMode.setChecked(false);
         }
@@ -303,13 +301,13 @@ public class SettingsActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(sendFeedback, true);
+                        bounceIn(sendFeedback, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        sendFeedback.startAnimation(bounceOut);
+                        sendFeedback.startAnimation(getBounceOut());
 
                         Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
-                        email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, getVersionName()));
+                        email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), getAppName(), getVersionName()));
 
                         startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
                 }
@@ -326,11 +324,11 @@ public class SettingsActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(sourceCode, true);
+                        bounceIn(sourceCode, DEFAULT_BOUNCE_IN_SETTING);
                         sourceCodeTitle.setText(getString(R.string.source_code));
                         break;
                     case MotionEvent.ACTION_UP:
-                        sourceCode.startAnimation(bounceOut);
+                        sourceCode.startAnimation(getBounceOut());
                         sourceCodeTitle.setText(getString(R.string.source_code));
 
                         Intent powerGitHubRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jeanbarrossilva/power"));
@@ -349,10 +347,10 @@ public class SettingsActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(credits, true);
+                        bounceIn(credits, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        credits.startAnimation(bounceOut);
+                        credits.startAnimation(getBounceOut());
 
                         startActivity(new Intent(SettingsActivity.this, CreditsActivity.class));
                         acTrans.performSlideToLeft();
@@ -363,23 +361,82 @@ public class SettingsActivity extends CalculatorActivity {
         });
     }
 
-    private void settingNight() {
-        settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    @SuppressLint("ClickableViewAccessibility")
+    private void buyPro() {
+        buyPro.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    night(true);
-                    preferencesEditor.putBoolean("isNightEnabled", true)
-                            .apply();
-                } else {
-                    night(false);
-                    preferencesEditor.putBoolean("isNightEnabled", false)
-                            .apply();
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        bounceIn(buyPro, "0.35, 1");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buyPro.startAnimation(getBounceOut());
+
+                        if (getIsAuthentic()) {
+                            if (!getDidSubscribeToProAvailability()) {
+                                setDialogYesNoTitle(getString(R.string.buy_pro));
+                                setDialogYesNoMessage(getString(R.string.pro_not_available));
+
+                                setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        getDialogYesNo().dismiss();
+
+                                        if (getIsConnected()) {
+                                            // Adds + 1 to the proAvailabilityInterestSubscriptions Firebase database.
+                                            addProAvailabilityInterestSubscription();
+
+                                            setAlertSuccessIcon(R.drawable.sent);
+                                            setAlertSuccessMessage(getString(R.string.waitlist_request_sent));
+                                            getAlertSuccess().show();
+
+                                            setDidSubscribeToProAvailability(true);
+
+                                            getTimer().schedule(new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    getAlertSuccess().dismiss();
+                                                }
+                                            }, 3500);
+                                        } else {
+                                            setAlertErrorIcon(R.drawable.connection_wifi_unavailable);
+                                            setAlertErrorMessage(getString(R.string.no_internet_connection));
+                                            getAlertError().show();
+
+                                            getTimer().schedule(new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    getAlertError().dismiss();
+                                                }
+                                            }, 3500);
+                                        }
+                                    }
+                                });
+
+                                getDialogYesNo().show();
+                            } else {
+                                setAlertInfoMessage(getString(R.string.waitlist_request_already_sent));
+                                getAlertInfo().show();
+
+
+                                getTimer().schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        getAlertInfo().dismiss();
+                                    }
+                                }, 3500);
+                            }
+                        } else {
+                            unauthentic();
+                        }
+
+                        break;
                 }
+
+                return true;
             }
         });
-
-        settingNight.setChecked(isNightEnabled);
     }
 
     void backToSettingsActivity(final Context context) {
@@ -414,7 +471,7 @@ public class SettingsActivity extends CalculatorActivity {
                 switch (swipeDirection) {
                     case TouchTypeDetector.SWIPE_DIR_RIGHT:
                         startActivity(new Intent(context, SettingsActivity.class));
-                        acTrans.performSlideToLeft();
+                        acTrans.performSlideToRight();
 
                         break;
                 }

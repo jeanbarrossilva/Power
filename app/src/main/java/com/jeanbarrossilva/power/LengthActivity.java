@@ -43,8 +43,6 @@ public class LengthActivity extends CalculatorActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_length);
 
-        preferencesEditor = getPreferences().edit();
-
         input = findViewById(R.id.input);
         inputSymbol = findViewById(R.id.input_symbol);
 
@@ -90,20 +88,20 @@ public class LengthActivity extends CalculatorActivity {
         // Default configuration (meter to kilometer).
         inputSymbol.setText(getString(R.string.meter_symbol));
         selectUnit(LengthActivity.this, meter, options);
-        preferencesEditor.putString("convertFrom", "meter")
+        getPreferencesEditor().putString("convertFrom", "meter")
                 .apply();
 
         unit.setText(getString(R.string.kilometer));
         conversionSymbolResult.setText(getString(R.string.kilometer_symbol));
-        preferencesEditor.putString("convertTo", "kilometer")
+        getPreferencesEditor().putString("convertTo", "kilometer")
                 .apply();
 
         settings();
         calculatorMode();
 
-        inputNumber();
-        inputDecimalSeparator();
-        delete();
+        inputNumber(input, conversionResult, conversionSymbolResult, calc);
+        inputDecimalSeparator(input, calc, decimalSeparator);
+        delete(input, delete);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -113,7 +111,7 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(unit, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -129,54 +127,54 @@ public class LengthActivity extends CalculatorActivity {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 if (item.getTitle().equals(getString(R.string.light_year))) {
-                                    preferencesEditor.putString("convertTo", "lightYear")
+                                    getPreferencesEditor().putString("convertTo", "lightYear")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.light_year_symbol));
                                 } else if (item.getTitle().equals(getString(R.string.kilometer))) {
-                                    preferencesEditor.putString("convertTo", "kilometer")
+                                    getPreferencesEditor().putString("convertTo", "kilometer")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.kilometer_symbol));
                                     unit.setText(getString(R.string.kilometer));
                                 } else if (item.getTitle().equals(getString(R.string.hectometer))) {
-                                    preferencesEditor.putString("convertTo", "hectometer")
+                                    getPreferencesEditor().putString("convertTo", "hectometer")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.hectometer_symbol));
                                     unit.setText(getString(R.string.hectometer));
                                 } else if (item.getTitle().equals(getString(R.string.decameter))) {
-                                    preferencesEditor.putString("convertTo", "decameter")
+                                    getPreferencesEditor().putString("convertTo", "decameter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.decameter_symbol));
                                     unit.setText(getString(R.string.decameter));
                                 } else if (item.getTitle().equals(getString(R.string.meter))) {
-                                    preferencesEditor.putString("convertTo", "meter")
+                                    getPreferencesEditor().putString("convertTo", "meter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.meter_symbol));
                                     unit.setText(getString(R.string.meter));
                                 } else if (item.getTitle().equals(getString(R.string.decimeter))) {
-                                    preferencesEditor.putString("convertTo", "decimeter")
+                                    getPreferencesEditor().putString("convertTo", "decimeter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.decimeter_symbol));
                                     unit.setText(getString(R.string.decimeter));
                                 } else if (item.getTitle().equals(getString(R.string.centimeter))) {
-                                    preferencesEditor.putString("convertTo", "centimeter")
+                                    getPreferencesEditor().putString("convertTo", "centimeter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.centimeter_symbol));
                                     unit.setText(getString(R.string.centimeter));
                                 } else if (item.getTitle().equals(getString(R.string.millimeter))) {
-                                    preferencesEditor.putString("convertTo", "millimeter")
+                                    getPreferencesEditor().putString("convertTo", "millimeter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.millimeter_symbol));
                                     unit.setText(getString(R.string.millimeter));
                                 } else if (item.getTitle().equals(getString(R.string.micrometer))) {
-                                    preferencesEditor.putString("convertTo", "micrometer")
+                                    getPreferencesEditor().putString("convertTo", "micrometer")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.micrometer_symbol));
@@ -204,15 +202,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(lightYear, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(lightYear, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        lightYear.startAnimation(bounceOut);
+                        lightYear.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, lightYear, options);
                         inputSymbol.setText(getString(R.string.light_year_symbol));
 
-                        preferencesEditor.putString("convertFrom", "lightYear")
+                        getPreferencesEditor().putString("convertFrom", "lightYear")
                                 .apply();
                         break;
                 }
@@ -228,15 +226,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(kilometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(kilometer, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        kilometer.startAnimation(bounceOut);
+                        kilometer.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, kilometer, options);
                         inputSymbol.setText(getString(R.string.kilometer_symbol));
 
-                        preferencesEditor.putString("convertFrom", "kilometer")
+                        getPreferencesEditor().putString("convertFrom", "kilometer")
                                 .apply();
                         break;
                 }
@@ -252,15 +250,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(hectometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(hectometer, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        hectometer.startAnimation(bounceOut);
+                        hectometer.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, hectometer, options);
                         inputSymbol.setText(getString(R.string.hectometer_symbol));
 
-                        preferencesEditor.putString("convertFrom", "hectometer")
+                        getPreferencesEditor().putString("convertFrom", "hectometer")
                                 .apply();
                         break;
                 }
@@ -276,15 +274,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(decameter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(decameter, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        decameter.startAnimation(bounceOut);
+                        decameter.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, decameter, options);
                         inputSymbol.setText(getString(R.string.decameter_symbol));
 
-                        preferencesEditor.putString("convertFrom", "decameter")
+                        getPreferencesEditor().putString("convertFrom", "decameter")
                                 .apply();
                         break;
                 }
@@ -300,15 +298,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(meter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(meter, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        meter.startAnimation(bounceOut);
+                        meter.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, meter, options);
                         inputSymbol.setText(getString(R.string.meter_symbol));
 
-                        preferencesEditor.putString("convertFrom", "meter")
+                        getPreferencesEditor().putString("convertFrom", "meter")
                                 .apply();
                         break;
                 }
@@ -324,15 +322,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(decimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(decimeter, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        decimeter.startAnimation(bounceOut);
+                        decimeter.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, decimeter, options);
                         inputSymbol.setText(getString(R.string.decimeter_symbol));
 
-                        preferencesEditor.putString("convertFrom", "decimeter")
+                        getPreferencesEditor().putString("convertFrom", "decimeter")
                                 .apply();
                         break;
                 }
@@ -348,15 +346,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(centimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(centimeter, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        centimeter.startAnimation(bounceOut);
+                        centimeter.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, centimeter, options);
                         inputSymbol.setText(getString(R.string.centimeter_symbol));
 
-                        preferencesEditor.putString("convertFrom", "centimeter")
+                        getPreferencesEditor().putString("convertFrom", "centimeter")
                                 .apply();
                         break;
                 }
@@ -372,15 +370,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(millimeter, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(millimeter, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        millimeter.startAnimation(bounceOut);
+                        millimeter.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, millimeter, options);
                         inputSymbol.setText(getString(R.string.millimeter_symbol));
 
-                        preferencesEditor.putString("convertFrom", "millimeter")
+                        getPreferencesEditor().putString("convertFrom", "millimeter")
                                 .apply();
                         break;
                 }
@@ -396,15 +394,15 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(micrometer, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(micrometer, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        micrometer.startAnimation(bounceOut);
+                        micrometer.startAnimation(getBounceOut());
 
                         selectUnit(LengthActivity.this, micrometer, options);
                         inputSymbol.setText(getString(R.string.micrometer_symbol));
 
-                        preferencesEditor.putString("convertFrom", "micrometer")
+                        getPreferencesEditor().putString("convertFrom", "micrometer")
                                 .apply();
                         break;
                 }
@@ -423,7 +421,7 @@ public class LengthActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(calculatorMode, false, DEFAULT_OPTION_BOUNCE_IN_SETTING);
+                        bounceIn(calculatorMode, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu calculatorModes;
@@ -454,87 +452,6 @@ public class LengthActivity extends CalculatorActivity {
                                 return true;
                             }
                         });
-
-                        break;
-                }
-
-                return true;
-            }
-        });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void inputNumber() {
-        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                number = (Button) view;
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(number, false, LOW_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        number.startAnimation(bounceOut);
-
-                        input.append(number.getText());
-                        calc(input, conversionResult, conversionSymbolResult);
-                }
-
-                return true;
-            }
-        };
-
-        for (int number: numbers) {
-            findViewById(number).setOnTouchListener(onTouchListener);
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void inputDecimalSeparator() {
-        decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(decimalSeparator, false, LOW_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        decimalSeparator.startAnimation(bounceOut);
-
-                        input.append(decimalSeparator.getText());
-
-                        System.out.println("Decimal separator added.");
-                        System.out.println("Updated 'input.getText().toString()' value: " + input.getText().toString());
-
-                        break;
-                }
-
-                return true;
-            }
-        });
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    public void delete() {
-        delete.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        bounceIn(delete, true);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        delete.startAnimation(bounceOut);
-
-                        if (!input.getText().toString().isEmpty()) {
-                            input.setText(input.getText().toString().substring(0, input.getText().toString().length() - 1));
-                            calc(input, conversionResult, conversionSymbolResult);
-                        }
-
-                        if (input.getText().toString().length() < 1) {
-                            conversionResult.setText(getString(R.string.zero));
-                        }
 
                         break;
                 }

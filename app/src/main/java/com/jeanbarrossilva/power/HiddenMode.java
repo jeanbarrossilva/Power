@@ -2,7 +2,7 @@ package com.jeanbarrossilva.power;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 
 public class HiddenMode extends AppCompatActivity {

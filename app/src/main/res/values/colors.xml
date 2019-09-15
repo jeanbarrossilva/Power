@@ -2,32 +2,31 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    
+
     <color name="background">@android:color/white</color>
-    <color name="settings">#F7F7F7</color>
-    <color name="settings_pressed">#F0F0F0</color>
+    <color name="dialog">@android:color/white</color>
+    <color name="dialog_input">#F1F1F1</color>
+    <color name="dialog_button">@android:color/white</color>
+    <color name="dialog_button_pressed">#B5B5B5</color>
+    <color name="alert_success">#99D850</color>
+    <color name="alert_info">#439EEE</color>
+    <color name="alert_error">#EE4343</color>
+    <color name="code_keypad_number">#F0F0F0</color>
+    <color name="close">#EE4343</color>
     <color name="setting">#F7F7F7</color>
-    <color name="setting_v21">@android:color/white</color>
     <color name="setting_pressed">#F0F0F0</color>
     <color name="setting_link">#03A9F4</color>
+    <color name="buy_pro">#2B2B2B</color>
     <color name="background_add">@android:color/white</color>
-    <color name="icon_add">@android:color/black</color>
     <color name="activity_additional_info">@android:color/white</color>
-    <color name="option_conversion">#E9E9E9</color>
     <color name="unit">#E9E9E9</color>
     <color name="others">#F7F7F7</color>
-    <color name="scrollbar">@android:color/white</color>
-    <color name="parenthesis">#1F1F1F</color>
-    <color name="operators">#1F1F1F</color>
     <color name="option">#E9E9E9</color>
     <color name="option_clicked">@android:color/black</color>
     <color name="calculator">#F7F7F7</color>
     <color name="calculator_mode">#303030</color>
-    <color name="clear_all">#EE4343</color>
     <color name="delete">#EE4343</color>
     <color name="number">#F1F1F1</color>
     <color name="equal">#03A9F4</color>
-    <color name="equal_pressed">#036FF4</color>
-    <color name="operator">@android:color/white</color>
+    <color name="mask">@android:color/black</color>
 </resources>

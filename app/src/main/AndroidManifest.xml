@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jeanbarrossilva.power">
-    
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <supports-screens
         android:smallScreens="false"
         android:normalScreens="true"
@@ -18,6 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".SecretCodeActivity"
+            android:screenOrientation="portrait" />
         
         <activity
             android:name=".CalculatorActivity"
@@ -29,6 +38,15 @@
             </intent-filter>
             
         </activity>
+
+        <activity android:name=".LengthActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".TemperatureActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".TimeActivity"
+            android:screenOrientation="portrait" />
         
         <activity
             android:name=".SettingsActivity"
@@ -40,14 +58,6 @@
         
         <activity android:name=".CreditsActivity"
             android:screenOrientation="portrait" />
-        
-        <activity android:name=".TemperatureActivity"
-            android:screenOrientation="portrait" />
-        
-        <activity android:name=".TimeActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".LengthActivity" />
-        <activity android:name=".MainActivity" />
 
     </application>
 
