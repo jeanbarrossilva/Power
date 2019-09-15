@@ -373,62 +373,58 @@ public class SettingsActivity extends CalculatorActivity {
                     case MotionEvent.ACTION_UP:
                         buyPro.startAnimation(getBounceOut());
 
-                        if (getIsAuthentic()) {
-                            if (!getDidSubscribeToProAvailability()) {
-                                setDialogYesNoTitle(getString(R.string.buy_pro));
-                                setDialogYesNoMessage(getString(R.string.pro_not_available));
+                        if (!getDidSubscribeToProAvailability()) {
+                            setDialogYesNoTitle(getString(R.string.buy_pro));
+                            setDialogYesNoMessage(getString(R.string.pro_not_available));
 
-                                setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        getDialogYesNo().dismiss();
+                            setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    getDialogYesNo().dismiss();
 
-                                        if (getIsConnected()) {
-                                            // Adds + 1 to the proAvailabilityInterestSubscriptions Firebase database.
-                                            addProAvailabilityInterestSubscription();
+                                    if (getIsConnected()) {
+                                        // Adds + 1 to the proAvailabilityInterestSubscriptions Firebase database.
+                                        addProAvailabilityInterestSubscription();
 
-                                            setAlertSuccessIcon(R.drawable.sent);
-                                            setAlertSuccessMessage(getString(R.string.waitlist_request_sent));
-                                            getAlertSuccess().show();
+                                        setAlertSuccessIcon(R.drawable.sent);
+                                        setAlertSuccessMessage(getString(R.string.waitlist_request_sent));
+                                        getAlertSuccess().show();
 
-                                            setDidSubscribeToProAvailability(true);
+                                        setDidSubscribeToProAvailability(true);
 
-                                            getTimer().schedule(new TimerTask() {
-                                                @Override
-                                                public void run() {
-                                                    getAlertSuccess().dismiss();
-                                                }
-                                            }, 3500);
-                                        } else {
-                                            setAlertErrorIcon(R.drawable.connection_wifi_unavailable);
-                                            setAlertErrorMessage(getString(R.string.no_internet_connection));
-                                            getAlertError().show();
+                                        getTimer().schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                getAlertSuccess().dismiss();
+                                            }
+                                        }, 3500);
+                                    } else {
+                                        setAlertErrorIcon(R.drawable.connection_wifi_unavailable);
+                                        setAlertErrorMessage(getString(R.string.no_internet_connection));
+                                        getAlertError().show();
 
-                                            getTimer().schedule(new TimerTask() {
-                                                @Override
-                                                public void run() {
-                                                    getAlertError().dismiss();
-                                                }
-                                            }, 3500);
-                                        }
+                                        getTimer().schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                getAlertError().dismiss();
+                                            }
+                                        }, 3500);
                                     }
-                                });
+                                }
+                            });
 
-                                getDialogYesNo().show();
-                            } else {
-                                setAlertInfoMessage(getString(R.string.waitlist_request_already_sent));
-                                getAlertInfo().show();
-
-
-                                getTimer().schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        getAlertInfo().dismiss();
-                                    }
-                                }, 3500);
-                            }
+                            getDialogYesNo().show();
                         } else {
-                            unauthentic();
+                            setAlertInfoMessage(getString(R.string.waitlist_request_already_sent));
+                            getAlertInfo().show();
+
+
+                            getTimer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    getAlertInfo().dismiss();
+                                }
+                            }, 3500);
                         }
 
                         break;

@@ -76,4 +76,6 @@
     <string name="waitlist_request_already_sent">Você já foi adicionado à lista de espera.</string>
     <string name="no_internet_connection">Não há conexão à Internet disponível.</string>
     <string name="pro_price">R$ 5,00</string>
+    <string name="buy_pro_features_description">Esse recurso está disponível apenas no Power Pro. Ao comprá-lo, você também leva:\n\n• Modo Oculto\n• Conversões (comprimento, tempo, temperatura e mais)\n• Modo Noite\n• Sem anúncios</string>
+    <string name="buy">Adquirir</string>
 </resources>

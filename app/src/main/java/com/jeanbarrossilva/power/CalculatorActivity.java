@@ -292,34 +292,40 @@ public class CalculatorActivity extends MainActivity {
                         bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        final PopupMenu calculatorModes;
-                        MenuInflater inflater;
+                        view.startAnimation(getBounceOut());
 
-                        calculatorModes = new PopupMenu(CalculatorActivity.this, calculatorMode);
-                        inflater = calculatorModes.getMenuInflater();
+                        if (getIsHiddenModeUnlocked()) {
+                            final PopupMenu calculatorModes;
+                            MenuInflater inflater;
 
-                        inflater.inflate(R.menu.calculator_modes, calculatorModes.getMenu());
-                        calculatorModes.show();
+                            calculatorModes = new PopupMenu(CalculatorActivity.this, calculatorMode);
+                            inflater = calculatorModes.getMenuInflater();
 
-                        calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(getString(R.string.calculator))) {
-                                    calculatorModes.dismiss();
-                                } else if (item.getTitle().equals(getString(R.string.length))) {
-                                    startActivity(new Intent(CalculatorActivity.this, LengthActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                } else if (item.getTitle().equals(getString(R.string.temperature))) {
-                                    startActivity(new Intent(CalculatorActivity.this, TemperatureActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                } else if (item.getTitle().equals(getString(R.string.time))) {
-                                    startActivity(new Intent(CalculatorActivity.this, TimeActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            inflater.inflate(R.menu.calculator_modes, calculatorModes.getMenu());
+                            calculatorModes.show();
+
+                            calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    if (item.getTitle().equals(getString(R.string.calculator))) {
+                                        calculatorModes.dismiss();
+                                    } else if (item.getTitle().equals(getString(R.string.length))) {
+                                        startActivity(new Intent(CalculatorActivity.this, LengthActivity.class));
+                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                    } else if (item.getTitle().equals(getString(R.string.temperature))) {
+                                        startActivity(new Intent(CalculatorActivity.this, TemperatureActivity.class));
+                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                    } else if (item.getTitle().equals(getString(R.string.time))) {
+                                        startActivity(new Intent(CalculatorActivity.this, TimeActivity.class));
+                                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                    }
+
+                                    return true;
                                 }
-
-                                return true;
-                            }
-                        });
+                            });
+                        } else {
+                            getDialogBuyPro().show();
+                        }
 
                         break;
                 }

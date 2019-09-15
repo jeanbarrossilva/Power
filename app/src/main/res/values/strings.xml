@@ -91,6 +91,9 @@
     <string name="times" translatable="false">×</string>
     <string name="division" translatable="false">÷</string>
 
+    <string name="buy_pro_features_description">This feature is only available in Power Pro. By buying it, you also get:\n\n• Hidden Mode\n• Conversions (length, time, temperature and more)\n• Night mode\n• No ads</string>
+    <string name="buy">Buy</string>
+
     <string name="calculator">Calculator</string>
     <string name="length">Length</string>
     <string name="time">Time</string>

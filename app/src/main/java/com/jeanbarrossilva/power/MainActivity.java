@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor preferencesEditor;
 
+    private String userId;
+
     private boolean didSubscribeToProAvailability;
     private int proAvailabilityInterestSubscriptions;
 
@@ -93,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     private Dialog alertError;
     private View alertErrorIcon;
     private TextView alertErrorMessage;
+
+    private Dialog[] dialogs;
+
+    private Dialog dialogBuyPro;
+    private Button dialogBuyProButton;
 
     private Dialog dialogOK;
     private TextView dialogOKTitle;
@@ -247,6 +255,11 @@ public class MainActivity extends AppCompatActivity {
         slash = "/";
         colon = ":";
 
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(Color.BLACK);
+            getWindow().setNavigationBarColor(Color.BLACK);
+        }
+
         alerts();
         dialogs();
     }
@@ -390,6 +403,10 @@ public class MainActivity extends AppCompatActivity {
 
     void setAlertErrorMessage(String message) {
         alertErrorMessage.setText(message);
+    }
+
+    Dialog getDialogBuyPro() {
+        return dialogBuyPro;
     }
 
     Dialog getDialogOK() {
@@ -610,6 +627,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dialogs() {
+        // Buy Pro Dialog (dialog with a description of the existing features in Power Pro and a "buy" button) declaration.
+        dialogBuyPro = new Dialog(this);
+        Objects.requireNonNull(dialogBuyPro.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogBuyPro.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBuyPro.setContentView(R.layout.dialog_buy_pro);
+
+        dialogBuyProButton = dialogBuyPro.findViewById(R.id.buy);
+
+        dialogBuyProButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!getDidSubscribeToProAvailability()) {
+                    setDialogYesNoTitle(getString(R.string.buy_pro));
+                    setDialogYesNoMessage(getString(R.string.pro_not_available));
+
+                    setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogYesNo.dismiss();
+
+                            if (isConnected) {
+                                // Adds + 1 to the proAvailabilityInterestSubscriptions Firebase database.
+                                addProAvailabilityInterestSubscription();
+
+                                setAlertSuccessIcon(R.drawable.sent);
+                                setAlertSuccessMessage(getString(R.string.waitlist_request_sent));
+                                alertSuccess.show();
+
+                                setDidSubscribeToProAvailability(true);
+
+                                timer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        alertSuccess.dismiss();
+                                    }
+                                }, 3500);
+                            } else {
+                                setAlertErrorIcon(R.drawable.connection_wifi_unavailable);
+                                setAlertErrorMessage(getString(R.string.no_internet_connection));
+                                alertError.show();
+
+                                timer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        alertError.dismiss();
+                                    }
+                                }, 3500);
+                            }
+                        }
+                    });
+
+                    dialogYesNo.show();
+                } else {
+                    setAlertInfoMessage(getString(R.string.waitlist_request_already_sent));
+                    getAlertInfo().show();
+
+
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            alertInfo.dismiss();
+                        }
+                    }, 3500);
+                }
+            }
+        });
+
         // OK Dialog (dialog with an OK neutral button) declaration.
         dialogOK = new Dialog(this);
         Objects.requireNonNull(dialogOK.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

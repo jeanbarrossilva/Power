@@ -5,6 +5,8 @@
 
     <color name="background">@android:color/white</color>
     <color name="dialog">@android:color/white</color>
+    <color name="dialog_buy_pro">@android:color/black</color>
+    <color name="dialog_buy_pro_button">#424242</color>
     <color name="dialog_input">#F1F1F1</color>
     <color name="dialog_button">@android:color/white</color>
     <color name="dialog_button_pressed">#B5B5B5</color>
