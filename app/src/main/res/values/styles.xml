@@ -10,9 +10,9 @@
         <item name="colorAccent">#2196F3</item>
         
         <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:fontFamily">@font/work_sans</item>
+        <item name="android:fontFamily">@font/sf_pro_display</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">?android:attr/textColor</item>
         <item name="android:lineHeight" tools:targetApi="28">22dp</item>
         <item name="android:buttonStyle">?android:attr/borderlessButtonStyle</item>
         <item name="android:scrollbars">none</item>

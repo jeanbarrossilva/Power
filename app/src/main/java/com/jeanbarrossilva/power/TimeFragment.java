@@ -1,66 +1,84 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
+
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-public class TimeActivity extends CalculatorActivity {
-    EditText input;
-    TextView inputSymbol;
+import org.jetbrains.annotations.NotNull;
 
-    TextView conversionResult;
-    TextView conversionSymbolResult;
+import java.util.TimerTask;
 
-    Button unit;
-    Button[] options =  new Button[7];
+import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
 
-    Button year;
-    Button month;
-    Button day;
-    Button hour;
-    Button minute;
-    Button second;
-    Button millisecond;
+public class TimeFragment extends CalculatorFragment {
+    private TextView inputSymbol;
+    private String calc;
 
-    Button decimalSeparator;
+    private TextView conversionResult;
+    private TextView conversionSymbolResult;
 
-    ImageButton delete;
+    private Button unit;
+    private Button[] options =  new Button[7];
 
-    @SuppressLint("CommitPrefEdits")
+    private Button year;
+    private Button month;
+    private Button day;
+    private Button hour;
+    private Button minute;
+    private Button second;
+    private Button millisecond;
+
+    public TimeFragment() {
+
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_time);
+    public void onAttach(@NotNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
-        input = findViewById(R.id.input);
-        inputSymbol = findViewById(R.id.input_symbol);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_time, container, false);
+        mainActivity = (MainActivity) getActivity();
 
-        input.setFocusable(false);
+        input = view.findViewById(R.id.input);
+        inputSymbol = view.findViewById(R.id.input_symbol);
 
-        unit = findViewById(R.id.unit);
+        mainActivity.getTimer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                calc = input.getText().toString();
+            }
+        }, 0, 100);
 
-        conversionResult = findViewById(R.id.option_conversion_number_result);
-        conversionSymbolResult = findViewById(R.id.option_conversion_symbol_result);
+        unit = view.findViewById(R.id.unit);
 
-        othersHorizontalScrollView = findViewById(R.id.others_horizontal_scroll_view);
+        conversionResult = view.findViewById(R.id.option_conversion_number_result);
+        conversionSymbolResult = view.findViewById(R.id.option_conversion_symbol_result);
+
+        othersHorizontalScrollView = view.findViewById(R.id.others_horizontal_scroll_view);
         othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
 
-        year = findViewById(R.id.year);
-        month = findViewById(R.id.month);
-        day = findViewById(R.id.day);
-        hour = findViewById(R.id.hour);
-        minute = findViewById(R.id.minute);
-        second = findViewById(R.id.second);
-        millisecond = findViewById(R.id.millisecond);
+        year = view.findViewById(R.id.year);
+        month = view.findViewById(R.id.month);
+        day = view.findViewById(R.id.day);
+        hour = view.findViewById(R.id.hour);
+        minute = view.findViewById(R.id.minute);
+        second = view.findViewById(R.id.second);
+        millisecond = view.findViewById(R.id.millisecond);
 
         options[0] = year;
         options[1] = month;
@@ -70,32 +88,35 @@ public class TimeActivity extends CalculatorActivity {
         options[5] = second;
         options[6] = millisecond;
 
-        calculatorMode = findViewById(R.id.calculator_mode);
-
-        decimalSeparator = findViewById(R.id.decimal_separator);
-
-        delete = findViewById(R.id.delete);
+        decimalSeparator = view.findViewById(R.id.decimal_separator);
+        calculatorMode = view.findViewById(R.id.calculator_mode);
+        delete = view.findViewById(R.id.delete);
 
         units();
         inputOption();
 
-        // Default configuration (hour to minute).
-        inputSymbol.setText(getString(R.string.hour_symbol));
-        selectUnit(TimeActivity.this, hour, options);
-        getPreferencesEditor().putString("convertFrom", "hour")
-                .apply();
+        try {
+            // Default configuration (hour to minute).
+            inputSymbol.setText(getString(R.string.hour_symbol));
+            mainActivity.selectUnit(context, hour, options);
+            mainActivity.getPreferences().edit().putString("convertFrom", "hour")
+                    .apply();
 
-        unit.setText(getString(R.string.minute));
-        conversionSymbolResult.setText(getString(R.string.minute_symbol));
-        getPreferencesEditor().putString("convertTo", "minute")
-                .apply();
+            unit.setText(getString(R.string.minute));
+            conversionSymbolResult.setText(getString(R.string.minute_symbol));
+            mainActivity.getPreferences().edit().putString("convertTo", "minute")
+                    .apply();
+        } catch (Exception exception) {
+            mainActivity.getAlertError().show();
+        }
 
-        settings();
-        calculatorMode();
+        mainActivity.calculatorMode(context, calculatorMode);
 
         inputNumber(input, conversionResult, conversionSymbolResult, calc);
         inputDecimalSeparator(input, calc, decimalSeparator);
         delete(input, delete);
+
+        return view;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -105,13 +126,13 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
                         MenuInflater inflater;
 
-                        units = new PopupMenu(TimeActivity.this, unit);
+                        units = new PopupMenu(context, unit);
                         inflater = units.getMenuInflater();
 
                         inflater.inflate(R.menu.units_time, units.getMenu());
@@ -121,50 +142,50 @@ public class TimeActivity extends CalculatorActivity {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 if (item.getTitle().equals(getString(R.string.year))) {
-                                    getPreferencesEditor().putString("convertTo", "year")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "year")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.year_symbol));
                                     unit.setText(getString(R.string.year));
                                 } else if (item.getTitle().equals(getString(R.string.month))) {
-                                    getPreferencesEditor().putString("convertTo", "month")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "month")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.month_symbol));
                                     unit.setText(getString(R.string.month));
                                 } else if (item.getTitle().equals(getString(R.string.day))) {
-                                    getPreferencesEditor().putString("convertTo", "day")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "day")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.day_symbol));
                                     unit.setText(getString(R.string.day));
                                 } else if (item.getTitle().equals(getString(R.string.hour))) {
-                                    getPreferencesEditor().putString("convertTo", "hour")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "hour")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.hour_symbol));
                                     unit.setText(getString(R.string.hour));
                                 } else if (item.getTitle().equals(getString(R.string.minute))) {
-                                    getPreferencesEditor().putString("convertTo", "minute")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "minute")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.minute_symbol));
                                     unit.setText(getString(R.string.minute));
                                 } else if (item.getTitle().equals(getString(R.string.second))) {
-                                    getPreferencesEditor().putString("convertTo", "second")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "second")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.second_symbol));
                                     unit.setText(getString(R.string.second));
                                 } else if (item.getTitle().equals(getString(R.string.millisecond))) {
-                                    getPreferencesEditor().putString("convertTo", "millisecond")
+                                    mainActivity.getPreferences().edit().putString("convertTo", "millisecond")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.millisecond_symbol));
                                     unit.setText(getString(R.string.millisecond));
                                 }
 
-                                calc(input, conversionResult, conversionSymbolResult);
+                                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                                 return true;
                             }
@@ -185,20 +206,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(year, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(year, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        year.startAnimation(getBounceOut());
+                        year.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, year, options);
+                        mainActivity.selectUnit(context, year, options);
                         inputSymbol.setText(getString(R.string.year_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "year")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "year")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -209,20 +230,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(month, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(month, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        month.startAnimation(getBounceOut());
+                        month.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, month, options);
+                        mainActivity.selectUnit(context, month, options);
                         inputSymbol.setText(getString(R.string.month_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "month")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "month")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -233,20 +254,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(day, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(day, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        day.startAnimation(getBounceOut());
+                        day.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, day, options);
+                        mainActivity.selectUnit(context, day, options);
                         inputSymbol.setText(getString(R.string.day_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "day")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "day")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -257,20 +278,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(hour, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(hour, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        hour.startAnimation(getBounceOut());
+                        hour.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, hour, options);
+                        mainActivity.selectUnit(context, hour, options);
                         inputSymbol.setText(getString(R.string.hour_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "hour")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "hour")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -281,20 +302,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(minute, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(minute, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        minute.startAnimation(getBounceOut());
+                        minute.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, minute, options);
+                        mainActivity.selectUnit(context, minute, options);
                         inputSymbol.setText(getString(R.string.minute_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "minute")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "minute")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -305,20 +326,20 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(second, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(second, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        second.startAnimation(getBounceOut());
+                        second.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, second, options);
+                        mainActivity.selectUnit(context, second, options);
                         inputSymbol.setText(getString(R.string.second_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "second")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "second")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
@@ -329,70 +350,66 @@ public class TimeActivity extends CalculatorActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(millisecond, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(millisecond, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        millisecond.startAnimation(getBounceOut());
+                        millisecond.startAnimation(mainActivity.getBounceOut());
 
-                        selectUnit(TimeActivity.this, millisecond, options);
+                        mainActivity.selectUnit(context, millisecond, options);
                         inputSymbol.setText(getString(R.string.millisecond_symbol));
 
-                        getPreferencesEditor().putString("convertFrom", "millisecond")
+                        mainActivity.getPreferences().edit().putString("convertFrom", "millisecond")
                                 .apply();
                         break;
                 }
 
-                calc(input, conversionResult, conversionSymbolResult);
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                 return true;
             }
         });
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    void calculatorMode() {
-        this.calculatorMode.setOnTouchListener(new View.OnTouchListener() {
+    private void inputNumber(final EditText input, final TextView conversionResult, final TextView conversionSymbolResult, final String calc) {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent event) {
+                number = (Button) view;
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(calculatorMode, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
                         break;
                     case MotionEvent.ACTION_UP:
-                        final PopupMenu calculatorModes;
-                        MenuInflater inflater;
+                        number.startAnimation(mainActivity.getBounceOut());
 
-                        calculatorModes = new PopupMenu(TimeActivity.this, calculatorMode);
-                        inflater = calculatorModes.getMenuInflater();
+                        if (!calc.equals(getString(R.string.error))) {
+                            if (!mainActivity.inputHasReachedCharLimit(input, calc)) {
+                                input.append(number.getText());
 
-                        inflater.inflate(R.menu.calculator_modes, calculatorModes.getMenu());
-                        calculatorModes.show();
-
-                        calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(getString(R.string.time))) {
-                                    calculatorModes.dismiss();
-                                } else if (item.getTitle().equals(getString(R.string.calculator))) {
-                                    startActivity(new Intent(TimeActivity.this, CalculatorActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                } else if (item.getTitle().equals(getString(R.string.length))) {
-                                    startActivity(new Intent(TimeActivity.this, LengthActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                } else if (item.getTitle().equals(getString(R.string.temperature))) {
-                                    startActivity(new Intent(TimeActivity.this, TemperatureActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                }
-
-                                return true;
+                                System.out.println("Number '" + number.getText() + "' added.");
                             }
-                        });
+                        } else {
+                            input.setText(mainActivity.getEmpty());
+
+                            number = (Button) view;
+                            input.append(number.getText());
+
+                            System.out.println("Number '" + number.getText() + "' added.");
+                        }
+
+                        mainActivity.calc(input, conversionResult, conversionSymbolResult);
 
                         break;
                 }
 
                 return true;
             }
-        });
+        };
+
+        for (int number: numbers) {
+            view.findViewById(number).setOnTouchListener(onTouchListener);
+        }
     }
 }

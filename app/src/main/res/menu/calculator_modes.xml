@@ -3,18 +3,22 @@
     
     <item
         android:id="@+id/calculator"
-        android:title="@string/calculator" />
+        android:title="@string/calculator"
+        android:titleCondensed="Calculator" />
     
     <item
         android:id="@+id/length"
-        android:title="@string/length" />
+        android:title="@string/length"
+        android:titleCondensed="Length" />
     
     <item
         android:id="@+id/time"
-        android:title="@string/time" />
+        android:title="@string/time"
+        android:titleCondensed="Time" />
     
     <item
         android:id="@+id/temperature"
-        android:title="@string/temperature" />
+        android:title="@string/temperature"
+        android:titleCondensed="Temperature" />
     
 </menu>

@@ -6,33 +6,36 @@
     android:id="@+id/activity_temperature"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="56dp"
     android:background="@color/background"
-    tools:context=".TemperatureActivity"
+    tools:context=".TimeFragment"
     tools:ignore="RtlSymmetry, Autofill, ContentDescription, HardcodedText">
-    
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8.5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="15dp"
         app:layout_constraintStart_toStartOf="@+id/calculator"
         app:layout_constraintBottom_toTopOf="@+id/calculator">
-        
+
         <HorizontalScrollView
             android:id="@+id/input_horizontal_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
             android:paddingEnd="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
-            
+
             <EditText
                 android:id="@+id/input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.7"
                 android:hint="@string/zero"
-                android:fontFamily="@font/quicksand"
+                android:fontFamily="@font/sf_pro_rounded"
                 android:textStyle="bold"
                 android:textSize="45sp"
                 android:inputType="text"
@@ -40,24 +43,23 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-        
+
         </HorizontalScrollView>
-        
+
         <TextView
             android:id="@+id/input_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.3"
             android:text="@string/hour_symbol"
-            android:fontFamily="@font/quicksand"
+            android:fontFamily="@font/sf_pro_rounded"
             android:textStyle="bold"
             android:textSize="45sp"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/input_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="parent" />
-    
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-    
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calculator"
         android:layout_width="wrap_content"
@@ -66,7 +68,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-        
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/option_conversion"
             android:layout_width="0dp"
@@ -74,13 +76,13 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
             android:paddingTop="10dp"
-            android:paddingStart="20dp"
+            android:paddingStart="30dp"
             android:paddingEnd="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintStart_toStartOf="@+id/others_horizontal_scroll_view">
-            
+
             <TextView
                 android:id="@+id/to"
                 android:layout_width="wrap_content"
@@ -91,7 +93,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-            
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,12 +101,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/to"
                 app:layout_constraintTop_toTopOf="parent">
-                
+
                 <TextView
                     android:id="@+id/option_conversion_number_result"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/quicksand"
+                    android:fontFamily="@font/sf_pro_rounded"
                     android:text="@string/zero"
                     android:singleLine="true"
                     android:textColor="?android:attr/textColorPrimary"
@@ -112,22 +114,22 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
-                
+
                 <TextView
                     android:id="@+id/option_conversion_symbol_result"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:fontFamily="@font/quicksand"
+                    android:fontFamily="@font/sf_pro_rounded"
                     android:text="@string/minute_symbol"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="30sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/option_conversion_number_result"
                     app:layout_constraintTop_toTopOf="parent" />
-            
+
             </androidx.constraintlayout.widget.ConstraintLayout>
-            
+
             <Button
                 android:id="@+id/unit"
                 android:layout_width="wrap_content"
@@ -141,9 +143,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-        
+
         <HorizontalScrollView
             android:id="@+id/others_horizontal_scroll_view"
             android:layout_width="0dp"
@@ -156,25 +158,25 @@
             app:layout_constraintBottom_toTopOf="@+id/keypad_delete"
             app:layout_constraintEnd_toEndOf="@+id/keypad_delete"
             app:layout_constraintStart_toStartOf="@+id/keypad_delete">
-            
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="180dp">
-                
+
                 <TextView
                     android:id="@+id/from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="30dp"
                     android:text="@string/from"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="15sp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
-                
+
                 <Button
                     android:id="@+id/year"
                     android:layout_width="wrap_content"
@@ -190,12 +192,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/month"
                     app:layout_constraintStart_toEndOf="@+id/from"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/month"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -206,12 +208,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/day"
                     app:layout_constraintStart_toEndOf="@+id/year"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/day"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -222,12 +224,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/hour"
                     app:layout_constraintStart_toEndOf="@+id/month"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/hour"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -238,12 +240,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/minute"
                     app:layout_constraintStart_toEndOf="@+id/day"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/minute"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -254,12 +256,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/second"
                     app:layout_constraintStart_toEndOf="@+id/hour"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/second"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -270,12 +272,12 @@
                     app:layout_constraintEnd_toStartOf="@+id/millisecond"
                     app:layout_constraintStart_toEndOf="@+id/minute"
                     app:layout_constraintTop_toTopOf="parent" />
-                
+
                 <Button
                     android:id="@+id/millisecond"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="15dp"
                     android:background="@drawable/option"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -286,18 +288,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/second"
                     app:layout_constraintTop_toTopOf="parent" />
-            
+
             </androidx.constraintlayout.widget.ConstraintLayout>
-        
+
         </HorizontalScrollView>
-        
+
         <ImageButton
             android:id="@+id/calculator_mode"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
+            android:paddingStart="55dp"
             android:paddingTop="5dp"
-            android:paddingStart="45dp"
-            android:paddingEnd="45dp"
+            android:paddingEnd="55dp"
             android:paddingBottom="5dp"
             android:scaleType="fitCenter"
             android:src="@drawable/time"
@@ -305,204 +307,16 @@
             app:layout_constraintTop_toTopOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view" />
-        
-        <androidx.constraintlayout.widget.ConstraintLayout
+
+        <include
             android:id="@+id/keypad_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            layout="@layout/keypad"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-            
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/keypad"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/keypad"
-                android:padding="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/delete"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-                
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/numbers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-                    
-                    <Button
-                        android:id="@+id/seven"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/seven"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/four"
-                        app:layout_constraintStart_toStartOf="parent" />
-                    
-                    <Button
-                        android:id="@+id/eight"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/eight"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/four"
-                        app:layout_constraintStart_toEndOf="@+id/seven" />
-                    
-                    <Button
-                        android:id="@+id/four"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/four"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/one"
-                        app:layout_constraintStart_toStartOf="parent" />
-                    
-                    <Button
-                        android:id="@+id/nine"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/nine"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/six"
-                        app:layout_constraintStart_toEndOf="@+id/eight" />
-                    
-                    <Button
-                        android:id="@+id/five"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/five"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/two"
-                        app:layout_constraintStart_toEndOf="@+id/four" />
-                    
-                    <Button
-                        android:id="@+id/six"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/six"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/three"
-                        app:layout_constraintStart_toEndOf="@+id/five" />
-                    
-                    <Button
-                        android:id="@+id/one"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/one"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/zero"
-                        app:layout_constraintStart_toStartOf="parent" />
-                    
-                    <Button
-                        android:id="@+id/two"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/two"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/zero"
-                        app:layout_constraintStart_toEndOf="@+id/one" />
-                    
-                    <Button
-                        android:id="@+id/three"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:layout_marginBottom="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/three"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/decimal_separator"
-                        app:layout_constraintStart_toEndOf="@+id/two" />
-                    
-                    <Button
-                        android:id="@+id/zero"
-                        android:layout_width="148.5dp"
-                        android:layout_height="70dp"
-                        android:paddingStart="30dp"
-                        android:background="@drawable/number"
-                        android:text="@string/zero"
-                        android:textAlignment="viewStart"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-                    
-                    <Button
-                        android:id="@+id/decimal_separator"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="8.5dp"
-                        android:background="@drawable/number"
-                        android:text="@string/dot"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/zero" />
-                
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            
-            <ImageButton
-                android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/delete"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:src="@drawable/backspace"
-                app:layout_constraintBottom_toBottomOf="@+id/keypad"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/keypad"
-                app:layout_constraintTop_toTopOf="@+id/keypad" />
-        
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    
+            app:layout_constraintBottom_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
