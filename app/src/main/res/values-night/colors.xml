@@ -19,20 +19,21 @@
     <color name="alert_error">#EE4343</color>
     <color name="code_keypad_number">#1D1D1D</color>
     <color name="close">#EE4343</color>
-    <color name="setting">#2B2B2B</color>
+    <color name="setting">#414141</color>
     <color name="setting_pressed">#313335</color>
     <color name="setting_link">#03A9F4</color>
     <color name="buy_pro">@android:color/white</color>
     <color name="background_add">#181818</color>
     <color name="activity_additional_info">#2B2B2B</color>
+    <color name="link">#03A9F4</color>
     <color name="unit">#353535</color>
-    <color name="others">#101010</color>
+    <color name="others">#1F1F1F</color>
     <color name="option">#353535</color>
     <color name="option_clicked">@android:color/white</color>
-    <color name="calculator">#101010</color>
+    <color name="calculator">#1F1F1F</color>
     <color name="calculator_mode">@android:color/white</color>
     <color name="delete">#E05B5B</color>
-    <color name="number">#181818</color>
+    <color name="keypad_button">#181818</color>
     <color name="equal">@android:color/white</color>
     <color name="mask">@android:color/white</color>
 </resources>

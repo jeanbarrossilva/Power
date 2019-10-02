@@ -25,14 +25,15 @@
     <color name="buy_pro">#2B2B2B</color>
     <color name="background_add">@android:color/white</color>
     <color name="activity_additional_info">@android:color/white</color>
-    <color name="unit">#E9E9E9</color>
+    <color name="link">#03A9F4</color>
+    <color name="unit">#F1F1F1</color>
     <color name="others">#F7F7F7</color>
     <color name="option">#E9E9E9</color>
     <color name="option_clicked">@android:color/black</color>
     <color name="calculator">#F7F7F7</color>
     <color name="calculator_mode">#303030</color>
     <color name="delete">#EE4343</color>
-    <color name="number">#F1F1F1</color>
+    <color name="keypad_button">#F1F1F1</color>
     <color name="equal">#03A9F4</color>
     <color name="mask">@android:color/black</color>
 </resources>

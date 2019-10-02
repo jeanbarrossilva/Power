@@ -37,17 +37,18 @@ public class SettingsFragment extends Fragment {
 
     private Switch settingNight;
 
+    private ConstraintLayout buyPro;
+
     private ConstraintLayout sendFeedback;
 
     private ConstraintLayout sourceCode;
     private TextView sourceCodeTitle;
 
-    private ConstraintLayout buyPro;
+    private TextView atDeveloper;
 
     public SettingsFragment() {
 
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,22 +66,24 @@ public class SettingsFragment extends Fragment {
         ConstraintLayout settingNightLayout = view.findViewById(R.id.setting_night);
         settingNight = view.findViewById(R.id.setting_night_switch);
 
+        buyPro = view.findViewById(R.id.buy_pro);
+
         sendFeedback = view.findViewById(R.id.send_feedback);
 
         sourceCode = view.findViewById(R.id.source_code);
         sourceCodeTitle = view.findViewById(R.id.source_code_title);
 
-        buyPro = view.findViewById(R.id.buy_pro);
+        atDeveloper = view.findViewById(R.id.at_developer);
 
         TextView version = view.findViewById(R.id.version);
         version.setText(String.format(getString(R.string.version_x), mainActivity.getVersionName()));
 
         settingHiddenMode();
+        buyPro();
         sendFeedback();
         sourceCode();
-        buyPro();
 
-        // connectionTest();
+        developer();
 
         if (Build.VERSION.SDK_INT >= 21) {
             settingNightLayout.setVisibility(View.GONE);
@@ -172,6 +175,27 @@ public class SettingsFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
+    private void buyPro() {
+        ((TextView) buyPro.findViewById(R.id.buy_pro_title)).setText(String.format(((TextView) buyPro.findViewById(R.id.buy_pro_title)).getText().toString(), mainActivity.getAppName()));
+
+        buyPro.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mainActivity.bounceIn(buyPro, "0.35, 1");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buyPro.startAnimation(mainActivity.getBounceOut());
+                        break;
+                }
+
+                return true;
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private void sendFeedback() {
         sendFeedback.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -220,41 +244,17 @@ public class SettingsFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void buyPro() {
-        ((TextView) buyPro.findViewById(R.id.buy_pro_title)).setText(String.format(((TextView) buyPro.findViewById(R.id.buy_pro_title)).getText().toString(), mainActivity.getAppName()));
-
-        buyPro.setOnTouchListener(new View.OnTouchListener() {
+    private void developer() {
+        atDeveloper.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(buyPro, "0.35, 1");
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        buyPro.startAnimation(mainActivity.getBounceOut());
-                        break;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Intent developer = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva"));
+                    startActivity(developer);
                 }
 
                 return true;
             }
         });
     }
-
-    /* void connectionTest() {
-        Button connectionTest = findViewById(R.id.connection_test);
-
-        connectionTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getIsConnected()) {
-                    setConnectionTests(getConnectionTests() + 1);
-                    getDatabase().getReference().child("connectionTests").setValue(getConnectionTests());
-
-                    getAlertSuccess().show();
-                } else {
-                    getAlertError().show();
-                }
-            }
-        });
-    } */
 }

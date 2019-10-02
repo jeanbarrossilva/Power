@@ -52,7 +52,7 @@
     <string name="hidden_mode_pro_only">Hidden Mode is only available in %1$s Pro version.</string>
     <string name="hidden_mode_definition">Hidden Mode is a feature that allows you to securely store images in the calculator with a password.</string>
     <string name="hidden_mode_disable">Disabling Hidden Mode will remove all the stored files.</string>
-    <string name="night">Night</string>
+    <string name="dark_mode">Dark Mode</string>
     <string name="night_locked">Night mode is locked. Find a way to unlock it.</string>
     <string name="night_pro">Night is available in %1$s Pro version.</string>
     <string name="send_feedback">Send feedback</string>
@@ -73,7 +73,7 @@
     <string name="waitlist_request_sent">You\'ve been added to the waitlist.</string>
     <string name="waitlist_request_already_sent">You\'ve already been added to the waitlist.</string>
 
-    <string name="created_by">Created by Jean Silva</string>
+    <string name="at_developer" translatable="false">\@jeanbarrossilva</string>
     <string name="version_x">Version %1$s</string>
 
     <string name="zero" translatable="false">0</string>
@@ -99,7 +99,10 @@
     <string name="times" translatable="false">×</string>
     <string name="division" translatable="false">÷</string>
 
-    <string name="buy_pro_features_description">This feature is only available in %1$s Pro. By buying it, you also get:\n\n• Hidden Mode\n• Conversions (length, time, temperature and more)\n• Night mode\n• No ads</string>
+    <string name="buy_pro_features_description">This feature is only available in %1$s Pro. By buying it, you also get:\n\n• %2$s\n• %3$s\n• %4$s\n• %5$s</string>
+    <string name="conversions_all">Conversions (length, time, temperature and more)</string>
+    <string name="ads_removal">Ads removal</string>
+
     <string name="buy">Buy</string>
 
     <string name="temporarily_unavailable_feature">This feature is temporarily unavailable.</string>

@@ -12,7 +12,6 @@
     <string name="incompatible_device_dialog_title">Dispositivo incompatível</string>
     <string name="incompatible_device_dialog_message">Infelizmente, o seu dispositivo é incompatível com %1$s devido ao seu tamanho de tela. Clique em \"OK\" para fechar o aplicativo.</string>
     <string name="settings">Ajustes</string>
-    <string name="created_by">Criado por Jean Silva</string>
     <string name="hidden_mode">Modo Oculto</string>
     <string name="send_feedback">Enviar feedback</string>
     <string name="hidden_mode_set_password_dialog_message">Defina um PIN de 4 dígitos.</string>
@@ -21,7 +20,7 @@
     <string name="send_feedback_email_subject">Feedback do %1$s %2$s</string>
     <string name="calculator">Calculadora</string>
     <string name="credits">Créditos</string>
-    <string name="night">Noite</string>
+    <string name="dark_mode">Modo Escuro</string>
     <string name="infinity">Infinito</string>
     <string name="temperature">Temperatura</string>
     <string name="source_code">Código-fonte</string>
@@ -57,7 +56,7 @@
     <string name="ok_ill_never_download_an_app_from_an_untrustable_store_just_to_get_paid_features_for_free_again">OK, me leve à Google Play</string>
     <string name="unauthentic_app">Aplicativo não autêntico</string>
     <string name="pro_features">Modo Oculto + conversões + modo Noite + <b>sem anúncios</b></string>
-    <string name="buy_pro">Adquirir o %1$s Pro</string>
+    <string name="buy_pro">Comprar o %1$s Pro</string>
     <string name="type_code">Digite o código.</string>
     <string name="close">Fechar</string>
     <string name="congratulations">Parabéns!</string>
@@ -76,12 +75,14 @@
     <string name="waitlist_request_already_sent">Você já foi adicionado à lista de espera.</string>
     <string name="no_internet_connection">Não há conexão à Internet disponível.</string>
     <string name="pro_price">R$ 5,00</string>
-    <string name="buy_pro_features_description">Este recurso está disponível apenas no %1$s Pro. Ao comprá-lo, você também leva:\n\n• Modo Oculto\n• Conversões (comprimento, tempo, temperatura e mais)\n• Modo Noite\n• Sem anúncios</string>
-    <string name="buy">Adquirir</string>
+    <string name="buy_pro_features_description">Este recurso está disponível apenas no %1$s Pro. Ao comprá-lo, você também leva:\n\n• %2$s\n• %3$s\n• %4$s\n• %5$s</string>
+    <string name="buy">Comprar</string>
     <string name="buy_pro_price">Comprar o %1$s Pro (%2$s)</string>
     <string name="unauthentic_version_general">Você está usando uma versão não autêntica do Power. Alguns recursos podem não estar disponíveis.</string>
     <string name="action_warning">A ação pode não ter sido realizada.</string>
     <string name="warning">Aviso</string>
     <string name="night_locked">O modo Noite está bloqueado. Encontre uma forma de desbloqueá-lo.</string>
     <string name="temporarily_unavailable_feature">Este recurso está temporariamente indisponível.</string>
+    <string name="conversions_all">Conversões (comprimento, tempo, temperatura e mais)</string>
+    <string name="ads_removal">Remoção de anúncios</string>
 </resources>

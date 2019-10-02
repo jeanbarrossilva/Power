@@ -17,13 +17,10 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.TimerTask;
-
 import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
 
 public class LengthFragment extends CalculatorFragment {
     private TextView inputSymbol;
-    private String calc;
 
     private TextView conversionResult;
     private TextView conversionSymbolResult;
@@ -59,12 +56,7 @@ public class LengthFragment extends CalculatorFragment {
         input = view.findViewById(R.id.input);
         inputSymbol = view.findViewById(R.id.input_symbol);
 
-        mainActivity.getTimer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                calc = input.getText().toString();
-            }
-        }, 0, 100);
+        calc = updatedCalcValue(input);
 
         unit = view.findViewById(R.id.unit);
 
@@ -116,7 +108,7 @@ public class LengthFragment extends CalculatorFragment {
 
         inputNumber(input, conversionResult, conversionSymbolResult, calc);
         inputDecimalSeparator(input, calc, decimalSeparator);
-        delete(input, delete);
+        mainActivity.delete(input, delete, conversionResult, conversionSymbolResult);
 
         return view;
     }
@@ -469,7 +461,7 @@ public class LengthFragment extends CalculatorFragment {
             }
         };
 
-        for (int number: numbers) {
+        for (int number: mainActivity.numbers) {
             view.findViewById(number).setOnTouchListener(onTouchListener);
         }
     }
