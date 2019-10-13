@@ -3,11 +3,10 @@ package com.jeanbarrossilva.power;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -19,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.text.InputType;
-import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,20 +44,13 @@ import java.util.TimerTask;
 
 import id.voela.actrans.AcTrans;
 
-import static android.util.DisplayMetrics.DENSITY_HIGH;
-import static android.util.DisplayMetrics.DENSITY_LOW;
-import static android.util.DisplayMetrics.DENSITY_MEDIUM;
-import static android.util.DisplayMetrics.DENSITY_XHIGH;
-import static android.util.DisplayMetrics.DENSITY_XXHIGH;
-import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
-
 @SuppressWarnings({"FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity {
     private String empty;
     private String space;
     private String colon;
 
-    private String emailDivider;
+    private String hyphen;
 
     String deviceName;
     private String deviceInfo;
@@ -78,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
     SettingsFragment settingsFragment;
 
     AcTrans.Builder acTrans;
-
-    private boolean isHiddenModeUnlocked;
-    private boolean isHiddenModeEnabled;
 
     private boolean isNightEnabled;
 
@@ -102,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     // private View alertErrorIcon;
     // private TextView alertErrorMessage;
 
-    // private Dialog[] dialogs;
+    private Dialog[] dialogs;
 
     private Dialog dialogBuyPro;
     private TextView dialogBuyProTitle;
@@ -110,28 +98,23 @@ public class MainActivity extends AppCompatActivity {
     // private Button dialogBuyProButton;
 
     private Dialog dialogOK;
-    // private TextView dialogOKTitle;
-    // private TextView dialogOKMessage;
+    private TextView dialogOKTitle;
+    private TextView dialogOKMessage;
     private Button dialogOKButton;
 
-    private Dialog dialogUnauthentic;
-
     private Dialog dialogYesNo;
-    // private TextView dialogYesNoTitle;
-    // private TextView dialogYesNoMessage;
-    // private Button dialogYesNoNoButton;
-    // private Button dialogYesNoYesButton;
+    private TextView dialogYesNoTitle;
+    private TextView dialogYesNoMessage;
+    private Button dialogYesNoNoButton;
+    private Button dialogYesNoYesButton;
 
     private Dialog dialogInput;
-    private TextView dialogInputTitle;
-    private TextView dialogInputMessage;
+    // private TextView dialogInputTitle;
+    // private TextView dialogInputMessage;
     private EditText dialogInputField;
     private Button dialogInputButton;
 
-    private String pin;
-
     private BounceInterpolator bounceInterpolator;
-    private Animation bounceIn;
 
     private DecimalFormat format;
 
@@ -147,6 +130,10 @@ public class MainActivity extends AppCompatActivity {
 
     static final int LAST_PARENTHESIS_LEFT = 0;
     static final int LAST_PARENTHESIS_RIGHT = 1;
+
+    static final int REMOVE_SQUARE_BRACKET_LEFT = 0;
+    static final int REMOVE_SQUARE_BRACKET_RIGHT = 1;
+    static final int REMOVE_SQUARE_BRACKET_ALL = 2;
 
     private String leftParenthesis;
     private String rightParenthesis;
@@ -171,6 +158,9 @@ public class MainActivity extends AppCompatActivity {
     private String asterisk;
     private String slash;
 
+    private String powerTwo;
+    private String[] powers;
+
     private String infinity;
 
     @SuppressLint("CommitPrefEdits")
@@ -183,10 +173,9 @@ public class MainActivity extends AppCompatActivity {
         space = " ";
         colon = ":";
 
-        emailDivider = "------------------------------";
+        hyphen = "-";
 
         deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
-        deviceInfo = getString(R.string.name) + colon + space + deviceName + "\n" + getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL);
 
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
@@ -199,21 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
         acTrans = new AcTrans.Builder(MainActivity.this);
 
-        isHiddenModeUnlocked = preferences.getBoolean("isHiddenModeUnlocked", false);
-        isHiddenModeEnabled = preferences.getBoolean("isHiddenModeEnabled", false);
-
         isNightEnabled = preferences.getBoolean("isNightEnabled", false);
-
-        /* alerts = new Dialog[] {
-            alertSuccess, alertInfo, alertError
-        }; */
-
-        pin = preferences.getString("pin", null);
-
-        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
-
-        bounceIn = AnimationUtils.loadAnimation(this, R.anim.bounce_in);
-        bounceIn.setInterpolator(bounceInterpolator);
 
         format = new DecimalFormat("#.##");
 
@@ -221,16 +196,18 @@ public class MainActivity extends AppCompatActivity {
 
         timer = new Timer();
 
-        leftParenthesis = "(";
-        rightParenthesis = ")";
+        leftParenthesis = getString(R.string.left_parenthesis);
+        rightParenthesis = getString(R.string.right_parenthesis);
+
+        deviceInfo = (getString(R.string.name) + colon + space + deviceName) + "\n" + (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT + rightParenthesis));
 
         leftSquareBracket = "[";
         rightSquareBracket = "]";
 
-        dot = ".";
-        comma = ",";
-        decimalSeparators = new String[] {
-            dot, comma
+        dot = getString(R.string.dot);
+        comma = getString(R.string.comma);
+        decimalSeparators = new String[]{
+                dot, comma
         };
 
         plus = getString(R.string.plus);
@@ -241,21 +218,37 @@ public class MainActivity extends AppCompatActivity {
         asterisk = "*";
         slash = "/";
 
+        powerTwo = "²";
+        powers = new String[]{
+                powerTwo
+        };
+
         infinity = "∞";
 
         setFragment(calculatorFragment);
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setStatusBarColor(Color.BLACK);
-            getWindow().setNavigationBarColor(Color.BLACK);
-        }
-
-        night(isNightEnabled);
+        if (Build.VERSION.SDK_INT >= 21)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        else
+            night(isNightEnabled);
 
         bottomNav();
 
         alerts();
         dialogs();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (preferences.getBoolean("isFirstTime", true)) {
+            // Defines that, for now on, it isn't the first time the user's opening the app.
+            preferencesEditor.putBoolean("isFirstTime", false)
+                    .apply();
+
+            dialogWelcome();
+        }
     }
 
     String getDeviceInfo() {
@@ -269,10 +262,6 @@ public class MainActivity extends AppCompatActivity {
     String getVersionName() {
         return versionName;
     }
-
-    /* boolean getIsConnected() {
-        return isConnected;
-    } */
 
     SharedPreferences getPreferences() {
         return preferences;
@@ -323,26 +312,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    boolean getIsHiddenModeUnlocked() {
-        return isHiddenModeUnlocked;
-    }
-
-    /* void setIsHiddenModeUnlocked(boolean isUnlocked) {
-        isHiddenModeUnlocked = isUnlocked;
-        preferencesEditor.putBoolean("isHiddenModeUnlocked", isHiddenModeUnlocked)
-                .apply();
-    } */
-
-    boolean getIsHiddenModeEnabled() {
-        return isHiddenModeEnabled;
-    }
-
-    void setIsHiddenModeEnabled(boolean isHiddenModeEnabled) {
-        this.isHiddenModeEnabled = isHiddenModeEnabled;
-        preferencesEditor.putBoolean("isHiddenModeEnabled", this.isHiddenModeEnabled)
-                .apply();
-    }
-
     boolean getIsNightEnabled() {
         return isNightEnabled;
     }
@@ -391,11 +360,11 @@ public class MainActivity extends AppCompatActivity {
 
     Dialog getDialogBuyPro() {
         return dialogBuyPro;
-    }
+    } */
 
-    Dialog getDialogOK() {
+    /* Dialog getDialogOK() {
         return dialogOK;
-    }
+    } */
 
     void setDialogOKTitle(String title) {
         dialogOKTitle.setText(title);
@@ -405,13 +374,13 @@ public class MainActivity extends AppCompatActivity {
         dialogOKMessage.setText(message);
     }
 
-    void setDialogOKButtonOnClickListener(View.OnClickListener listener) {
+    /* void setDialogOKButtonOnClickListener(View.OnClickListener listener) {
         dialogOKButton.setOnClickListener(listener);
     }
 
     Dialog getDialogYesNo() {
         return dialogYesNo;
-    }
+    } */
 
     void setDialogYesNoTitle(String title) {
         dialogYesNoTitle.setText(title);
@@ -423,9 +392,9 @@ public class MainActivity extends AppCompatActivity {
 
     void setDialogYesNoYesButtonOnClickListener(View.OnClickListener listener) {
         dialogYesNoYesButton.setOnClickListener(listener);
-    } */
+    }
 
-    Dialog getDialogInput() {
+    /* Dialog getDialogInput() {
         return dialogInput;
     }
 
@@ -439,19 +408,15 @@ public class MainActivity extends AppCompatActivity {
 
     void setDialogInputButtonOnClickListener(View.OnClickListener listener) {
         dialogInputButton.setOnClickListener(listener);
-    }
+    } */
 
     void setDialogInputFieldInputType(int type) {
         dialogInputField.setInputType(type);
     }
 
-    String getDialogInputFieldText() {
+    /* String getDialogInputFieldText() {
         return dialogInputField.getText().toString();
-    }
-
-    String getPin() {
-        return pin;
-    }
+    } */
 
     void setBounceInterpolatorConfig(double amplitude, double frequency) {
         this.bounceAmplitude = amplitude;
@@ -462,18 +427,23 @@ public class MainActivity extends AppCompatActivity {
 
     Animation getBounceOut() {
         Animation bounceOut = AnimationUtils.loadAnimation(this, R.anim.bounce_out);
-
-        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
         bounceOut.setInterpolator(bounceInterpolator);
 
         return bounceOut;
     }
 
-    /* void setPin(String pin) {
-        this.pin = pin;
-        preferencesEditor.putString("pin", this.pin)
-                .apply();
+    /* Timer getTimer() {
+        return timer;
     } */
+
+    String repeat(final String text, int times) {
+        StringBuilder result = new StringBuilder(empty);
+
+        for (int quantity = 0; quantity < times; quantity++)
+            result = result.append(text);
+
+        return result.toString();
+    }
 
     String getLeftParenthesis() {
         return leftParenthesis;
@@ -491,12 +461,16 @@ public class MainActivity extends AppCompatActivity {
         return space;
     }
 
-    String getEmailDivider() {
-        return emailDivider;
+    String getDot() {
+        return dot;
     }
 
     String getComma() {
         return comma;
+    }
+
+    String getHyphen() {
+        return hyphen;
     }
 
     String[] getDecimalSeparators() {
@@ -515,9 +489,9 @@ public class MainActivity extends AppCompatActivity {
         return times;
     }
 
-    String getDivision() {
+    /* String getDivision() {
         return division;
-    }
+    } */
 
     String getAsterisk() {
         return asterisk;
@@ -525,6 +499,14 @@ public class MainActivity extends AppCompatActivity {
 
     String getSlash() {
         return slash;
+    }
+
+    String getPowerTwo() {
+        return powerTwo;
+    }
+
+    String[] getPowers() {
+        return powers;
     }
 
     String getInfinity() {
@@ -554,36 +536,6 @@ public class MainActivity extends AppCompatActivity {
 
         return screenLayoutSize;
     } */
-
-    private String screenDensity() {
-        String density;
-        int dpi = getResources().getDisplayMetrics().densityDpi;
-
-        switch (dpi) {
-            case DENSITY_LOW:
-            density = "ldpi";
-            break;
-            case DENSITY_MEDIUM:
-            density = "mdpi";
-            break;
-            case DENSITY_HIGH:
-            density = "hdpi";
-            break;
-            case DENSITY_XHIGH:
-            density = "xhdpi";
-            break;
-            case DENSITY_XXHIGH:
-            density = "xxhdpi";
-            break;
-            case DENSITY_XXXHIGH:
-            density = "xxxhdpi";
-            break;
-            default:
-            density = null;
-        }
-
-        return density;
-    }
 
     private void alerts() {
         // Success alert (alert with a positive message) declaration.
@@ -640,12 +592,30 @@ public class MainActivity extends AppCompatActivity {
     private void dialogs() {
         // Buy Pro Dialog (dialog with a description of the existing features in Power Pro and a "buy" button) declaration.
         dialogBuyPro = new Dialog(this);
-        Objects.requireNonNull(dialogBuyPro.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogBuyPro.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        // OK Dialog (dialog with an OK neutral button) declaration.
+        dialogOK = new Dialog(this);
+
+        // Yes/No Dialog (dialog with a positive Yes and a negative No buttons) declaration.
+        dialogYesNo = new Dialog(this);
+
+        // Input Dialog (dialog with a text field) declaration.
+        dialogInput = new Dialog(this);
+
+        dialogs = new Dialog[] {
+                dialogBuyPro, dialogOK, dialogInput, dialogYesNo
+        };
+
+        for (final Dialog dialog: dialogs) {
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        // Dialog Buy Pro content.
         dialogBuyPro.setContentView(R.layout.dialog_buy_pro);
 
         dialogBuyProTitle = dialogBuyPro.findViewById(R.id.title);
-        dialogBuyProTitle.setText(String.format(getString(R.string.app_pro), appName));
+        dialogBuyProTitle.setText(String.format(getString(R.string.app_plus), appName));
 
         dialogBuyProMessage = dialogBuyPro.findViewById(R.id.message);
         dialogBuyProMessage.setText(String.format(getString(R.string.buy_pro_features_description),
@@ -657,14 +627,11 @@ public class MainActivity extends AppCompatActivity {
 
         // dialogBuyProButton = dialogBuyPro.findViewById(R.id.buy);
 
-        // OK Dialog (dialog with an OK neutral button) declaration.
-        dialogOK = new Dialog(this);
-        Objects.requireNonNull(dialogOK.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogOK.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Dialog OK content.
         dialogOK.setContentView(R.layout.dialog_ok);
 
-        // dialogOKTitle = dialogOK.findViewById(R.id.title);
-        // dialogOKMessage = dialogOK.findViewById(R.id.message);
+        dialogOKTitle = dialogOK.findViewById(R.id.title);
+        dialogOKMessage = dialogOK.findViewById(R.id.message);
         dialogOKButton = dialogOK.findViewById(R.id.ok);
 
         // Default OK Dialog button click listener, dismisses the dialog.
@@ -675,52 +642,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Unauthentic Dialog (an OK Dialog, but with a link to Google Play Store) declaration.
-        dialogUnauthentic = new Dialog(this);
-        Objects.requireNonNull(dialogUnauthentic.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogUnauthentic.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogUnauthentic.setContentView(R.layout.dialog_unauthentic);
-
-        Button dialogUnauthenticButton = dialogUnauthentic.findViewById(R.id.ok);
-
-        // Default Unauthentic Dialog button click listener, opens Google Play.
-        dialogUnauthenticButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent power = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.jeanbarrossilva.power"));
-                startActivity(power);
-
-                dialogUnauthentic.dismiss();
-            }
-        });
-
-        // Yes/No Dialog (dialog with a positive Yes and a negative No buttons) declaration.
-        dialogYesNo = new Dialog(this);
-        Objects.requireNonNull(dialogYesNo.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogYesNo.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Dialog Yes/No content.
         dialogYesNo.setContentView(R.layout.dialog_yes_no);
 
-        // dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
-        // dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
-        // dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
-        // dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
+        dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
+        dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
+        dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
+        dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
 
         // Default Yes/No dialog No button click listener, dismisses the dialog.
-        /* dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
+        dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialogYesNo.dismiss();
             }
-        }); */
+        });
 
-        // Input Dialog (dialog with a text field) declaration.
-        dialogInput = new Dialog(this);
-        Objects.requireNonNull(dialogInput.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogInput.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Dialog Input content.
         dialogInput.setContentView(R.layout.dialog_input);
 
-        dialogInputTitle = dialogInput.findViewById(R.id.title);
-        dialogInputMessage = dialogInput.findViewById(R.id.message);
+        // dialogInputTitle = dialogInput.findViewById(R.id.title);
+        // dialogInputMessage = dialogInput.findViewById(R.id.message);
 
         dialogInputField = dialogInput.findViewById(R.id.input);
         setDialogInputFieldInputType(InputType.TYPE_CLASS_TEXT);
@@ -736,6 +678,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void dialogWelcome() {
+        setDialogOKTitle(String.format(getString(R.string.welcome_to_dialog_title), appName));
+        setDialogOKMessage(String.format(getString(R.string.welcome_to_dialog_message), appName));
+
+        dialogOK.show();
+
+        if (Build.VERSION.SDK_INT >= 29) {
+            dialogOK.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    setDialogYesNoTitle(getString(R.string.dark_mode));
+                    setDialogYesNoMessage(String.format(getString(R.string.dark_mode_compatible_message), appName));
+
+                    setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            night(true);
+                            dialogYesNo.dismiss();
+                        }
+                    });
+
+                    dialogYesNo.show();
+                }
+            });
+        }
+    }
+
     private void night(boolean enableNight) {
         AppCompatDelegate.setDefaultNightMode(enableNight ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
         setIsNightEnabled(enableNight);
@@ -745,29 +714,50 @@ public class MainActivity extends AppCompatActivity {
         night(enable);
     }
 
-    private boolean hasSquareBracket(String text) {
-        return (text.contains(leftSquareBracket) || text.contains(rightSquareBracket));
+    boolean hasSquareBracket(String text) {
+        return text.contains(leftSquareBracket) || text.contains(rightSquareBracket);
     }
 
-    private String squareBracket(String text) {
-        String squareBracket = null;
+    private String whichSquareBracket(String text) {
+        String whichSquareBracket = null;
 
         if (hasSquareBracket(text)) {
-            if (text.contains(leftSquareBracket)) {
-                squareBracket = "left";
-            } else if (text.contains(rightSquareBracket)) {
-                squareBracket = "right";
-            } else if (text.contains(leftSquareBracket) && text.contains(rightSquareBracket)) {
-                squareBracket = "both";
-            } else {
-                squareBracket = null;
-            }
+            if (text.contains(leftSquareBracket))
+                whichSquareBracket = "left";
+            else if (text.contains(rightSquareBracket))
+                whichSquareBracket = "right";
+            else if (text.contains(leftSquareBracket) && text.contains(rightSquareBracket))
+                whichSquareBracket = "both";
+            else
+                whichSquareBracket = null;
         }
 
-        return squareBracket;
+        return whichSquareBracket;
     }
 
-    // Meant to be implemented into a View.OnTouchListener's MotionEvent.ACTION_DOWN as 'bounceIn(view, "amplitude, frequency")'. e. g., bounceIn(keypad_button, DEFAULT_BOUNCE_IN_SETTING).
+    String removeSquareBracket(String calc, int squareBracket) {
+        switch (squareBracket) {
+            case REMOVE_SQUARE_BRACKET_LEFT:
+                calc = calc.replace(leftSquareBracket, empty);
+                break;
+            case REMOVE_SQUARE_BRACKET_RIGHT:
+                calc = calc.replace(rightSquareBracket, empty);
+                break;
+            case REMOVE_SQUARE_BRACKET_ALL:
+                calc = calc.replace(leftSquareBracket, empty);
+                calc = calc.replace(rightSquareBracket, empty);
+
+                break;
+        }
+
+        return calc;
+    }
+
+    /**
+     * Applies a bounce in animation effect on a View, usually when it's being tapped.
+     * @param view The View that's supposed to receive the bounce in animation.
+     * @param customSetting Float values for the animation's amplitude and frequency, respectively, separated by a coma + space (", ").
+     */
     void bounceIn(View view, String... customSetting) {
         if (!Arrays.toString(customSetting).isEmpty()) {
             if (Arrays.toString(customSetting).contains(getComma() + getSpace())) {
@@ -775,16 +765,16 @@ public class MainActivity extends AppCompatActivity {
                 String formatParts = null;
 
                 if (hasSquareBracket(Arrays.toString(parts))) {
-                    switch (squareBracket(Arrays.toString(parts))) {
+                    switch (whichSquareBracket(Arrays.toString(parts))) {
                         case "left":
-                        formatParts = Arrays.toString(parts).replace(leftSquareBracket, getEmpty());
-                        break;
+                            formatParts = Arrays.toString(parts).replace(leftSquareBracket, getEmpty());
+                            break;
                         case "right":
-                        formatParts = Arrays.toString(parts).replace(rightSquareBracket, getEmpty());
-                        break;
+                            formatParts = Arrays.toString(parts).replace(rightSquareBracket, getEmpty());
+                            break;
                         case "both":
-                        formatParts = Arrays.toString(parts).replaceAll(leftSquareBracket, rightSquareBracket);
-                        break;
+                            formatParts = Arrays.toString(parts).replaceAll(leftSquareBracket, rightSquareBracket);
+                            break;
                     }
 
                     assert formatParts != null;
@@ -794,9 +784,8 @@ public class MainActivity extends AppCompatActivity {
                     String formatFrequency = formatValues[1];
 
                     // For some unknown reason, formatFrequency has "]]" at its end.
-                    if (formatFrequency.endsWith(rightSquareBracket + rightSquareBracket)) {
+                    if (formatFrequency.endsWith(rightSquareBracket + rightSquareBracket))
                         formatFrequency = formatFrequency.substring(0, formatFrequency.length() - 2);
-                    }
 
                     bounceAmplitude = Double.parseDouble(formatAmplitude);
                     bounceFrequency = Double.parseDouble(formatFrequency);
@@ -806,29 +795,21 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 setBounceInterpolatorConfig(bounceAmplitude, bounceFrequency);
-            } else {
+            } else
                 System.out.println("bounceInterpolator was incorrectly set and doesn't contain '" + getComma() + getSpace() + "'.");
-            }
+        } else {
+            customSetting = new String[] {
+                    DEFAULT_BOUNCE_IN_SETTING
+            };
+
+            bounceIn(view, customSetting);
         }
 
+        Animation bounceIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.bounce_in);
         bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
         bounceIn.setInterpolator(bounceInterpolator);
 
         view.startAnimation(bounceIn);
-
-        if (String.valueOf(bounceAmplitude).endsWith(".0")) {
-            String amplitudeString = String.valueOf(bounceAmplitude).replace(".0", getEmpty());
-            System.out.println("Amplitude: " + amplitudeString);
-        } else {
-            System.out.println("Amplitude: " + bounceAmplitude);
-        }
-
-        if (String.valueOf(bounceFrequency).endsWith(".0")) {
-            String frequencyString = String.valueOf(bounceFrequency).replace(".0", getEmpty());
-            System.out.println("Frequency: " + frequencyString);
-        } else {
-            System.out.println("Frequency: " + bounceFrequency);
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -855,9 +836,9 @@ public class MainActivity extends AppCompatActivity {
                         calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(className.replace("Fragment", empty))) {
+                                if (item.getTitle().equals(className.replace("Fragment", empty)))
                                     calculatorModes.dismiss();
-                                } else {
+                                else {
                                     switch (item.getTitleCondensed().toString()) {
                                         case "Calculator":
                                             setFragment(new CalculatorFragment());
@@ -907,9 +888,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void inputNumber(final EditText input, final TextView conversionResult, final TextView conversionSymbolResult, final String calc) {
+    @SuppressLint("ClickableViewAccessibility")
+    void inputNumber(View view, final EditText input, final TextView conversionResult, final TextView conversionSymbolResult, final String calc) {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 number = (Button) view;
@@ -922,11 +903,8 @@ public class MainActivity extends AppCompatActivity {
                         number.startAnimation(getBounceOut());
 
                         if (!calc.equals(getString(R.string.error))) {
-                            if (!inputHasReachedCharLimit(input, calc)) {
-                                input.append(number.getText());
-
-                                System.out.println("Number '" + number.getText() + "' added.");
-                            }
+                            input.append(number.getText());
+                            System.out.println("Number '" + number.getText() + "' added.");
                         } else {
                             input.setText(empty);
 
@@ -945,9 +923,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        for (int number: numbers) {
-            findViewById(number).setOnTouchListener(onTouchListener);
-        }
+        for (int number: numbers)
+            view.findViewById(number).setOnTouchListener(onTouchListener);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -970,7 +947,8 @@ public class MainActivity extends AppCompatActivity {
                             input.setText(calc.endsWith(space) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
 
                             calc(input, conversionResult, conversionResultSymbol);
-                        }
+                        } else
+                            conversionResult.setText(getString(R.string.zero));
 
                         break;
                 }
@@ -1673,31 +1651,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String reformatCalc(String calc) {
-        if (calc.contains(plus) || calc.contains(minus) || calc.contains(times) || calc.contains(division)) {
-            if (calc.contains(plus)) {
-                // Replaces " + " by "+".
-                calc = calc.replace(space + plus + space, plus);
+        if (calc != null) {
+            if (calc.contains(space))
+                calc = calc.replace(space, empty);
+
+            if (calc.contains(times) || calc.contains(division)) {
+                if (calc.contains(times))
+                    calc = calc.replace(times, asterisk);
+
+                if (calc.contains(division))
+                    calc = calc.replace(division, slash);
             }
 
-            if (calc.contains(minus)) {
-                // Replaces " - " by "-".
-                calc = calc.replace(space + minus + space, minus);
-            }
+            if (hasSquareBracket(calc))
+                removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
 
-            if (calc.contains(times)) {
-                // Replaces " × " by "*".
-                calc = calc.replace(space + times + space, asterisk);
-            }
-
-            if (calc.contains(division)) {
-                // Replaces " ÷ " by "/".
-                calc = calc.replace(space + division + space, slash);
-            }
-
-            System.out.println("Transformed calc: " + calc);
+            System.out.println("Transformed calc: " + removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL));
         }
 
-        return calc;
+        return removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
     }
 
     /**
@@ -1711,51 +1683,10 @@ public class MainActivity extends AppCompatActivity {
             conversionResult.setText(format.format(Double.parseDouble(conversionResult.getText().toString())));
         }
 
-        if (conversionResult.getText().toString().endsWith(".0")) {
+        if (conversionResult.getText().toString().endsWith(".0"))
             conversionResult.setText(input.getText().toString().replace(".0", ""));
-        }
 
-        if (conversionResult.getText().toString().endsWith("E")) {
+        if (conversionResult.getText().toString().endsWith("E"))
             conversionResult.setText(input.getText().toString().replace("E", "e"));
-        }
-    }
-
-    /**
-     * Checks if a text field has reached its character length limit. Here, it is defined based on the device screen density, where for 'ldpi', 'mdpi' and 'hdpi' it equals 17 and for 'xhdpi', 'xxhdpi', 'xxxhdpi' it also equals 17, but has a different behavior, as shown below.
-     *
-     * @param input Represents the text field itself.
-     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean inputHasReachedCharLimit(final EditText input, final String calc) {
-        try {
-            if (screenDensity().equals("ldpi") || screenDensity().equals("mdpi") || screenDensity().equals("hdpi")) {
-                switch (calc.length()) {
-                    case 14:
-                    input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
-                    break;
-                    case 17:
-                    input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-                    break;
-                    case 19:
-                    return true;
-                }
-            } else if (screenDensity().equals("xhdpi") || screenDensity().equals("xxhdpi") || screenDensity().equals("xxxhdpi")) {
-                switch (calc.length()) {
-                    case 12:
-                    input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
-                    break;
-                    case 15:
-                    input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-                    break;
-                    case 17:
-                    return true;
-                }
-            }
-        } catch (NullPointerException nullPointerException) {
-            System.out.println("Couldn't check if the input has reached its limit.");
-        }
-
-        return false;
     }
 }

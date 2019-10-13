@@ -2,8 +2,8 @@ package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -26,7 +28,6 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
@@ -39,20 +40,25 @@ public class CalculatorFragment extends Fragment {
 
     MainActivity mainActivity;
 
+    private Animation keypadIn;
+    private Animation keypadOut;
+
+    private boolean isScientific;
+
+    private View keypad;
+    Button[] keypadButtons = new Button[11];
+
     EditText input;
-    String calc;
 
     HorizontalScrollView othersHorizontalScrollView;
 
-    Button number;
-    private final String[] numbersArray = {
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
-    };
+    private Button number;
 
     private Button parenthesis;
     private final int[] parenthesisArray = {
             R.id.left_parenthesis, R.id.right_parenthesis
     };
+    private String[] parenthesisStringArray;
 
     private Button operator;
     private final int[] operators = {
@@ -82,17 +88,35 @@ public class CalculatorFragment extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
 
+        keypadIn = AnimationUtils.loadAnimation(context, R.anim.keypad_in);
+        keypadOut = AnimationUtils.loadAnimation(context, R.anim.keypad_out);
+
+        keypad = view.findViewById(R.id.keypad_delete).findViewById(R.id.keypad);
+
+        keypadButtons[0] = keypad.findViewById(R.id.zero);
+        keypadButtons[1] = keypad.findViewById(R.id.one);
+        keypadButtons[2] = keypad.findViewById(R.id.two);
+        keypadButtons[3] = keypad.findViewById(R.id.three);
+        keypadButtons[4] = keypad.findViewById(R.id.four);
+        keypadButtons[5] = keypad.findViewById(R.id.five);
+        keypadButtons[6] = keypad.findViewById(R.id.six);
+        keypadButtons[7] = keypad.findViewById(R.id.seven);
+        keypadButtons[8] = keypad.findViewById(R.id.eight);
+        keypadButtons[9] = keypad.findViewById(R.id.nine);
+        keypadButtons[10] = keypad.findViewById(R.id.decimal_separator);
+
         input = view.findViewById(R.id.input);
 
         // Disables the keyboard, since the app already has predefined buttons.
         input.setFocusable(false);
 
-        calc = updatedCalcValue(input);
-
         othersHorizontalScrollView = view.findViewById(R.id.others_horizontal_scroll_view);
         othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
 
-        decimalSeparator = view.findViewById(R.id.decimal_separator);
+        parenthesisStringArray = new String[] {
+                mainActivity.getLeftParenthesis(), mainActivity.getRightParenthesis()
+        };
+
         calculatorMode = view.findViewById(R.id.calculator_mode);
         delete = view.findViewById(R.id.delete);
 
@@ -108,76 +132,62 @@ public class CalculatorFragment extends Fragment {
 
         mainActivity.calculatorMode(context, calculatorMode);
 
-        inputNumber(input, calc);
-        inputDecimalSeparator(input, calc, decimalSeparator);
-        inputOperator(input, calc);
-        inputParenthesis(input, calc);
+        inputNumber(input);
+        inputDecimalSeparator(input, decimalSeparator);
+        inputOperator(input);
+        inputParenthesis(input);
 
         delete(input, delete);
-        calc();
+        calc(false);
 
         return view;
     }
 
-    /* private void hiddenMode() {
-        // Checks if Hidden Mode is enabled.
-        mainActivity.setIsHiddenModeEnabled(mainActivity.getPreferences().getBoolean("isHiddenModeEnabled", mainActivity.getIsHiddenModeEnabled()));
-
-        if (mainActivity.getIsHiddenModeEnabled()) {
-            mainActivity.setPin(mainActivity.getPreferences().getString("pin", null));
-
-            Toast.makeText(context, getString(R.string.hidden_mode_set_up_success), Toast.LENGTH_LONG).show();
-            mainActivity.setIsHiddenModeEnabled(true);
-
-            System.out.println("Apparently, Hidden Mode was successfully set.");
-        }
-    } */
-
-    @SuppressWarnings("LoopStatementThatDoesntLoop")
-    private boolean isInputLastNumber(String calc) {
-        for (String number: numbersArray) {
-            return mainActivity.reformatCalc(calc).endsWith(number);
-        }
+    private boolean isInputLastNumber(EditText input) {
+        if (input.getText().toString().length() > 0)
+            return Character.isDigit(input.getText().toString().charAt(input.getText().toString().length() - 1));
 
         return false;
     }
 
     @SuppressWarnings("LoopStatementThatDoesntLoop")
-    private boolean isInputLastDecimalSeparator(String calc) {
+    private boolean isInputLastDecimalSeparator(EditText input) {
         for (String decimalSeparator: mainActivity.getDecimalSeparators()) {
-            return mainActivity.reformatCalc(calc).endsWith(decimalSeparator);
+            return input.getText().toString().endsWith(decimalSeparator);
         }
 
         return false;
     }
 
-    @SuppressWarnings("LoopStatementThatDoesntLoop")
-    private boolean isInputLastOperator(String calc) {
+    private boolean isInputLastOperator(EditText input) {
         String[] operators = {
-                mainActivity.getPlus(), mainActivity.getMinus(), mainActivity.getTimes(), mainActivity.getDivision()
+                mainActivity.getPlus(), mainActivity.getMinus(), mainActivity.getAsterisk(), mainActivity.getSlash()
         };
 
         for (String operator: operators) {
-            return calc.substring(0, calc.length() - 2).endsWith(operator);
+            if (input.getText().toString().length() > 0) {
+                StringBuilder buffer = new StringBuilder(input.getText().toString());
+                return buffer.charAt(input.length() - 1) == operator.charAt(0);
+            }
         }
 
         return false;
     }
 
     @SuppressWarnings("SameParameterValue")
-    private boolean isInputLastParenthesis(String calc, int parenthesis) {
+    private boolean isInputLastParenthesis(EditText input, int parenthesis) {
         switch (parenthesis) {
             case LAST_PARENTHESIS_LEFT:
-                return calc.endsWith(mainActivity.getLeftParenthesis());
+                return input.getText().toString().endsWith(mainActivity.getLeftParenthesis());
             case LAST_PARENTHESIS_RIGHT:
-                return calc.endsWith(mainActivity.getRightParenthesis());
+                return input.getText().toString().endsWith(mainActivity.getRightParenthesis());
         }
 
         return false;
     }
 
-    private void inputFormat(EditText input, String calc, String result) {
-        if (!(isInputLastOperator(calc) && isInputLastDecimalSeparator(calc))) try {
+    private void inputFormat(EditText input, String result) {
+        if (!(isInputLastOperator(input) && isInputLastDecimalSeparator(input))) try {
             if (result.contains("E")) {
                 result = result.replace("E", "e");
             }
@@ -203,38 +213,13 @@ public class CalculatorFragment extends Fragment {
         }
     }
 
-    String updatedCalcValue(final EditText input) {
-        final String[] calc = new String[1];
-
-        input.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                calc[0] = String.valueOf(s);
-                System.out.println("Updated \"calc\" value: " + (Arrays.toString(calc).isEmpty() ? "[empty]" : s));
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        return Arrays.toString(calc);
-    }
-
     /**
      * Inputs a number in a text field.
      *
      * @param input Represents the text field itself.
-     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
      */
     @SuppressLint("ClickableViewAccessibility")
-    private void inputNumber(final EditText input, final String calc) {
+    private void inputNumber(final EditText input) {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -247,10 +232,8 @@ public class CalculatorFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         number.startAnimation(mainActivity.getBounceOut());
 
-                        if (!calc.equals(getString(R.string.error))) {
-                            if (!mainActivity.inputHasReachedCharLimit(input, calc)) {
-                                input.append(number.getText());
-                            }
+                        if (!input.getText().toString().equals(getString(R.string.error))) {
+                            input.append(number.getText());
                         } else {
                             input.setText(mainActivity.getEmpty());
 
@@ -274,36 +257,37 @@ public class CalculatorFragment extends Fragment {
      * Inputs a decimal separator in a text field.
      *
      * @param input Represents the text field itself.
-     * @param calc String from the text field, regularly referred as 'input.getText().toString()'.
+     * @param decimalSeparator A decimal separator (comma or dot) button.
      */
     @SuppressLint("ClickableViewAccessibility")
-    void inputDecimalSeparator(final EditText input, final String calc, final Button decimalSeparator) {
-        decimalSeparator.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        decimalSeparator.startAnimation(mainActivity.getBounceOut());
+    void inputDecimalSeparator(final EditText input, final Button decimalSeparator) {
+        try {
+            keypadButtons[10].setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            view.startAnimation(mainActivity.getBounceOut());
 
-                        if (!mainActivity.inputHasReachedCharLimit(input, calc)) {
-                            if (isInputLastNumber(calc)) {
-                                input.append(decimalSeparator.getText());
-                            }
-                        }
+                            if (isInputLastNumber(input))
+                                input.append(mainActivity.getDot());
 
-                        break;
+                            break;
+                    }
+
+                    return true;
                 }
-
-                return true;
-            }
-        });
+            });
+        } catch (NullPointerException nullPointerException) {
+            nullPointerException.printStackTrace();
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void inputOperator(final EditText input, final String calc) {
+    private void inputOperator(final EditText input) {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -316,15 +300,19 @@ public class CalculatorFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         operator.startAnimation(mainActivity.getBounceOut());
 
-                        if (operator.getId() == R.id.plus || operator.getId() == R.id.minus) {
-                            if (!calc.isEmpty()) {
-                                input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
-                            } else if ((isInputLastNumber(calc) || (isInputLastParenthesis(calc, LAST_PARENTHESIS_LEFT) || isInputLastParenthesis(calc, LAST_PARENTHESIS_LEFT))) & !isInputLastOperator(calc)) {
-                                input.append(operator.getText() + mainActivity.getSpace());
-                            }
-                        } else if (operator.getId() == R.id.times || operator.getId() == R.id.division) {
-                            if (!(calc.isEmpty() && isInputLastDecimalSeparator(calc) && isInputLastParenthesis(calc, LAST_PARENTHESIS_LEFT))) {
-                                input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                        for (String power: mainActivity.getPowers()) {
+                            if (!isInputLastOperator(input)) {
+                                if ((operator.getId() == R.id.plus || operator.getId() == R.id.minus) || input.getText().toString().endsWith(power)) {
+                                    if (!input.getText().toString().isEmpty())
+                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                    else if ((isInputLastNumber(input) || (isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT) || isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT))) & !isInputLastOperator(input))
+                                        input.append(operator.getText() + mainActivity.getSpace());
+                                    else
+                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                } else if (operator.getId() == R.id.times || operator.getId() == R.id.division) {
+                                    if (!(input.getText().toString().isEmpty() && isInputLastDecimalSeparator(input) && isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT)))
+                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                }
                             }
                         }
 
@@ -341,27 +329,33 @@ public class CalculatorFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void inputParenthesis(final EditText input, final String calc) {
+    private void inputParenthesis(final EditText input) {
         View.OnTouchListener listener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                parenthesis = (Button) view;
+            parenthesis = (Button) view;
 
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        parenthesis.startAnimation(mainActivity.getBounceOut());
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    parenthesis.startAnimation(mainActivity.getBounceOut());
 
-                        if (!mainActivity.inputHasReachedCharLimit(input, calc)) {
-                            input.append(parenthesis.getText());
+                    for (String parenthesis: parenthesisStringArray) {
+                        if (parenthesis.equals(mainActivity.getLeftParenthesis())) {
+                            if (isInputLastNumber(input))
+                                input.append(mainActivity.getSpace() + mainActivity.getTimes() + mainActivity.getSpace() + parenthesis);
+                        } else if (parenthesis.equals(mainActivity.getRightParenthesis())) {
+                            if (isInputLastNumber(input))
+                                input.append(parenthesis);
                         }
+                    }
 
-                        break;
-                }
+                    break;
+            }
 
-                return true;
+            return true;
             }
         };
 
@@ -371,7 +365,7 @@ public class CalculatorFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    void delete(final EditText input, final ImageButton delete) {
+    private void delete(final EditText input, final ImageButton delete) {
         delete.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -385,8 +379,10 @@ public class CalculatorFragment extends Fragment {
                         delete.startAnimation(mainActivity.getBounceOut());
                         delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
-                        if (!calc.isEmpty()) {
+                        if (!calc.isEmpty()) try {
                             input.setText(calc.endsWith(mainActivity.getSpace()) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
+                        } catch (Exception exception) {
+                            input.setText(mainActivity.getEmpty());
                         }
 
                         break;
@@ -398,58 +394,141 @@ public class CalculatorFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void calc() {
+    private void calc(final boolean cancel) {
         equal.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent event) {
+            public boolean onTouch(View view, final MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, "0.5, 1");
                         equal.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
                         break;
                     case MotionEvent.ACTION_UP:
-                        equal.startAnimation(mainActivity.getBounceOut());
+                        if (!cancel) {
+                            Expression expression;
+                            String result;
 
-                        Expression expression;
-                        String result;
-
-                        if (calc != null) {
-                            if (!calc.isEmpty()) {
-                                if (mainActivity.getIsHiddenModeEnabled()) {
-                                    if (mainActivity.getPin() != null) {
-                                        if (calc.equals(mainActivity.getPin())) {
-                                            input.setText(mainActivity.getEmpty());
-                                            startActivity(new Intent(context, HiddenMode.class));
-                                        }
-                                    } else {
-                                        System.out.println("'pin' is null.");
-                                    }
-                                }
+                            if (!input.getText().toString().isEmpty()) {
+                                expression = new ExpressionBuilder(mainActivity.reformatCalc(input.getText().toString())).build();
 
                                 try {
-                                    calc = input.getText().toString();
-
-                                    expression = new ExpressionBuilder(mainActivity.reformatCalc(calc)).build();
                                     result = String.valueOf(expression.evaluate());
-
-                                    inputFormat(input, calc, result);
-
-                                    calc = updatedCalcValue(input);
+                                    input.setText(result);
                                 } catch (Exception exception) {
                                     // If the calc is unfinished, "String.valueOf(expression.evaluate())" throws an IllegalArgumentException.
-                                    input.append(mainActivity.getSpace() + "0");
+                                    if (!input.getText().toString().isEmpty()) {
+                                        input.append(input.getText().toString().endsWith(mainActivity.getSpace()) ? getString(R.string.zero) : mainActivity.getSpace() + getString(R.string.zero));
+                                    } else {
+                                        input.append(getString(R.string.zero));
+                                    }
 
                                     equal.performClick();
                                 }
+
+                                inputFormat(input, input.getText().toString());
                             }
                         }
+
+                        System.out.println("\"isScientific\": " + isScientific);
 
                         break;
                 }
 
+                return false;
+            }
+        });
+
+        equal.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                isScientific = !isScientific;
+                scientific();
+
                 return true;
             }
         });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void scientific() {
+        calc(true);
+
+        keypad.startAnimation(isScientific ? keypadOut : keypadIn);
+
+        keypadButtons[0].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.zero));
+        keypadButtons[1].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.one));
+        keypadButtons[2].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.two));
+        keypadButtons[3].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.three));
+        keypadButtons[4].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.four));
+        keypadButtons[5].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.five));
+        keypadButtons[6].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.six));
+        keypadButtons[7].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.seven));
+        keypadButtons[8].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.eight));
+        keypadButtons[9].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.nine));
+        keypadButtons[10].setText(isScientific ? mainActivity.getEmpty() : mainActivity.getDot());
+
+        for (final Button keypadButton : keypadButtons) {
+            for (int index = 0; index < keypadButtons.length; index++) {
+                if (isScientific) {
+                    if (keypadButtons[index].getId() == keypadButton.getId()) {
+                        keypadButton.setTag("placeholder" + index);
+                        break;
+                    }
+                }
+            }
+
+            keypadButton.setTypeface(keypadButton.getTypeface(), isScientific ? Typeface.NORMAL : Typeface.BOLD);
+            if (isScientific) {
+                switch (keypadButton.getId()) {
+                    case R.id.seven:
+                        keypadButton.setTag("powerTwo");
+
+                        // Dynamic text preview.
+                        input.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                if (isScientific) {
+                                    keypadButton.setText(s.toString().length() == 1 && isInputLastNumber(input) ? s.toString().charAt(0) + mainActivity.getPowerTwo() : getString(R.string.x_power_two));
+                                } else {
+                                    keypadButton.setText(getString(R.string.seven));
+                                }
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+
+                            }
+                        });
+
+                        keypadButton.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View view, MotionEvent event) {
+                                switch (event.getAction()) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                                        break;
+                                    case MotionEvent.ACTION_UP:
+                                        view.startAnimation(mainActivity.getBounceOut());
+
+                                        if (isInputLastNumber(input) && isInputLastParenthesis(input, LAST_PARENTHESIS_RIGHT))
+                                            input.append(mainActivity.getPowerTwo());
+
+                                        break;
+                                }
+
+                                return true;
+                            }
+                        });
+
+                        break;
+                }
+            } else {
+                inputNumber(input);
+            }
+        }
     }
 }

@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#3F51B5</color>
 
     <color name="background">@android:color/white</color>
+    <color name="backgroundInverse">@android:color/black</color>
     <color name="bottom_navigation_view">@android:color/white</color>
     <color name="dialog">@android:color/white</color>
     <color name="dialog_buy_pro">@android:color/black</color>
     <color name="dialog_buy_pro_button">#424242</color>
     <color name="dialog_input">#F1F1F1</color>
-    <color name="dialog_button">@android:color/white</color>
+    <color name="dialog_button">#252525</color>
+    <color name="dialog_button_unhighlight">#F7F7F7</color>
     <color name="dialog_button_pressed">#B5B5B5</color>
-    <color name="dialog_button_ok">#1685DA</color>
-    <color name="dialog_button_no">#E72C3D</color>
     <color name="alert_success">#99D850</color>
     <color name="alert_info">#439EEE</color>
     <color name="alert_warning">#FFCE36</color>
@@ -23,6 +24,8 @@
     <color name="setting_pressed">#F0F0F0</color>
     <color name="setting_link">#03A9F4</color>
     <color name="buy_pro">#2B2B2B</color>
+    <color name="activity_pro">#1A1A1A</color>
+    <color name="pro_item_icon">@android:color/white</color>
     <color name="background_add">@android:color/white</color>
     <color name="activity_additional_info">@android:color/white</color>
     <color name="link">#03A9F4</color>
@@ -35,5 +38,7 @@
     <color name="delete">#EE4343</color>
     <color name="keypad_button">#F1F1F1</color>
     <color name="equal">#03A9F4</color>
+    <color name="equal_pressed">#0085C2</color>
     <color name="mask">@android:color/black</color>
+
 </resources>

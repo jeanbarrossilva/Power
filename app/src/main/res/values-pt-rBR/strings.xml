@@ -48,15 +48,13 @@
     <string name="light_year_symbol">al</string>
     <string name="micrometer">Micrômetro</string>
     <string name="hidden_mode_definition">O Modo Oculto é um recurso que permite que você armazene imagens de forma segura na calculadora com uma senha.</string>
-    <string name="version_x">Versão %1$s</string>
     <string name="hidden_mode_pin_at_least_4_digits">O PIN deve conter ao menos 4 dígitos.</string>
     <string name="hidden_only_mode_pin_4_digits">O PIN deve conter apenas 4 dígitos.</string>
     <string name="hidden_mode_pin_empty">O campo de PIN não pode ficar vazio.</string>
     <string name="unauthentic_version_feature">Porque você está usando uma versão não autêntica do Power, você não tem acesso a este recurso. Uma pena.</string>
     <string name="ok_ill_never_download_an_app_from_an_untrustable_store_just_to_get_paid_features_for_free_again">OK, me leve à Google Play</string>
     <string name="unauthentic_app">Aplicativo não autêntico</string>
-    <string name="pro_features">Modo Oculto + conversões + modo Noite + <b>sem anúncios</b></string>
-    <string name="buy_pro">Comprar o %1$s Pro</string>
+    <string name="get_app_plus">Obter o %1$s+</string>
     <string name="type_code">Digite o código.</string>
     <string name="close">Fechar</string>
     <string name="congratulations">Parabéns!</string>
@@ -65,7 +63,6 @@
     <string name="night_pro">O Noite está disponível no %1$s Pro.</string>
     <string name="device_model">Modelo do dispositivo</string>
     <string name="name">Nome</string>
-    <string name="pro_not_available">O %1$s Pro ainda não está disponível. Gostaria de entrar na lista de espera?</string>
     <string name="success">Sucesso</string>
     <string name="action_success">A ação foi realizada com sucesso.</string>
     <string name="action_error">A ação não pôde ser realizada.</string>
@@ -74,10 +71,8 @@
     <string name="waitlist_request_sent">Você foi adicionado à lista de espera.</string>
     <string name="waitlist_request_already_sent">Você já foi adicionado à lista de espera.</string>
     <string name="no_internet_connection">Não há conexão à Internet disponível.</string>
-    <string name="pro_price">R$ 5,00</string>
     <string name="buy_pro_features_description">Este recurso está disponível apenas no %1$s Pro. Ao comprá-lo, você também leva:\n\n• %2$s\n• %3$s\n• %4$s\n• %5$s</string>
     <string name="buy">Comprar</string>
-    <string name="buy_pro_price">Comprar o %1$s Pro (%2$s)</string>
     <string name="unauthentic_version_general">Você está usando uma versão não autêntica do Power. Alguns recursos podem não estar disponíveis.</string>
     <string name="action_warning">A ação pode não ter sido realizada.</string>
     <string name="warning">Aviso</string>
@@ -85,4 +80,10 @@
     <string name="temporarily_unavailable_feature">Este recurso está temporariamente indisponível.</string>
     <string name="conversions_all">Conversões (comprimento, tempo, temperatura e mais)</string>
     <string name="ads_removal">Remoção de anúncios</string>
+    <string name="dark_mode_compatible_message">O %1$s é compatível com o modo escuro do Android. Gostaria de habilitá-lo agora?</string>
+    <string name="dark_mode_app_message">O %1$s é compatível com modo escuro. Gostaria de habilitá-lo agora?</string>
+    <string name="get">Obter</string>
+    <string name="get_plus_subtitle">Destrave todas as possibilidades.</string>
+    <string name="conversions">Conversões</string>
+    <string name="version">Versão</string>
 </resources>

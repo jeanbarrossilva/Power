@@ -33,14 +33,6 @@
 
         </activity>
 
-        <activity
-            android:name=".ConversionActivity"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".HiddenMode"
-            android:screenOrientation="portrait" />
-
     </application>
 
 </manifest>

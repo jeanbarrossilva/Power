@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -50,8 +49,6 @@ public class TemperatureFragment extends CalculatorFragment {
         input = view.findViewById(R.id.input);
         inputSymbol = view.findViewById(R.id.input_symbol);
 
-        calc = updatedCalcValue(input);
-
         input.setFocusable(false);
 
         unit = view.findViewById(R.id.unit);
@@ -71,7 +68,7 @@ public class TemperatureFragment extends CalculatorFragment {
         options[2] = kelvin;
 
         calculatorMode = view.findViewById(R.id.calculator_mode);
-        decimalSeparator = view.findViewById(R.id.decimal_separator);
+        keypadButtons[10] = view.findViewById(R.id.decimal_separator);
         delete = view.findViewById(R.id.delete);
 
         units();
@@ -94,8 +91,8 @@ public class TemperatureFragment extends CalculatorFragment {
 
         mainActivity.calculatorMode(context, calculatorMode);
 
-        inputNumber(input, conversionResult, conversionSymbolResult, calc);
-        inputDecimalSeparator(input, calc, decimalSeparator);
+        mainActivity.inputNumber(view, input, conversionResult, conversionSymbolResult, input.getText().toString());
+        inputDecimalSeparator(input, keypadButtons[10]);
         mainActivity.delete(input, delete, conversionResult, conversionSymbolResult);
 
         return view;
@@ -230,48 +227,5 @@ public class TemperatureFragment extends CalculatorFragment {
                 return true;
             }
         });
-    }
-
-    private void inputNumber(final EditText input, final TextView conversionResult, final TextView conversionSymbolResult, final String calc) {
-        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                number = (Button) view;
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        number.startAnimation(mainActivity.getBounceOut());
-
-                        if (!calc.equals(getString(R.string.error))) {
-                            if (!mainActivity.inputHasReachedCharLimit(input, calc)) {
-                                input.append(number.getText());
-
-                                System.out.println("Number '" + number.getText() + "' added.");
-                            }
-                        } else {
-                            input.setText(mainActivity.getEmpty());
-
-                            number = (Button) view;
-                            input.append(number.getText());
-
-                            System.out.println("Number '" + number.getText() + "' added.");
-                        }
-
-                        mainActivity.calc(input, conversionResult, conversionSymbolResult);
-
-                        break;
-                }
-
-                return true;
-            }
-        };
-
-        for (int number: mainActivity.numbers) {
-            view.findViewById(number).setOnTouchListener(onTouchListener);
-        }
     }
 }

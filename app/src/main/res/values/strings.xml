@@ -26,6 +26,8 @@
     <string name="message">Message</string>
     <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap \"OK\" to close the app.</string>
     <string name="welcome_to_dialog_message">%1$s is a powerful calculator that lets you easily calculate expressions and convert units like Celsius to Fahrenheit, meter to kilometer, liter to barrel and much more! This is CalcOne, but taken to a whole new level.\n\nHope you enjoy it!</string>
+    <string name="dark_mode_compatible_message">%1$s is compatible with Android\'s dark mode. Would you like to enable it now?</string>
+    <string name="dark_mode_app_message">%1$s is compatible with dark mode. Would you like to enable it now?</string>
     <string name="beta_version_dialog_message">You are using a beta version of %1$s. That means there may be some bugs, crashes and/or missing features.</string>
     <string name="congratulations_night_mode_unlock">You discovered the secret code and Night mode has been freely unlocked. To enable it, go to Settings.</string>
     <string name="hidden_mode_set_password_dialog_message">Set a 4-digit PIN.</string>
@@ -60,12 +62,14 @@
     <string name="source_code">Source code</string>
     <string name="credits">Credits</string>
 
-    <string name="app_pro" translatable="false">%1$s Pro</string>
-    <string name="buy_pro">Buy %1$s Pro</string>
-    <string name="buy_pro_price">Buy %1$s Pro (%2$s)</string>
-    <string name="pro_features">Hidden Mode + conversions + Night mode + <b>no ads</b></string>
-    <string name="pro_price">$ 1.50</string>
-    <string name="pro_not_available">%1$s Pro is not available yet. Would you like to enter to the waitlist?</string>
+    <string name="app_plus" translatable="false">%1$s+</string>
+    <string name="get_app_plus">Get %1$s+</string>
+
+    <string name="get">Get</string>
+    <string name="get_plus_subtitle">Unlock all the possibilities.</string>
+    <string name="conversions">Conversions</string>
+    <string name="conversions_length_item_units" translatable="false">• %1$s\n• %2$s\n• %3$s\n• %4$s\n• %5$s\n• %6$s\n• %7$s\n• %8$s\n• %9$s</string>
+
     <string name="name">Name</string>
     <string name="device_model">Device model</string>
     <string name="api_x" translatable="false">API %1o</string>
@@ -74,10 +78,12 @@
     <string name="waitlist_request_already_sent">You\'ve already been added to the waitlist.</string>
 
     <string name="at_developer" translatable="false">\@jeanbarrossilva</string>
-    <string name="version_x">Version %1$s</string>
+    <string name="version_x" translatable="false">%1$s %2$s</string>
+    <string name="version">Version</string>
 
     <string name="zero" translatable="false">0</string>
     <string name="dot" translatable="false">.</string>
+    <string name="comma" translatable="false">,</string>
 
     <string name="one" translatable="false">1</string>
     <string name="two" translatable="false">2</string>
@@ -90,6 +96,8 @@
     <string name="nine" translatable="false">9</string>
 
     <string name="equal" translatable="false">=</string>
+
+    <string name="x_power_two" translatable="false">x²</string>
 
     <string name="left_parenthesis" translatable="false">(</string>
     <string name="right_parenthesis" translatable="false">)</string>
@@ -179,6 +187,4 @@
     <string name="hidden_mode_pin_empty">The PIN field can\'t be empty.</string>
     <string name="hidden_mode_pin_at_least_4_digits">The PIN must contain at least 4 digits.</string>
     <string name="hidden_only_mode_pin_4_digits">The PIN must contain only 4 digits.</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
 </resources>
