@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="RtlSymmetry, ContentDescription">
+    tools:ignore="ContentDescription">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/keypad_delete"
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/keypad"
-            android:padding="20dp"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/delete"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,9 +36,9 @@
 
                 <Button
                     android:id="@+id/seven"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/seven"
                     android:textSize="25sp"
@@ -48,10 +48,10 @@
 
                 <Button
                     android:id="@+id/eight"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/eight"
                     android:textSize="25sp"
@@ -61,9 +61,9 @@
 
                 <Button
                     android:id="@+id/four"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/four"
                     android:textSize="25sp"
@@ -73,10 +73,10 @@
 
                 <Button
                     android:id="@+id/nine"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/nine"
                     android:textSize="25sp"
@@ -86,10 +86,10 @@
 
                 <Button
                     android:id="@+id/five"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/five"
                     android:textSize="25sp"
@@ -99,10 +99,10 @@
 
                 <Button
                     android:id="@+id/six"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/six"
                     android:textSize="25sp"
@@ -112,9 +112,9 @@
 
                 <Button
                     android:id="@+id/one"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/one"
                     android:textSize="25sp"
@@ -124,10 +124,10 @@
 
                 <Button
                     android:id="@+id/two"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/two"
                     android:textSize="25sp"
@@ -137,10 +137,10 @@
 
                 <Button
                     android:id="@+id/three"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
+                    android:layout_marginBottom="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/three"
                     android:textSize="25sp"
@@ -150,10 +150,10 @@
 
                 <Button
                     android:id="@+id/zero"
-                    android:layout_width="170dp"
-                    android:layout_height="75dp"
-                    android:paddingStart="30dp"
+                    android:layout_width="148.5dp"
+                    android:layout_height="70dp"
                     android:background="@drawable/keypad_button"
+                    android:paddingStart="30dp"
                     android:text="@string/zero"
                     android:textAlignment="viewStart"
                     android:textSize="25sp"
@@ -163,9 +163,9 @@
 
                 <Button
                     android:id="@+id/decimal_separator"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8.5dp"
                     android:background="@drawable/keypad_button"
                     android:text="@string/dot"
                     android:textSize="25sp"
@@ -183,8 +183,8 @@
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/delete"
-            android:paddingStart="22.5dp"
-            android:paddingEnd="22.5dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:src="@drawable/backspace"
             app:layout_constraintBottom_toBottomOf="@+id/keypad"
             app:layout_constraintEnd_toEndOf="parent"

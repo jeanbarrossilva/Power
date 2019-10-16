@@ -7,7 +7,7 @@
     android:paddingBottom="56dp"
     android:background="@color/background"
     tools:context=".SettingsFragment"
-    tools:ignore="HardcodedText">
+    tools:ignore="RtlSymmetry">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/activity_title_layout"
@@ -60,49 +60,6 @@
             android:paddingStart="30dp"
             android:paddingEnd="30dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/setting_night"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/setting_night_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="20dp"
-                    android:paddingStart="50dp"
-                    android:paddingEnd="50dp"
-                    android:paddingBottom="20dp"
-                    android:background="@drawable/setting"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <TextView
-                        android:id="@+id/setting_night_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dark_mode"
-                        android:textSize="20sp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                    <Switch
-                        android:id="@+id/setting_night_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
@@ -130,15 +87,52 @@
             app:layout_constraintBottom_toTopOf="@+id/app_info">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/send_feedback"
+                android:id="@+id/share_usage_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="20dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="50dp"
                 android:paddingBottom="20dp"
-                android:background="@drawable/setting_link"
+                android:background="@drawable/setting"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/send_feedback">
+
+                <TextView
+                    android:id="@+id/share_usage_data_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="80dp"
+                    android:text="@string/share_usage_data"
+                    android:textSize="20sp"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <Switch
+                    android:id="@+id/share_usage_data_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/send_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingTop="20dp"
+                android:paddingStart="50dp"
+                android:paddingEnd="50dp"
+                android:paddingBottom="20dp"
+                android:background="@drawable/setting_link"
+                app:layout_constraintTop_toBottomOf="@+id/share_usage_data"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/source_code">
@@ -147,6 +141,7 @@
                     android:id="@+id/send_feedback_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="80dp"
                     android:text="@string/send_feedback"
                     android:textColor="@android:color/white"
                     android:textSize="20sp"
@@ -184,6 +179,7 @@
                     android:id="@+id/source_code_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="80dp"
                     android:text="@string/source_code"
                     android:textSize="20sp"
                     app:layout_constraintTop_toTopOf="parent"
@@ -218,7 +214,6 @@
                 android:id="@+id/version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/version_x"
                 android:textSize="13sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -13,4 +13,12 @@
         android:id="@+id/kelvin"
         android:title="@string/kelvin" />
 
+    <item
+        android:id="@+id/rankine"
+        android:title="@string/rankine" />
+
+    <item
+        android:id="@+id/reaumur"
+        android:title="@string/reaumur" />
+
 </menu>

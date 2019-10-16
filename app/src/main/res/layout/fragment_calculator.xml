@@ -62,19 +62,24 @@
 
         <HorizontalScrollView
             android:id="@+id/others_horizontal_scroll_view"
-            android:layout_width="270dp"
+            android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
-            app:layout_constraintStart_toStartOf="@+id/keypad_delete"
-            app:layout_constraintBottom_toTopOf="@+id/keypad_delete">
+            android:paddingStart="5dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp"
+            android:scrollbarSize="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/keypad_delete"
+            app:layout_constraintEnd_toEndOf="@+id/keypad_delete"
+            app:layout_constraintStart_toStartOf="@+id/keypad_delete">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
+                android:paddingEnd="110dp">
 
                 <Button
                     android:id="@+id/plus"
@@ -82,6 +87,7 @@
                     android:layout_height="50dp"
                     android:background="@null"
                     android:text="@string/plus"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/minus"
@@ -95,6 +101,7 @@
                     android:layout_marginStart="2.5dp"
                     android:background="@null"
                     android:text="@string/minus"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/times"
@@ -108,11 +115,13 @@
                     android:layout_marginStart="2.5dp"
                     android:background="@null"
                     android:text="@string/times"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/division"
                     app:layout_constraintStart_toEndOf="@+id/minus"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <Button
                     android:id="@+id/division"
@@ -121,11 +130,13 @@
                     android:layout_marginStart="2.5dp"
                     android:background="@null"
                     android:text="@string/division"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/divider"
                     app:layout_constraintStart_toEndOf="@+id/times"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <View
                     android:id="@+id/divider"
@@ -142,10 +153,11 @@
 
                 <Button
                     android:id="@+id/left_parenthesis"
-                    android:layout_width="41dp"
-                    android:layout_height="59dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:background="@null"
                     android:text="@string/left_parenthesis"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/right_parenthesis"
@@ -159,6 +171,7 @@
                     android:layout_marginStart="2.5dp"
                     android:background="@null"
                     android:text="@string/right_parenthesis"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/left_parenthesis"
@@ -170,15 +183,14 @@
 
         <ImageButton
             android:id="@+id/calculator_mode"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="70dp"
-            android:background="@drawable/calculator_mode"
-            android:paddingStart="25dp"
-            android:paddingEnd="25dp"
+            android:padding="23dp"
             android:scaleType="fitCenter"
             android:src="@drawable/calculator"
+            android:background="@drawable/calculator_mode"
             app:layout_constraintTop_toTopOf="@+id/others_horizontal_scroll_view"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view" />
 
         <include

@@ -47,7 +47,7 @@ public class TimeFragment extends CalculatorFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_time, container, false);
+        view = inflater.inflate(R.layout.fragment_calculator_time, container, false);
         mainActivity = (MainActivity) getActivity();
 
         input = view.findViewById(R.id.input);
@@ -87,7 +87,7 @@ public class TimeFragment extends CalculatorFragment {
         try {
             // Default configuration (hour to minute).
             inputSymbol.setText(getString(R.string.hour_symbol));
-            mainActivity.selectUnit(context, hour, options);
+            mainActivity.selectButton(hour, options, R.drawable.option_clicked);
             mainActivity.getPreferences().edit().putString("convertFrom", "hour")
                     .apply();
 
@@ -102,7 +102,7 @@ public class TimeFragment extends CalculatorFragment {
         mainActivity.calculatorMode(context, calculatorMode);
 
         mainActivity.inputNumber(view, input, conversionResult, conversionSymbolResult, input.getText().toString());
-        inputDecimalSeparator(input, keypadButtons[10]);
+        inputDecimalSeparator(input);
         mainActivity.delete(input, delete, conversionResult, conversionSymbolResult);
 
         return view;
@@ -200,7 +200,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         year.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, year, options);
+                        mainActivity.selectButton(year, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.year_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "year")
@@ -224,7 +224,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         month.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, month, options);
+                        mainActivity.selectButton(month, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.month_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "month")
@@ -248,7 +248,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         day.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, day, options);
+                        mainActivity.selectButton(day, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.day_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "day")
@@ -272,7 +272,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         hour.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, hour, options);
+                        mainActivity.selectButton(hour, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.hour_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "hour")
@@ -296,7 +296,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         minute.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, minute, options);
+                        mainActivity.selectButton(minute, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.minute_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "minute")
@@ -320,7 +320,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         second.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, second, options);
+                        mainActivity.selectButton(second, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.second_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "second")
@@ -344,7 +344,7 @@ public class TimeFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         millisecond.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, millisecond, options);
+                        mainActivity.selectButton(millisecond, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.millisecond_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "millisecond")

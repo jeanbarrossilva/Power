@@ -3,7 +3,6 @@ package com.jeanbarrossilva.power;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -21,8 +20,7 @@ import android.widget.TextView;
 public class SettingsFragment extends Fragment {
     private MainActivity mainActivity;
 
-    private Switch settingNight;
-
+    private Switch shareUsageData;
     private ConstraintLayout sendFeedback;
 
     private ConstraintLayout sourceCode;
@@ -44,8 +42,8 @@ public class SettingsFragment extends Fragment {
         ScrollView settingsScrollView = view.findViewById(R.id.settings_scroll_view);
         settingsScrollView.setVerticalScrollBarEnabled(false);
 
-        ConstraintLayout settingNightLayout = view.findViewById(R.id.setting_night);
-        settingNight = view.findViewById(R.id.setting_night_switch);
+        shareUsageData = view.findViewById(R.id.share_usage_data_switch);
+        shareUsageData.setChecked(mainActivity.getShareUsageData());
 
         sendFeedback = view.findViewById(R.id.send_feedback);
 
@@ -55,33 +53,24 @@ public class SettingsFragment extends Fragment {
         atDeveloper = view.findViewById(R.id.at_developer);
 
         TextView version = view.findViewById(R.id.version);
-        version.setText(String.format(getString(R.string.version_x), getString(R.string.version), mainActivity.getVersionName()));
+        version.setText(mainActivity.getVersionName());
 
+        shareUsageData();
         sendFeedback();
         sourceCode();
 
         developer();
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            settingNightLayout.setVisibility(View.GONE);
-        } else {
-            settingNightLayout.setVisibility(View.VISIBLE);
-            settingNight();
-        }
-
         return view;
     }
 
-    private void settingNight() {
-        settingNight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    private void shareUsageData() {
+        shareUsageData.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mainActivity.setNight(isChecked);
-                mainActivity.setFragment(mainActivity.settingsFragment);
+                mainActivity.setShareUsageData(isChecked);
             }
         });
-
-        settingNight.setChecked(mainActivity.getIsNightEnabled());
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -95,13 +84,8 @@ public class SettingsFragment extends Fragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         sendFeedback.startAnimation(mainActivity.getBounceOut());
-
-                        Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
-
-                        email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), mainActivity.getAppName(), mainActivity.getVersionName()));
-                        email.putExtra(Intent.EXTRA_TEXT, "\n\n" + mainActivity.repeat(mainActivity.getHyphen(), 40) + "\n\n" + mainActivity.getDeviceInfo());
-
-                        startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
+                        mainActivity.getDialogFeedback().show();
+                        break;
                 }
 
                 return true;
@@ -137,10 +121,8 @@ public class SettingsFragment extends Fragment {
         atDeveloper.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Intent developer = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva"));
-                    startActivity(developer);
-                }
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva")));
 
                 return true;
             }

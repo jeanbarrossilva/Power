@@ -54,18 +54,13 @@ public class CalculatorFragment extends Fragment {
 
     private Button number;
 
-    private Button parenthesis;
-    private final int[] parenthesisArray = {
-            R.id.left_parenthesis, R.id.right_parenthesis
-    };
-    private String[] parenthesisStringArray;
+    private Button[] parenthesis;
 
     private Button operator;
     private final int[] operators = {
             R.id.plus, R.id.minus, R.id.times, R.id.division
     };
 
-    Button decimalSeparator;
     ImageButton calculatorMode;
     ImageButton delete;
 
@@ -110,12 +105,13 @@ public class CalculatorFragment extends Fragment {
         // Disables the keyboard, since the app already has predefined buttons.
         input.setFocusable(false);
 
+        parenthesis = new Button[2];
+
+        parenthesis[0] = view.findViewById(R.id.left_parenthesis);
+        parenthesis[1] = view.findViewById(R.id.right_parenthesis);
+
         othersHorizontalScrollView = view.findViewById(R.id.others_horizontal_scroll_view);
         othersHorizontalScrollView.setHorizontalScrollBarEnabled(false);
-
-        parenthesisStringArray = new String[] {
-                mainActivity.getLeftParenthesis(), mainActivity.getRightParenthesis()
-        };
 
         calculatorMode = view.findViewById(R.id.calculator_mode);
         delete = view.findViewById(R.id.delete);
@@ -133,7 +129,7 @@ public class CalculatorFragment extends Fragment {
         mainActivity.calculatorMode(context, calculatorMode);
 
         inputNumber(input);
-        inputDecimalSeparator(input, decimalSeparator);
+        inputDecimalSeparator(input);
         inputOperator(input);
         inputParenthesis(input);
 
@@ -257,10 +253,9 @@ public class CalculatorFragment extends Fragment {
      * Inputs a decimal separator in a text field.
      *
      * @param input Represents the text field itself.
-     * @param decimalSeparator A decimal separator (comma or dot) button.
      */
     @SuppressLint("ClickableViewAccessibility")
-    void inputDecimalSeparator(final EditText input, final Button decimalSeparator) {
+    void inputDecimalSeparator(final EditText input) {
         try {
             keypadButtons[10].setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -286,6 +281,11 @@ public class CalculatorFragment extends Fragment {
         }
     }
 
+    /**
+     * Inputs an operator in a text field.
+     *
+     * @param input Represents the text field itself.
+     */
     @SuppressLint("ClickableViewAccessibility")
     private void inputOperator(final EditText input) {
         View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -328,12 +328,17 @@ public class CalculatorFragment extends Fragment {
         }
     }
 
+    /**
+     * Inputs a parenthesis in a text field.
+     *
+     * @param input Represents the text field itself.
+     */
     @SuppressLint("ClickableViewAccessibility")
     private void inputParenthesis(final EditText input) {
         View.OnTouchListener listener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-            parenthesis = (Button) view;
+            Button parenthesis = (Button) view;
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -342,13 +347,20 @@ public class CalculatorFragment extends Fragment {
                 case MotionEvent.ACTION_UP:
                     parenthesis.startAnimation(mainActivity.getBounceOut());
 
-                    for (String parenthesis: parenthesisStringArray) {
-                        if (parenthesis.equals(mainActivity.getLeftParenthesis())) {
-                            if (isInputLastNumber(input))
-                                input.append(mainActivity.getSpace() + mainActivity.getTimes() + mainActivity.getSpace() + parenthesis);
-                        } else if (parenthesis.equals(mainActivity.getRightParenthesis())) {
-                            if (isInputLastNumber(input))
-                                input.append(parenthesis);
+                    for (Button parenthesisButton: CalculatorFragment.this.parenthesis) {
+                        switch (parenthesisButton.getId()) {
+                            case R.id.left_parenthesis:
+                                if (!isInputLastDecimalSeparator(input))
+                                    input.append(mainActivity.getLeftParenthesis());
+                                else if (isInputLastNumber(input))
+                                    input.append(mainActivity.getSpace() + mainActivity.getTimes() + mainActivity.getSpace() + parenthesis);
+
+                                break;
+                            case R.id.right_parenthesis:
+                                if (isInputLastNumber(input))
+                                    input.append(mainActivity.getRightParenthesis());
+
+                                break;
                         }
                     }
 
@@ -359,8 +371,8 @@ public class CalculatorFragment extends Fragment {
             }
         };
 
-        for (int parenthesis: parenthesisArray) {
-            view.findViewById(parenthesis).setOnTouchListener(listener);
+        for (Button parenthesis: parenthesis) {
+            view.findViewById(parenthesis.getId()).setOnTouchListener(listener);
         }
     }
 

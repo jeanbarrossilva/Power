@@ -1,21 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">Power</string>
+    <string name="freshchat_file_provider_authority" translatable="false">com.jeanbarrossilva.power.provider</string>
 
     <string name="unauthentic_app">Unauthentic app</string>
     <string name="unauthentic_version_general">You\'re using an unauthentic version of Power. Some features may not be available.</string>
     <string name="unauthentic_version_feature">Because you\'re using an unauthentic version of %1$s, you don\'t have access to this feature. Too bad.</string>
-
-    <string name="type_code">Type the code.</string>
-    <string name="abc" translatable="false">ABC</string>
-    <string name="def" translatable="false">DEF</string>
-    <string name="ghi" translatable="false">GHI</string>
-    <string name="jkl" translatable="false">JKL</string>
-    <string name="mno" translatable="false">MNO</string>
-    <string name="pqrs" translatable="false">PQRS</string>
-    <string name="tuv" translatable="false">TUV</string>
-    <string name="wxyz" translatable="false">WXYZ</string>
-
-    <string name="close">Close</string>
 
     <string name="title">Title</string>
     <string name="incompatible_device_dialog_title">Incompatible device</string>
@@ -27,15 +16,13 @@
     <string name="incompatible_device_dialog_message">Unfortunately, your device is incompatible with %1$s due to its screen size. Tap \"OK\" to close the app.</string>
     <string name="welcome_to_dialog_message">%1$s is a powerful calculator that lets you easily calculate expressions and convert units like Celsius to Fahrenheit, meter to kilometer, liter to barrel and much more! This is CalcOne, but taken to a whole new level.\n\nHope you enjoy it!</string>
     <string name="dark_mode_compatible_message">%1$s is compatible with Android\'s dark mode. Would you like to enable it now?</string>
-    <string name="dark_mode_app_message">%1$s is compatible with dark mode. Would you like to enable it now?</string>
     <string name="beta_version_dialog_message">You are using a beta version of %1$s. That means there may be some bugs, crashes and/or missing features.</string>
-    <string name="congratulations_night_mode_unlock">You discovered the secret code and Night mode has been freely unlocked. To enable it, go to Settings.</string>
-    <string name="hidden_mode_set_password_dialog_message">Set a 4-digit PIN.</string>
 
     <string name="ok_ill_never_download_an_app_from_an_untrustable_store_just_to_get_paid_features_for_free_again">Sure, take me to Google Play</string>
     <string name="ok" translatable="false">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="cancel">Cancel</string>
 
     <string name="success">Success</string>
     <string name="action_success">The action was successfully performed.</string>
@@ -50,15 +37,25 @@
     <string name="action_error">The action couldn\'t be performed.</string>
 
     <string name="settings">Settings</string>
-    <string name="hidden_mode">Hidden Mode</string>
-    <string name="hidden_mode_pro_only">Hidden Mode is only available in %1$s Pro version.</string>
-    <string name="hidden_mode_definition">Hidden Mode is a feature that allows you to securely store images in the calculator with a password.</string>
-    <string name="hidden_mode_disable">Disabling Hidden Mode will remove all the stored files.</string>
     <string name="dark_mode">Dark Mode</string>
-    <string name="night_locked">Night mode is locked. Find a way to unlock it.</string>
-    <string name="night_pro">Night is available in %1$s Pro version.</string>
+    <string name="share_usage_data">Share usage data</string>
     <string name="send_feedback">Send feedback</string>
+
+    <string name="share_thoughts">Share your thoughts about this app with the developer by choosing one of the ways below to do so.</string>
+    <string name="review">Review</string>
+
+    <string name="rate">Rate</string>
+    <string name="loved_it">Love</string>
+    <string name="dislike">Dislike</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="store_rating_error">An error occurred while restoring your rating. It will be submitted as soon as possible.</string>
+
+    <string name="chat">Chat</string>
+    <string name="tweet_direct_message">Tweet or Direct Message</string>
+    <string name="email" translatable="false">E-mail</string>
+    <string name="report">Report</string>
     <string name="send_feedback_email_subject">%1$s %2$s feedback</string>
+
     <string name="source_code">Source code</string>
     <string name="credits">Credits</string>
 
@@ -72,14 +69,10 @@
 
     <string name="name">Name</string>
     <string name="device_model">Device model</string>
+    <string name="version">Version</string>
     <string name="api_x" translatable="false">API %1o</string>
-    <string name="no_internet_connection">No Internet connection available.</string>
-    <string name="waitlist_request_sent">You\'ve been added to the waitlist.</string>
-    <string name="waitlist_request_already_sent">You\'ve already been added to the waitlist.</string>
 
     <string name="at_developer" translatable="false">\@jeanbarrossilva</string>
-    <string name="version_x" translatable="false">%1$s %2$s</string>
-    <string name="version">Version</string>
 
     <string name="zero" translatable="false">0</string>
     <string name="dot" translatable="false">.</string>
@@ -107,7 +100,7 @@
     <string name="times" translatable="false">×</string>
     <string name="division" translatable="false">÷</string>
 
-    <string name="buy_pro_features_description">This feature is only available in %1$s Pro. By buying it, you also get:\n\n• %2$s\n• %3$s\n• %4$s\n• %5$s</string>
+    <string name="buy_pro_features_description">This feature is only available in %1$s Pro. By buying it, you also get:\n\n• %2$s\n• %3$s\n• %4$s</string>
     <string name="conversions_all">Conversions (length, time, temperature and more)</string>
     <string name="ads_removal">Ads removal</string>
 
@@ -122,7 +115,7 @@
     <string name="from">From</string>
     <string name="to">To</string>
 
-    <string name="light_year">Light-year</string>
+    <string name="light_year">Light year</string>
     <string name="light_year_symbol">ly</string>
 
     <string name="kilometer">Kilometer</string>
@@ -133,6 +126,9 @@
 
     <string name="decameter">Decameter</string>
     <string name="decameter_symbol" translatable="false">dam</string>
+
+    <string name="mile">Mile</string>
+    <string name="mile_symbol" translatable="false">mi</string>
 
     <string name="meter">Meter</string>
     <string name="meter_symbol" translatable="false">m</string>
@@ -179,12 +175,11 @@
     <string name="kelvin" translatable="false">Kelvin</string>
     <string name="kelvin_symbol" translatable="false">K</string>
 
+    <string name="rankine" translatable="false">Rankine</string>
+    <string name="rankine_symbol" translatable="false">°R</string>
+
+    <string name="reaumur" translatable="false">Réaumur</string>
+    <string name="reaumur_symbol" translatable="false">°Ré</string>
+
     <string name="infinity">Infinity</string>
-
-    <string name="hidden_mode_set_up_success">Hidden Mode was successfully set up. Type in your PIN and hit \"=\" to enter.</string>
-
-    <string name="an_error_occurred">An error occurred.</string>
-    <string name="hidden_mode_pin_empty">The PIN field can\'t be empty.</string>
-    <string name="hidden_mode_pin_at_least_4_digits">The PIN must contain at least 4 digits.</string>
-    <string name="hidden_only_mode_pin_4_digits">The PIN must contain only 4 digits.</string>
 </resources>

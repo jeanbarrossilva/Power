@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -14,10 +16,13 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.HapticFeedbackConstants;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,8 +36,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.freshchat.consumer.sdk.Freshchat;
+import com.freshchat.consumer.sdk.FreshchatConfig;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.DecimalFormat;
@@ -42,10 +48,13 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import id.voela.actrans.AcTrans;
-
 @SuppressWarnings({"FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity {
+    boolean didRate;
+    String unsavedRating;
+
+    boolean shareUsageData;
+
     private String empty;
     private String space;
     private String colon;
@@ -61,34 +70,20 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor preferencesEditor;
 
-    // private String userId;
-
     BottomNavigationView bottomNavigationView;
 
     CalculatorFragment calculatorFragment;
     SettingsFragment settingsFragment;
 
-    AcTrans.Builder acTrans;
-
     private boolean isNightEnabled;
 
     private Dialog alertSuccess;
-    // private View alertSuccessIcon;
-    // private TextView alertSuccessMessage;
+    private TextView alertSuccessMessage;
 
     private Dialog[] alerts;
-
     private Dialog alertInfo;
-    // private View alertInfoIcon;
-    // private TextView alertInfoMessage;
-
     private Dialog alertWarning;
-    // private View alertWarningIcon;
-    // private TextView alertWarningMessage;
-
     private Dialog alertError;
-    // private View alertErrorIcon;
-    // private TextView alertErrorMessage;
 
     private Dialog[] dialogs;
 
@@ -96,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView dialogBuyProTitle;
     private TextView dialogBuyProMessage;
     // private Button dialogBuyProButton;
+
+    private Dialog dialogFeedback;
+    private ConstraintLayout dialogFeedbackReviewButton;
+    private ConstraintLayout dialogFeedbackChatButton;
+    private ConstraintLayout dialogFeedbackTweetDirectMessageButton;
+    private ConstraintLayout dialogFeedbackEmailButton;
+    private Button dialogFeedbackCancelButton;
 
     private Dialog dialogOK;
     private TextView dialogOKTitle;
@@ -109,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
     private Button dialogYesNoYesButton;
 
     private Dialog dialogInput;
-    // private TextView dialogInputTitle;
-    // private TextView dialogInputMessage;
     private EditText dialogInputField;
     private Button dialogInputButton;
 
@@ -169,6 +169,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        preferencesEditor = preferences.edit();
+
+        didRate = preferences.getBoolean("didRate", false);
+        unsavedRating = null;
+
+        shareUsageData = preferences.getBoolean("shareUsageData", false);
+
         empty = "";
         space = " ";
         colon = ":";
@@ -180,13 +188,8 @@ public class MainActivity extends AppCompatActivity {
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
 
-        preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-        preferencesEditor = preferences.edit();
-
         calculatorFragment = new CalculatorFragment();
         settingsFragment = new SettingsFragment();
-
-        acTrans = new AcTrans.Builder(MainActivity.this);
 
         isNightEnabled = preferences.getBoolean("isNightEnabled", false);
 
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         leftParenthesis = getString(R.string.left_parenthesis);
         rightParenthesis = getString(R.string.right_parenthesis);
 
-        deviceInfo = (getString(R.string.name) + colon + space + deviceName) + "\n" + (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT + rightParenthesis));
+        deviceInfo = shareUsageData ? (getString(R.string.name) + colon + space + deviceName) + "\n" : empty + (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT + rightParenthesis));
 
         leftSquareBracket = "[";
         rightSquareBracket = "]";
@@ -251,12 +254,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    String getDeviceInfo() {
-        return deviceInfo;
+    boolean getShareUsageData() {
+        return preferences.getBoolean("shareUsageData", false);
     }
 
-    String getAppName() {
-        return appName;
+    void setShareUsageData(boolean share) {
+        preferencesEditor.putBoolean("shareUsageData", share)
+                .apply();
     }
 
     String getVersionName() {
@@ -285,7 +289,9 @@ public class MainActivity extends AppCompatActivity {
             String fragment = String.valueOf(fragments.get(fragments.size() - 1));
             String currentFragment = fragment.replace(fragment.substring(fragment.indexOf("{"), fragment.indexOf("}") + 1), empty);
 
-            System.out.println("Current Fragment: " + currentFragment);
+            if (shareUsageData)
+                System.out.println("Current Fragment: " + currentFragment);
+
             return currentFragment;
         }
 
@@ -322,49 +328,9 @@ public class MainActivity extends AppCompatActivity {
                 .apply();
     }
 
-    /* Dialog getAlertSuccess() {
-        return alertSuccess;
-    }
-
-    void setAlertSuccessIcon(int icon) {
-        alertSuccessIcon.setBackgroundResource(icon);
-    }
-
-    void setAlertSuccessMessage(String message) {
-        alertSuccessMessage.setText(message);
-    }
-
-    Dialog getAlertInfo() {
-        return alertInfo;
-    }
-
-    void setAlertInfoIcon(int icon) {
-        alertInfoIcon.setBackgroundResource(icon);
-    }
-
-    void setAlertInfoMessage(String message) {
-        alertInfoMessage.setText(message);
-    } */
-
     Dialog getAlertError() {
         return alertError;
     }
-
-    /* void setAlertErrorIcon(int icon) {
-        alertErrorIcon.setBackgroundResource(icon);
-    }
-
-    void setAlertErrorMessage(String message) {
-        alertErrorMessage.setText(message);
-    }
-
-    Dialog getDialogBuyPro() {
-        return dialogBuyPro;
-    } */
-
-    /* Dialog getDialogOK() {
-        return dialogOK;
-    } */
 
     void setDialogOKTitle(String title) {
         dialogOKTitle.setText(title);
@@ -374,13 +340,9 @@ public class MainActivity extends AppCompatActivity {
         dialogOKMessage.setText(message);
     }
 
-    /* void setDialogOKButtonOnClickListener(View.OnClickListener listener) {
-        dialogOKButton.setOnClickListener(listener);
+    Dialog getDialogFeedback() {
+        return dialogFeedback;
     }
-
-    Dialog getDialogYesNo() {
-        return dialogYesNo;
-    } */
 
     void setDialogYesNoTitle(String title) {
         dialogYesNoTitle.setText(title);
@@ -394,29 +356,9 @@ public class MainActivity extends AppCompatActivity {
         dialogYesNoYesButton.setOnClickListener(listener);
     }
 
-    /* Dialog getDialogInput() {
-        return dialogInput;
-    }
-
-    void setDialogInputTitle(String title) {
-        dialogInputTitle.setText(title);
-    }
-
-    void setDialogInputMessage(String message) {
-        dialogInputMessage.setText(message);
-    }
-
-    void setDialogInputButtonOnClickListener(View.OnClickListener listener) {
-        dialogInputButton.setOnClickListener(listener);
-    } */
-
     void setDialogInputFieldInputType(int type) {
         dialogInputField.setInputType(type);
     }
-
-    /* String getDialogInputFieldText() {
-        return dialogInputField.getText().toString();
-    } */
 
     void setBounceInterpolatorConfig(double amplitude, double frequency) {
         this.bounceAmplitude = amplitude;
@@ -432,17 +374,13 @@ public class MainActivity extends AppCompatActivity {
         return bounceOut;
     }
 
-    /* Timer getTimer() {
-        return timer;
-    } */
-
     String repeat(final String text, int times) {
         StringBuilder result = new StringBuilder(empty);
 
         for (int quantity = 0; quantity < times; quantity++)
             result = result.append(text);
 
-        return result.toString();
+        return result.toString().equals(empty) ? null : result.toString();
     }
 
     String getLeftParenthesis() {
@@ -469,10 +407,6 @@ public class MainActivity extends AppCompatActivity {
         return comma;
     }
 
-    String getHyphen() {
-        return hyphen;
-    }
-
     String[] getDecimalSeparators() {
         return decimalSeparators;
     }
@@ -488,10 +422,6 @@ public class MainActivity extends AppCompatActivity {
     String getTimes() {
         return times;
     }
-
-    /* String getDivision() {
-        return division;
-    } */
 
     String getAsterisk() {
         return asterisk;
@@ -512,30 +442,6 @@ public class MainActivity extends AppCompatActivity {
     String getInfinity() {
         return infinity;
     }
-
-    /* String screenSize() {
-        String screenLayoutSize;
-        int size = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-
-        switch (size) {
-            case Configuration.SCREENLAYOUT_SIZE_SMALL:
-            screenLayoutSize = "small";
-            break;
-            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            screenLayoutSize = "normal";
-            break;
-            case Configuration.SCREENLAYOUT_SIZE_LARGE:
-            screenLayoutSize = "large";
-            break;
-            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-            screenLayoutSize = "xlarge";
-            break;
-            default:
-            screenLayoutSize = null;
-        }
-
-        return screenLayoutSize;
-    } */
 
     private void alerts() {
         // Success alert (alert with a positive message) declaration.
@@ -569,29 +475,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         alertSuccess.setContentView(R.layout.alert_success);
-
-        // alertSuccessIcon = alertSuccess.findViewById(R.id.icon);
-        // alertSuccessMessage = alertSuccess.findViewById(R.id.message);
+        alertSuccessMessage = alertSuccess.findViewById(R.id.message);
 
         alertInfo.setContentView(R.layout.alert_info);
-
-        // alertInfoIcon = alertInfo.findViewById(R.id.icon);
-        // alertInfoMessage = alertInfo.findViewById(R.id.message);
-
         alertWarning.setContentView(R.layout.alert_warning);
-
-        // alertWarningIcon = alertWarning.findViewById(R.id.icon);
-        // alertWarningMessage = alertWarning.findViewById(R.id.message);
-
         alertError.setContentView(R.layout.alert_error);
-
-        // alertErrorIcon = alertError.findViewById(R.id.icon);
-        // alertErrorMessage = alertError.findViewById(R.id.message);
     }
 
     private void dialogs() {
         // Buy Pro Dialog (dialog with a description of the existing features in Power Pro and a "buy" button) declaration.
         dialogBuyPro = new Dialog(this);
+
+        // Feedback Dialog (dialog with a "list" of feedback options) declaration.
+        dialogFeedback = new Dialog(this);
 
         // OK Dialog (dialog with an OK neutral button) declaration.
         dialogOK = new Dialog(this);
@@ -603,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
         dialogInput = new Dialog(this);
 
         dialogs = new Dialog[] {
-                dialogBuyPro, dialogOK, dialogInput, dialogYesNo
+                dialogBuyPro, dialogFeedback, dialogOK, dialogInput, dialogYesNo
         };
 
         for (final Dialog dialog: dialogs) {
@@ -620,12 +516,66 @@ public class MainActivity extends AppCompatActivity {
         dialogBuyProMessage = dialogBuyPro.findViewById(R.id.message);
         dialogBuyProMessage.setText(String.format(getString(R.string.buy_pro_features_description),
                 getString(R.string.app_name),
-                getString(R.string.hidden_mode),
                 getString(R.string.conversions_all),
                 getString(R.string.dark_mode),
                 getString(R.string.ads_removal)));
 
-        // dialogBuyProButton = dialogBuyPro.findViewById(R.id.buy);
+        // Dialog Feedback content.
+        dialogFeedback.setContentView(R.layout.dialog_feedback);
+
+        dialogFeedbackReviewButton = dialogFeedback.findViewById(R.id.review);
+        dialogFeedbackChatButton = dialogFeedback.findViewById(R.id.chat);
+        dialogFeedbackTweetDirectMessageButton = dialogFeedback.findViewById(R.id.tweet_direct_message);
+        dialogFeedbackEmailButton = dialogFeedback.findViewById(R.id.email);
+        dialogFeedbackCancelButton = dialogFeedback.findViewById(R.id.cancel);
+
+        // Default Dialog Feedback Review button click listener, opens Google Play Store.
+        dialogFeedbackReviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+            }
+        });
+
+        dialogFeedbackChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FreshchatConfig freshchatConfig = new FreshchatConfig("57b32ce0-60a5-4067-b601-288016f4be5e", "75534fd8-ed19-4107-9b54-6b5a9bf811a4");
+
+                freshchatConfig.setGallerySelectionEnabled(true);
+
+                Freshchat.getInstance(MainActivity.this).init(freshchatConfig);
+                Freshchat.showConversations(MainActivity.this);
+            }
+        });
+
+        // Default Dialog Feedback Tweet or Direct Message listener, opens the developer's Twitter profile.
+        dialogFeedbackTweetDirectMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/jeanbarrossilva")));
+            }
+        });
+
+        // Default Dialog Feedback E-mail button click listener, composes a new e-mail message.
+        dialogFeedbackEmailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
+
+                email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+                email.putExtra(Intent.EXTRA_TEXT, "\n\n" + repeat(hyphen, 50) + "\n\n" + deviceInfo);
+
+                startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
+            }
+        });
+
+        dialogFeedbackCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogFeedback.dismiss();
+            }
+        });
 
         // Dialog OK content.
         dialogOK.setContentView(R.layout.dialog_ok);
@@ -660,9 +610,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Dialog Input content.
         dialogInput.setContentView(R.layout.dialog_input);
-
-        // dialogInputTitle = dialogInput.findViewById(R.id.title);
-        // dialogInputMessage = dialogInput.findViewById(R.id.message);
 
         dialogInputField = dialogInput.findViewById(R.id.input);
         setDialogInputFieldInputType(InputType.TYPE_CLASS_TEXT);
@@ -795,8 +742,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 setBounceInterpolatorConfig(bounceAmplitude, bounceFrequency);
-            } else
+            } else if (shareUsageData)
                 System.out.println("bounceInterpolator was incorrectly set and doesn't contain '" + getComma() + getSpace() + "'.");
+
         } else {
             customSetting = new String[] {
                     DEFAULT_BOUNCE_IN_SETTING
@@ -805,8 +753,9 @@ public class MainActivity extends AppCompatActivity {
             bounceIn(view, customSetting);
         }
 
-        Animation bounceIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.bounce_in);
         bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
+
+        Animation bounceIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.bounce_in);
         bounceIn.setInterpolator(bounceInterpolator);
 
         view.startAnimation(bounceIn);
@@ -819,7 +768,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        bounceIn(view, "0.35, 1");
                         break;
                     case MotionEvent.ACTION_UP:
                         view.startAnimation(getBounceOut());
@@ -869,20 +818,18 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
         // The units Button[] must contain all the unit buttons available, including the selected one.
-    void selectUnit(Context context, final Button selectedUnit, final Button[] units) {
-        int selectedUnitId = selectedUnit.getId();
+    void selectButton(final Button selected, final Button[] units, int background) {
+        int selectedId = selected.getId();
 
-        selectedUnit.setTextColor(isNightEnabled ? Color.BLACK : Color.WHITE);
-        selectedUnit.setBackgroundResource(R.drawable.option_clicked);
-
-        System.out.println("Selected \"convertFrom\" unit: " + selectedUnit.getText());
+        selected.setTextColor(isNightEnabled ? Color.BLACK : Color.WHITE);
+        selected.setBackgroundResource(background);
 
         for (Button unit: units) {
-            if (unit.getId() != selectedUnitId) try {
+            if (unit.getId() != selectedId) try {
                 unit.setTextColor(isNightEnabled ? Color.WHITE : Color.BLACK);
                 unit.setBackgroundResource(R.drawable.option);
             } catch (NullPointerException nullPointerException) {
-                Toast.makeText(context, getString(R.string.an_error_occurred), Toast.LENGTH_LONG).show();
+                alertError.show();
                 nullPointerException.printStackTrace();
             }
         }
@@ -904,15 +851,15 @@ public class MainActivity extends AppCompatActivity {
 
                         if (!calc.equals(getString(R.string.error))) {
                             input.append(number.getText());
-                            System.out.println("Number '" + number.getText() + "' added.");
                         } else {
                             input.setText(empty);
 
                             number = (Button) view;
                             input.append(number.getText());
-
-                            System.out.println("Number '" + number.getText() + "' added.");
                         }
+
+                        if (shareUsageData)
+                            System.out.println("Number '" + number.getText() + "' added.");
 
                         calc(input, conversionResult, conversionSymbolResult);
 
@@ -947,8 +894,26 @@ public class MainActivity extends AppCompatActivity {
                             input.setText(calc.endsWith(space) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
 
                             calc(input, conversionResult, conversionResultSymbol);
-                        } else
-                            conversionResult.setText(getString(R.string.zero));
+                        }
+
+                        input.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            if (String.valueOf(s).isEmpty())
+                                conversionResult.setText(getString(R.string.zero));
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if (String.valueOf(s).isEmpty())
+                                conversionResult.setText(getString(R.string.zero));
+                        }
+                    });
 
                         break;
                 }
@@ -974,6 +939,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case "decameter":
                             unit = "decameter";
+                            break;
+                        case "mile":
+                            unit = "mile";
                             break;
                         case "meter":
                             unit = "meter";
@@ -1029,6 +997,12 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case "kelvin":
                             unit = "kelvin";
+                            break;
+                        case "rankine":
+                            unit = "rankine";
+                            break;
+                        case "reaumur":
+                            unit = "reaumur";
                             break;
                     }
 
@@ -1056,6 +1030,9 @@ public class MainActivity extends AppCompatActivity {
                         case "decameter":
                             unit = "decameter";
                             break;
+                        case "mile":
+                            unit = "mile";
+                            break;
                         case "meter":
                             unit = "meter";
                             break;
@@ -1110,6 +1087,12 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case "kelvin":
                             unit = "kelvin";
+                            break;
+                        case "rankine":
+                            unit = "rankine";
+                            break;
+                        case "reaumur":
+                            unit = "reaumur";
                             break;
                     }
 
@@ -1138,6 +1121,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 946100000000000.0));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(5.789, 12)));
                                     break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9461000000000000.0));
@@ -1170,6 +1156,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1.609));
                                     break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1000));
@@ -1204,6 +1193,9 @@ public class MainActivity extends AppCompatActivity {
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
                                     break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 16.093));
+                                    break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 100));
                                     break;
@@ -1236,6 +1228,9 @@ public class MainActivity extends AppCompatActivity {
                                 case "decameter":
                                     conversionResult.setText(input.getText().toString());
                                     break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 160.934));
+                                    break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 10));
                                     break;
@@ -1252,6 +1247,43 @@ public class MainActivity extends AppCompatActivity {
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 7)));
                                     break;
                             }
+
+                            break;
+                        case "mile":
+                            switch (convertTo()) {
+                                case "lightYear":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / Math.pow(5.879, 12)));
+                                    break;
+                                case "kilometer":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1.609));
+                                    break;
+                                case "hectometer":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 16.093));
+                                    break;
+                                case "decameter":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 160.934));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                                case "meter":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1609.344));
+                                    break;
+                                case "decimeter":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 16093.44));
+                                    break;
+                                case "centimeter":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 160934.4));
+                                    break;
+                                case "millimeter":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(1.609, 6)));
+                                    break;
+                                case "micrometer":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(1.609, 9)));
+                                    break;
+                            }
+
+                            break;
                         case "meter":
                             switch (convertTo()) {
                                 case "lightYear":
@@ -1265,6 +1297,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1609.344));
                                     break;
                                 case "meter":
                                     conversionResult.setText(input.getText().toString());
@@ -1298,6 +1333,9 @@ public class MainActivity extends AppCompatActivity {
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 100));
                                     break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 16093.44));
+                                    break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(1.8 / (Double.parseDouble(input.getText().toString())) / 10));
                                     break;
@@ -1329,6 +1367,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 160934.4));
                                     break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) / 100));
@@ -1362,6 +1403,9 @@ public class MainActivity extends AppCompatActivity {
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 10000));
                                     break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / Math.pow(1.609, 6)));
+                                    break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / 1000));
                                     break;
@@ -1378,6 +1422,8 @@ public class MainActivity extends AppCompatActivity {
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * Math.pow(10, 3)));
                                     break;
                             }
+
+                            break;
                         case "micrometer":
                             switch (convertTo()) {
                                 case "lightYear":
@@ -1391,6 +1437,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "decameter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -7))));
+                                    break;
+                                case "mile":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / Math.pow(1.609, 9)));
                                     break;
                                 case "meter":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) / (1.057 * Math.pow(10, -6))));
@@ -1408,6 +1457,8 @@ public class MainActivity extends AppCompatActivity {
                                     conversionResult.setText(input.getText().toString());
                                     break;
                             }
+
+                            break;
                     }
 
                     break;
@@ -1607,6 +1658,12 @@ public class MainActivity extends AppCompatActivity {
                                 case "kelvin":
                                     conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) + 273.15));
                                     break;
+                                case "rankine":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 9 / 5 + 491.67));
+                                    break;
+                                case "reaumur":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 5 / 4));
+                                    break;
                             }
 
                             break;
@@ -1621,6 +1678,12 @@ public class MainActivity extends AppCompatActivity {
                                 case "kelvin":
                                     conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 32) * 5 / 9 + 273.15));
                                     break;
+                                case "rankine":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) + 459.67));
+                                    break;
+                                case "reaumur":
+                                    conversionResult.setText(String.valueOf((Double.valueOf(input.getText().toString()) - 32) * 4 / 9));
+                                    break;
                             }
 
                             break;
@@ -1633,6 +1696,52 @@ public class MainActivity extends AppCompatActivity {
                                     conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 273.15) * 9 / 5 + 32));
                                     break;
                                 case "kelvin":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                                case "rankine":
+                                    conversionResult.setText(String.valueOf(Double.valueOf(input.getText().toString()) * 1.8));
+                                    break;
+                                case "reaumur":
+                                    conversionResult.setText(String.valueOf((Double.valueOf(input.getText().toString()) - 273.15) * 4 / 5));
+                                    break;
+                            }
+
+                            break;
+                        case "rankine":
+                            switch (convertTo()) {
+                                case "celsius":
+                                    conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) - 491.67) * 5 / 9));
+                                    break;
+                                case "fahrenheit":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) - 459.67));
+                                    break;
+                                case "kelvin":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) * 5 / 9));
+                                    break;
+                                case "rankine":
+                                    conversionResult.setText(input.getText().toString());
+                                    break;
+                                case "reaumur":
+                                    conversionResult.setText(String.valueOf((Double.valueOf(input.getText().toString()) - 491.67) * 4 / 9));
+                                    break;
+                            }
+
+                            break;
+                        case "reaumur":
+                            switch (convertTo()) {
+                                case "celsius":
+                                    conversionResult.setText(String.valueOf((Double.parseDouble(input.getText().toString()) / 0.8)));
+                                    break;
+                                case "fahrenheit":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) * 9 / 4 + 32));
+                                    break;
+                                case "kelvin":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) * 5 / 4 + 273.15));
+                                    break;
+                                case "rankine":
+                                    conversionResult.setText(String.valueOf(Double.parseDouble(input.getText().toString()) * 9 / 4 + 491.67));
+                                    break;
+                                case "reaumur":
                                     conversionResult.setText(input.getText().toString());
                                     break;
                             }

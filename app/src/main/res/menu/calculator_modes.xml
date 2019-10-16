@@ -10,15 +10,15 @@
         android:id="@+id/length"
         android:title="@string/length"
         android:titleCondensed="Length" />
+
+    <item
+        android:id="@+id/temperature"
+        android:title="@string/temperature"
+        android:titleCondensed="Temperature" />
     
     <item
         android:id="@+id/time"
         android:title="@string/time"
         android:titleCondensed="Time" />
-    
-    <item
-        android:id="@+id/temperature"
-        android:title="@string/temperature"
-        android:titleCondensed="Temperature" />
     
 </menu>

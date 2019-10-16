@@ -22,6 +22,18 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.jeanbarrossilva.power.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/freshchat_file_provider_paths" />
+
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">

@@ -25,11 +25,13 @@ public class TemperatureFragment extends CalculatorFragment {
     private TextView conversionSymbolResult;
 
     private Button unit;
-    private Button[] options =  new Button[3];
+    private Button[] options =  new Button[5];
 
     private Button celsius;
     private Button fahrenheit;
     private Button kelvin;
+    private Button rankine;
+    private Button reaumur;
 
     public TemperatureFragment() {
 
@@ -43,7 +45,7 @@ public class TemperatureFragment extends CalculatorFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_temperature, container, false);
+        view = inflater.inflate(R.layout.fragment_calculator_temperature, container, false);
         mainActivity = (MainActivity) getActivity();
 
         input = view.findViewById(R.id.input);
@@ -62,10 +64,14 @@ public class TemperatureFragment extends CalculatorFragment {
         celsius = view.findViewById(R.id.celsius);
         fahrenheit = view.findViewById(R.id.fahrenheit);
         kelvin = view.findViewById(R.id.kelvin);
+        rankine = view.findViewById(R.id.rankine);
+        reaumur = view.findViewById(R.id.reaumur);
 
         options[0] = celsius;
         options[1] = fahrenheit;
         options[2] = kelvin;
+        options[3] = rankine;
+        options[4] = reaumur;
 
         calculatorMode = view.findViewById(R.id.calculator_mode);
         keypadButtons[10] = view.findViewById(R.id.decimal_separator);
@@ -77,7 +83,7 @@ public class TemperatureFragment extends CalculatorFragment {
         try {
             // Default configuration (Celsius to Fahrenheit).
             inputSymbol.setText(getString(R.string.celsius_symbol));
-            mainActivity.selectUnit(context, celsius, options);
+            mainActivity.selectButton(celsius, options, R.drawable.option_clicked);
             mainActivity.getPreferences().edit().putString("convertFrom", "celsius")
                     .apply();
 
@@ -92,7 +98,7 @@ public class TemperatureFragment extends CalculatorFragment {
         mainActivity.calculatorMode(context, calculatorMode);
 
         mainActivity.inputNumber(view, input, conversionResult, conversionSymbolResult, input.getText().toString());
-        inputDecimalSeparator(input, keypadButtons[10]);
+        inputDecimalSeparator(input);
         mainActivity.delete(input, delete, conversionResult, conversionSymbolResult);
 
         return view;
@@ -138,6 +144,18 @@ public class TemperatureFragment extends CalculatorFragment {
 
                                     conversionSymbolResult.setText(getString(R.string.kelvin_symbol));
                                     unit.setText(getString(R.string.kelvin));
+                                } else if (item.getTitle().equals(getString(R.string.rankine))) {
+                                    mainActivity.getPreferences().edit().putString("convertTo", "rankine")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.rankine_symbol));
+                                    unit.setText(getString(R.string.rankine));
+                                } else if (item.getTitle().equals(getString(R.string.reaumur))) {
+                                    mainActivity.getPreferences().edit().putString("convertTo", "reaumur")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.reaumur_symbol));
+                                    unit.setText(getString(R.string.reaumur));
                                 }
 
                                 mainActivity.calc(input, conversionResult, conversionSymbolResult);
@@ -166,7 +184,7 @@ public class TemperatureFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         celsius.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, celsius, options);
+                        mainActivity.selectButton(celsius, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.celsius_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "celsius")
@@ -190,7 +208,7 @@ public class TemperatureFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         fahrenheit.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, fahrenheit, options);
+                        mainActivity.selectButton(fahrenheit, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.fahrenheit_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "fahrenheit")
@@ -214,10 +232,58 @@ public class TemperatureFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         kelvin.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, kelvin, options);
+                        mainActivity.selectButton(kelvin, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.kelvin_symbol));
 
                         mainActivity.getPreferences().edit().putString("convertFrom", "kelvin")
+                                .apply();
+                        break;
+                }
+
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
+
+                return true;
+            }
+        });
+
+        rankine.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mainActivity.bounceIn(rankine, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        rankine.startAnimation(mainActivity.getBounceOut());
+
+                        mainActivity.selectButton(rankine, options, R.drawable.option_clicked);
+                        inputSymbol.setText(getString(R.string.rankine_symbol));
+
+                        mainActivity.getPreferences().edit().putString("convertFrom", "rankine")
+                                .apply();
+                        break;
+                }
+
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
+
+                return true;
+            }
+        });
+
+        reaumur.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mainActivity.bounceIn(reaumur, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        reaumur.startAnimation(mainActivity.getBounceOut());
+
+                        mainActivity.selectButton(reaumur, options, R.drawable.option_clicked);
+                        inputSymbol.setText(getString(R.string.reaumur_symbol));
+
+                        mainActivity.getPreferences().edit().putString("convertFrom", "reaumur")
                                 .apply();
                         break;
                 }

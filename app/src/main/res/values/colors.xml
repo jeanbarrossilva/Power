@@ -8,6 +8,8 @@
     <color name="backgroundInverse">@android:color/black</color>
     <color name="bottom_navigation_view">@android:color/white</color>
     <color name="dialog">@android:color/white</color>
+    <color name="dialog_feedback">#131313</color>
+    <color name="dialog_feedback_button_clicked">#333333</color>
     <color name="dialog_buy_pro">@android:color/black</color>
     <color name="dialog_buy_pro_button">#424242</color>
     <color name="dialog_input">#F1F1F1</color>

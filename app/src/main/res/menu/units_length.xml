@@ -16,6 +16,10 @@
     <item
         android:id="@+id/decameter"
         android:title="@string/decameter" />
+
+    <item
+        android:id="@+id/mile"
+        android:title="@string/mile" />
     
     <item
         android:id="@+id/meter"

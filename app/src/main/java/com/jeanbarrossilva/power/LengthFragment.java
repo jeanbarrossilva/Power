@@ -25,12 +25,13 @@ public class LengthFragment extends CalculatorFragment {
     private TextView conversionSymbolResult;
 
     private Button unit;
-    private Button[] options =  new Button[9];
+    private Button[] options =  new Button[10];
 
     private Button lightYear;
     private Button kilometer;
     private Button hectometer;
     private Button decameter;
+    private Button mile;
     private Button meter;
     private Button decimeter;
     private Button centimeter;
@@ -49,7 +50,7 @@ public class LengthFragment extends CalculatorFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_length, container, false);
+        view = inflater.inflate(R.layout.fragment_calculator_length, container, false);
         mainActivity = (MainActivity) getActivity();
 
         input = view.findViewById(R.id.input);
@@ -67,6 +68,7 @@ public class LengthFragment extends CalculatorFragment {
         kilometer = view.findViewById(R.id.kilometer);
         hectometer = view.findViewById(R.id.hectometer);
         decameter = view.findViewById(R.id.decameter);
+        mile = view.findViewById(R.id.mile);
         meter = view.findViewById(R.id.meter);
         decimeter = view.findViewById(R.id.decimeter);
         centimeter = view.findViewById(R.id.centimeter);
@@ -77,11 +79,12 @@ public class LengthFragment extends CalculatorFragment {
         options[1] = kilometer;
         options[2] = hectometer;
         options[3] = decameter;
-        options[4] = meter;
-        options[5] = decimeter;
-        options[6] = centimeter;
-        options[7] = millimeter;
-        options[8] = micrometer;
+        options[4] = mile;
+        options[5] = meter;
+        options[6] = decimeter;
+        options[7] = centimeter;
+        options[8] = millimeter;
+        options[9] = micrometer;
 
         keypadButtons[10] = view.findViewById(R.id.decimal_separator);
         calculatorMode = view.findViewById(R.id.calculator_mode);
@@ -92,7 +95,7 @@ public class LengthFragment extends CalculatorFragment {
 
         // Default configuration (meter to kilometer).
         inputSymbol.setText(getString(R.string.meter_symbol));
-        mainActivity.selectUnit(context, meter, options);
+        mainActivity.selectButton(meter, options, R.drawable.option_clicked);
         mainActivity.getPreferencesEditor().putString("convertFrom", "meter")
                 .apply();
 
@@ -104,7 +107,7 @@ public class LengthFragment extends CalculatorFragment {
         mainActivity.calculatorMode(context, calculatorMode);
 
         mainActivity.inputNumber(view, input, conversionResult, conversionSymbolResult, input.getText().toString());
-        inputDecimalSeparator(input, keypadButtons[10]);
+        inputDecimalSeparator(input);
         mainActivity.delete(input, delete, conversionResult, conversionSymbolResult);
 
         return view;
@@ -155,12 +158,24 @@ public class LengthFragment extends CalculatorFragment {
 
                                     conversionSymbolResult.setText(getString(R.string.decameter_symbol));
                                     unit.setText(getString(R.string.decameter));
+                                } else if (item.getTitle().equals(getString(R.string.mile))) {
+                                    mainActivity.getPreferencesEditor().putString("convertTo", "mile")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.mile_symbol));
+                                    unit.setText(getString(R.string.mile));
                                 } else if (item.getTitle().equals(getString(R.string.meter))) {
                                     mainActivity.getPreferencesEditor().putString("convertTo", "meter")
                                             .apply();
 
                                     conversionSymbolResult.setText(getString(R.string.meter_symbol));
                                     unit.setText(getString(R.string.meter));
+                                } else if (item.getTitle().equals(getString(R.string.mile))) {
+                                    mainActivity.getPreferencesEditor().putString("convertTo", "mile")
+                                            .apply();
+
+                                    conversionSymbolResult.setText(getString(R.string.mile_symbol));
+                                    unit.setText(getString(R.string.mile));
                                 } else if (item.getTitle().equals(getString(R.string.decimeter))) {
                                     mainActivity.getPreferencesEditor().putString("convertTo", "decimeter")
                                             .apply();
@@ -213,7 +228,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         lightYear.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, lightYear, options);
+                        mainActivity.selectButton(lightYear, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.light_year_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "lightYear")
@@ -237,7 +252,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         kilometer.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, kilometer, options);
+                        mainActivity.selectButton(kilometer, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.kilometer_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "kilometer")
@@ -261,7 +276,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         hectometer.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, hectometer, options);
+                        mainActivity.selectButton(hectometer, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.hectometer_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "hectometer")
@@ -285,10 +300,34 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         decameter.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, decameter, options);
+                        mainActivity.selectButton(decameter, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.decameter_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "decameter")
+                                .apply();
+                        break;
+                }
+
+                mainActivity.calc(input, conversionResult, conversionSymbolResult);
+
+                return true;
+            }
+        });
+
+        mile.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mainActivity.bounceIn(mile, DEFAULT_BOUNCE_IN_SETTING);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        meter.startAnimation(mainActivity.getBounceOut());
+
+                        mainActivity.selectButton(mile, options, R.drawable.option_clicked);
+                        inputSymbol.setText(getString(R.string.mile_symbol));
+
+                        mainActivity.getPreferencesEditor().putString("convertFrom", "mile")
                                 .apply();
                         break;
                 }
@@ -309,7 +348,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         meter.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, meter, options);
+                        mainActivity.selectButton(meter, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.meter_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "meter")
@@ -333,7 +372,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         decimeter.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, decimeter, options);
+                        mainActivity.selectButton(decimeter, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.decimeter_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "decimeter")
@@ -357,7 +396,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         centimeter.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, centimeter, options);
+                        mainActivity.selectButton(centimeter, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.centimeter_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "centimeter")
@@ -381,7 +420,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         millimeter.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, millimeter, options);
+                        mainActivity.selectButton(millimeter, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.millimeter_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "millimeter")
@@ -405,7 +444,7 @@ public class LengthFragment extends CalculatorFragment {
                     case MotionEvent.ACTION_UP:
                         micrometer.startAnimation(mainActivity.getBounceOut());
 
-                        mainActivity.selectUnit(context, micrometer, options);
+                        mainActivity.selectButton(micrometer, options, R.drawable.option_clicked);
                         inputSymbol.setText(getString(R.string.micrometer_symbol));
 
                         mainActivity.getPreferencesEditor().putString("convertFrom", "micrometer")
