@@ -67,7 +67,6 @@
     <string name="get_plus_subtitle">Destrave todas as possibilidades.</string>
     <string name="conversions">Conversões</string>
     <string name="mile">Milha</string>
-    <string name="version">Versão</string>
     <string name="cancel">Cancelar</string>
     <string name="rate">Avaliar</string>
     <string name="share_thoughts">Compartilhe o você que acha deste aplicativo com o desenvolvedor através de uma das maneiras abaixo.</string>
@@ -80,4 +79,6 @@
     <string name="share_usage_data">Compartilhar dados de uso</string>
     <string name="chat">Conversar</string>
     <string name="tweet_direct_message">Tweet ou Mensagem Direta</string>
+    <string name="so_version">Versão do SO</string>
+    <string name="history">Histórico</string>
 </resources>

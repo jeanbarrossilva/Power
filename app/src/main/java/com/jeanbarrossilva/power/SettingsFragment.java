@@ -1,6 +1,7 @@
 package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,8 +18,13 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
+import nl.dionsegijn.konfetti.KonfettiView;
+
 public class SettingsFragment extends Fragment {
     private MainActivity mainActivity;
+    private Context context;
 
     private Switch shareUsageData;
     private ConstraintLayout sendFeedback;
@@ -30,6 +36,12 @@ public class SettingsFragment extends Fragment {
 
     public SettingsFragment() {
 
+    }
+
+    @Override
+    public void onAttach(@NotNull Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 
     @SuppressLint("SetTextI18n")
@@ -68,6 +80,11 @@ public class SettingsFragment extends Fragment {
         shareUsageData.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    new KonfettiView(getContext()).build()
+                        .setFadeOutEnabled(true)
+                        .streamFor(300, 5000L);
+
                 mainActivity.setShareUsageData(isChecked);
             }
         });

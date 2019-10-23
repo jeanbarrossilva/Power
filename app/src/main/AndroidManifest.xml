@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jeanbarrossilva.power">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <supports-screens
         android:smallScreens="false"
         android:normalScreens="true"

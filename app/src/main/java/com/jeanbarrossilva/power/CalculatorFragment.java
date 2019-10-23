@@ -417,7 +417,7 @@ public class CalculatorFragment extends Fragment {
                     case MotionEvent.ACTION_UP:
                         if (!cancel) {
                             Expression expression;
-                            String result;
+                            String result = null;
 
                             if (!input.getText().toString().isEmpty()) {
                                 expression = new ExpressionBuilder(mainActivity.reformatCalc(input.getText().toString())).build();
@@ -436,11 +436,19 @@ public class CalculatorFragment extends Fragment {
                                     equal.performClick();
                                 }
 
+                                final String previousCalc = input.getText().toString();
+
                                 inputFormat(input, input.getText().toString());
+
+                                if (result != null) try {
+                                    new HistoryFragment().add(new Calc(previousCalc, result));
+                                } catch (NullPointerException exception) {
+                                    System.out.println("Couldn't add expression to History.");
+                                }
                             }
                         }
 
-                        System.out.println("\"isScientific\": " + isScientific);
+                        System.out.println("\"isScientific\":" + mainActivity.getSpace() + isScientific);
 
                         break;
                 }

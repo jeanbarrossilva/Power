@@ -36,6 +36,8 @@
     <string name="error">Error</string>
     <string name="action_error">The action couldn\'t be performed.</string>
 
+    <string name="history">History</string>
+
     <string name="settings">Settings</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="share_usage_data">Share usage data</string>
@@ -69,7 +71,7 @@
 
     <string name="name">Name</string>
     <string name="device_model">Device model</string>
-    <string name="version">Version</string>
+    <string name="so_version">SO version</string>
     <string name="api_x" translatable="false">API %1o</string>
 
     <string name="at_developer" translatable="false">\@jeanbarrossilva</string>

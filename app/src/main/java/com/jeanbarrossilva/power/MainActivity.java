@@ -48,71 +48,50 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-@SuppressWarnings({"FieldCanBeLocal"})
+@SuppressWarnings("SameParameterValue")
 public class MainActivity extends AppCompatActivity {
-    boolean didRate;
-    String unsavedRating;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferencesEditor;
 
-    boolean shareUsageData;
+    private ConstraintLayout layoutInfo;
+    private TextView layoutTitle;
+
+    private boolean shareUsageData;
 
     private String empty;
     private String space;
-    private String colon;
 
     private String hyphen;
 
-    String deviceName;
+    private String deviceInfoName;
     private String deviceInfo;
 
     private String appName;
     private String versionName;
 
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor preferencesEditor;
+    private BottomNavigationView bottomNavigationView;
 
-    BottomNavigationView bottomNavigationView;
-
-    CalculatorFragment calculatorFragment;
-    SettingsFragment settingsFragment;
+    private CalculatorFragment calculatorFragment;
 
     private boolean isNightEnabled;
 
-    private Dialog alertSuccess;
-    private TextView alertSuccessMessage;
-
-    private Dialog[] alerts;
-    private Dialog alertInfo;
-    private Dialog alertWarning;
     private Dialog alertError;
 
-    private Dialog[] dialogs;
-
-    private Dialog dialogBuyPro;
-    private TextView dialogBuyProTitle;
-    private TextView dialogBuyProMessage;
     // private Button dialogBuyProButton;
 
     private Dialog dialogFeedback;
-    private ConstraintLayout dialogFeedbackReviewButton;
-    private ConstraintLayout dialogFeedbackChatButton;
-    private ConstraintLayout dialogFeedbackTweetDirectMessageButton;
-    private ConstraintLayout dialogFeedbackEmailButton;
-    private Button dialogFeedbackCancelButton;
 
     private Dialog dialogOK;
     private TextView dialogOKTitle;
     private TextView dialogOKMessage;
-    private Button dialogOKButton;
 
     private Dialog dialogYesNo;
     private TextView dialogYesNoTitle;
     private TextView dialogYesNoMessage;
-    private Button dialogYesNoNoButton;
     private Button dialogYesNoYesButton;
 
     private Dialog dialogInput;
     private EditText dialogInputField;
-    private Button dialogInputButton;
 
     private BounceInterpolator bounceInterpolator;
 
@@ -131,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
     static final int LAST_PARENTHESIS_LEFT = 0;
     static final int LAST_PARENTHESIS_RIGHT = 1;
 
-    static final int REMOVE_SQUARE_BRACKET_LEFT = 0;
-    static final int REMOVE_SQUARE_BRACKET_RIGHT = 1;
-    static final int REMOVE_SQUARE_BRACKET_ALL = 2;
+    private static final int REMOVE_SQUARE_BRACKET_LEFT = 0;
+    private static final int REMOVE_SQUARE_BRACKET_RIGHT = 1;
+    private static final int REMOVE_SQUARE_BRACKET_ALL = 2;
 
     private String leftParenthesis;
     private String rightParenthesis;
@@ -146,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
     };
 
-    String dot;
+    private String dot;
     private String comma;
     private String[] decimalSeparators;
 
@@ -172,24 +151,21 @@ public class MainActivity extends AppCompatActivity {
         preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
         preferencesEditor = preferences.edit();
 
-        didRate = preferences.getBoolean("didRate", false);
-        unsavedRating = null;
-
-        shareUsageData = preferences.getBoolean("shareUsageData", false);
+        layoutInfo = findViewById(R.id.layout_info);
+        layoutTitle = findViewById(R.id.layout_title);
 
         empty = "";
         space = " ";
-        colon = ":";
+        String colon = ":";
 
         hyphen = "-";
 
-        deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+        String deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
 
         appName = getString(R.string.app_name);
         versionName = BuildConfig.VERSION_NAME;
 
         calculatorFragment = new CalculatorFragment();
-        settingsFragment = new SettingsFragment();
 
         isNightEnabled = preferences.getBoolean("isNightEnabled", false);
 
@@ -202,14 +178,15 @@ public class MainActivity extends AppCompatActivity {
         leftParenthesis = getString(R.string.left_parenthesis);
         rightParenthesis = getString(R.string.right_parenthesis);
 
-        deviceInfo = shareUsageData ? (getString(R.string.name) + colon + space + deviceName) + "\n" : empty + (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT + rightParenthesis));
+        deviceInfoName = (getString(R.string.name) + colon + space + deviceName);
+        deviceInfo = (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.so_version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT) + rightParenthesis);
 
         leftSquareBracket = "[";
         rightSquareBracket = "]";
 
         dot = getString(R.string.dot);
         comma = getString(R.string.comma);
-        decimalSeparators = new String[]{
+        decimalSeparators = new String[] {
                 dot, comma
         };
 
@@ -236,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
             night(isNightEnabled);
 
         bottomNav();
+        layoutInfo();
 
         alerts();
         dialogs();
@@ -254,13 +232,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void layoutInfo() {
+        layoutInfo.setVisibility(View.GONE);
+    }
+
     boolean getShareUsageData() {
-        return preferences.getBoolean("shareUsageData", false);
+        return shareUsageData;
     }
 
     void setShareUsageData(boolean share) {
         preferencesEditor.putBoolean("shareUsageData", share)
                 .apply();
+
+        shareUsageData = share;
+
+        System.out.println("\"shareUsageData\": " + shareUsageData);
     }
 
     String getVersionName() {
@@ -275,14 +261,14 @@ public class MainActivity extends AppCompatActivity {
         return preferencesEditor;
     }
 
-    void setFragment(Fragment fragment) {
+    private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
         fragmentTransaction.replace(R.id.main_frame, fragment);
         fragmentTransaction.commit();
     }
 
-    String currentFragment() {
+    private String currentFragment() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
         if (!fragments.isEmpty()) {
@@ -298,7 +284,10 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    void bottomNav() {
+    private void bottomNav() {
+        final HistoryFragment historyFragment = new HistoryFragment();
+        final SettingsFragment settingsFragment = new SettingsFragment();
+
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -307,6 +296,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.calculator:
                         setFragment(calculatorFragment);
+                        break;
+                    case R.id.history:
+                        setFragment(historyFragment);
                         break;
                     case R.id.settings:
                         setFragment(settingsFragment);
@@ -322,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
         return isNightEnabled;
     }
 
-    void setIsNightEnabled(boolean isNightEnabled) {
+    private void setIsNightEnabled(boolean isNightEnabled) {
         this.isNightEnabled = isNightEnabled;
         preferencesEditor.putBoolean("isNightEnabled", this.isNightEnabled)
                 .apply();
@@ -332,11 +324,11 @@ public class MainActivity extends AppCompatActivity {
         return alertError;
     }
 
-    void setDialogOKTitle(String title) {
+    private void setDialogOKTitle(String title) {
         dialogOKTitle.setText(title);
     }
 
-    void setDialogOKMessage(String message) {
+    private void setDialogOKMessage(String message) {
         dialogOKMessage.setText(message);
     }
 
@@ -344,23 +336,23 @@ public class MainActivity extends AppCompatActivity {
         return dialogFeedback;
     }
 
-    void setDialogYesNoTitle(String title) {
+    private void setDialogYesNoTitle(String title) {
         dialogYesNoTitle.setText(title);
     }
 
-    void setDialogYesNoMessage(String message) {
+    private void setDialogYesNoMessage(String message) {
         dialogYesNoMessage.setText(message);
     }
 
-    void setDialogYesNoYesButtonOnClickListener(View.OnClickListener listener) {
+    private void setDialogYesNoYesButtonOnClickListener(View.OnClickListener listener) {
         dialogYesNoYesButton.setOnClickListener(listener);
     }
 
-    void setDialogInputFieldInputType(int type) {
+    private void setDialogInputFieldInputType(int type) {
         dialogInputField.setInputType(type);
     }
 
-    void setBounceInterpolatorConfig(double amplitude, double frequency) {
+    private void setBounceInterpolatorConfig(double amplitude, double frequency) {
         this.bounceAmplitude = amplitude;
         this.bounceFrequency = frequency;
 
@@ -374,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         return bounceOut;
     }
 
-    String repeat(final String text, int times) {
+    private String repeat(final String text, int times) {
         StringBuilder result = new StringBuilder(empty);
 
         for (int quantity = 0; quantity < times; quantity++)
@@ -403,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
         return dot;
     }
 
-    String getComma() {
+    private String getComma() {
         return comma;
     }
 
@@ -445,18 +437,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void alerts() {
         // Success alert (alert with a positive message) declaration.
-        alertSuccess = new Dialog(this);
+        Dialog alertSuccess = new Dialog(this);
 
         // Info alert (alert with a neutral message) declaration.
-        alertInfo = new Dialog(this);
+        Dialog alertInfo = new Dialog(this);
 
         // Warning alert (alert with a "neutral-negative" message) declaration.
-        alertWarning = new Dialog(this);
+        Dialog alertWarning = new Dialog(this);
 
         // Error alert (alert with a negative message) declaration.
         alertError = new Dialog(this);
 
-        alerts = new Dialog[] {
+        Dialog[] alerts = new Dialog[]{
                 alertSuccess, alertInfo, alertWarning, alertError
         };
 
@@ -475,8 +467,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         alertSuccess.setContentView(R.layout.alert_success);
-        alertSuccessMessage = alertSuccess.findViewById(R.id.message);
-
         alertInfo.setContentView(R.layout.alert_info);
         alertWarning.setContentView(R.layout.alert_warning);
         alertError.setContentView(R.layout.alert_error);
@@ -484,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void dialogs() {
         // Buy Pro Dialog (dialog with a description of the existing features in Power Pro and a "buy" button) declaration.
-        dialogBuyPro = new Dialog(this);
+        Dialog dialogBuyPro = new Dialog(this);
 
         // Feedback Dialog (dialog with a "list" of feedback options) declaration.
         dialogFeedback = new Dialog(this);
@@ -498,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
         // Input Dialog (dialog with a text field) declaration.
         dialogInput = new Dialog(this);
 
-        dialogs = new Dialog[] {
+        Dialog[] dialogs = new Dialog[]{
                 dialogBuyPro, dialogFeedback, dialogOK, dialogInput, dialogYesNo
         };
 
@@ -510,10 +500,10 @@ public class MainActivity extends AppCompatActivity {
         // Dialog Buy Pro content.
         dialogBuyPro.setContentView(R.layout.dialog_buy_pro);
 
-        dialogBuyProTitle = dialogBuyPro.findViewById(R.id.title);
+        TextView dialogBuyProTitle = dialogBuyPro.findViewById(R.id.title);
         dialogBuyProTitle.setText(String.format(getString(R.string.app_plus), appName));
 
-        dialogBuyProMessage = dialogBuyPro.findViewById(R.id.message);
+        TextView dialogBuyProMessage = dialogBuyPro.findViewById(R.id.message);
         dialogBuyProMessage.setText(String.format(getString(R.string.buy_pro_features_description),
                 getString(R.string.app_name),
                 getString(R.string.conversions_all),
@@ -523,11 +513,11 @@ public class MainActivity extends AppCompatActivity {
         // Dialog Feedback content.
         dialogFeedback.setContentView(R.layout.dialog_feedback);
 
-        dialogFeedbackReviewButton = dialogFeedback.findViewById(R.id.review);
-        dialogFeedbackChatButton = dialogFeedback.findViewById(R.id.chat);
-        dialogFeedbackTweetDirectMessageButton = dialogFeedback.findViewById(R.id.tweet_direct_message);
-        dialogFeedbackEmailButton = dialogFeedback.findViewById(R.id.email);
-        dialogFeedbackCancelButton = dialogFeedback.findViewById(R.id.cancel);
+        ConstraintLayout dialogFeedbackReviewButton = dialogFeedback.findViewById(R.id.review);
+        ConstraintLayout dialogFeedbackChatButton = dialogFeedback.findViewById(R.id.chat);
+        ConstraintLayout dialogFeedbackTweetDirectMessageButton = dialogFeedback.findViewById(R.id.tweet_direct_message);
+        ConstraintLayout dialogFeedbackEmailButton = dialogFeedback.findViewById(R.id.email);
+        Button dialogFeedbackCancelButton = dialogFeedback.findViewById(R.id.cancel);
 
         // Default Dialog Feedback Review button click listener, opens Google Play Store.
         dialogFeedbackReviewButton.setOnClickListener(new View.OnClickListener() {
@@ -564,6 +554,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent email = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:jeanbarrossilva@outlook.com"));
 
                 email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
+
+                deviceInfo = shareUsageData ? deviceInfoName + "\n" + deviceInfo : deviceInfo;
                 email.putExtra(Intent.EXTRA_TEXT, "\n\n" + repeat(hyphen, 50) + "\n\n" + deviceInfo);
 
                 startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
@@ -582,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialogOKTitle = dialogOK.findViewById(R.id.title);
         dialogOKMessage = dialogOK.findViewById(R.id.message);
-        dialogOKButton = dialogOK.findViewById(R.id.ok);
+        Button dialogOKButton = dialogOK.findViewById(R.id.ok);
 
         // Default OK Dialog button click listener, dismisses the dialog.
         dialogOKButton.setOnClickListener(new View.OnClickListener() {
@@ -597,7 +589,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
         dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
-        dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
+        Button dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
         dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
 
         // Default Yes/No dialog No button click listener, dismisses the dialog.
@@ -614,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
         dialogInputField = dialogInput.findViewById(R.id.input);
         setDialogInputFieldInputType(InputType.TYPE_CLASS_TEXT);
 
-        dialogInputButton = dialogInput.findViewById(R.id.ok);
+        Button dialogInputButton = dialogInput.findViewById(R.id.ok);
 
         // Default Input Dialog button click listener, dismisses the dialog.
         dialogInputButton.setOnClickListener(new View.OnClickListener() {
@@ -657,11 +649,7 @@ public class MainActivity extends AppCompatActivity {
         setIsNightEnabled(enableNight);
     }
 
-    void setNight(boolean enable) {
-        night(enable);
-    }
-
-    boolean hasSquareBracket(String text) {
+    private boolean hasSquareBracket(String text) {
         return text.contains(leftSquareBracket) || text.contains(rightSquareBracket);
     }
 
@@ -682,7 +670,7 @@ public class MainActivity extends AppCompatActivity {
         return whichSquareBracket;
     }
 
-    String removeSquareBracket(String calc, int squareBracket) {
+    private String removeSquareBracket(String calc, int squareBracket) {
         switch (squareBracket) {
             case REMOVE_SQUARE_BRACKET_LEFT:
                 calc = calc.replace(leftSquareBracket, empty);
@@ -923,7 +911,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    String convertFrom() {
+    private String convertFrom() {
         if (preferences.getString("convertTo", null) != null) {
             switch (currentFragment()) {
                 case "LengthFragment":
@@ -1013,7 +1001,7 @@ public class MainActivity extends AppCompatActivity {
         return unit;
     }
 
-    String convertTo() {
+    private String convertTo() {
         if (preferences.getString("convertTo", null) != null) {
             switch (currentFragment()) {
                 case "LengthFragment":
@@ -1787,7 +1775,7 @@ public class MainActivity extends AppCompatActivity {
      * @param input Represents the text field itself.
      * @param conversionResult Conversion result of the input keypad_button'.
      */
-    void inputFormat(EditText input, TextView conversionResult) {
+    private void inputFormat(EditText input, TextView conversionResult) {
         if (conversionResult.getText().toString().contains(".")) {
             conversionResult.setText(format.format(Double.parseDouble(conversionResult.getText().toString())));
         }

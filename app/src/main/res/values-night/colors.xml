@@ -16,10 +16,10 @@
     <color name="dialog_button">#F7F7F7</color>
     <color name="dialog_button_unhighlight">#2C2C2C</color>
     <color name="dialog_button_pressed">#2C2C2C</color>
-    <color name="alert_success">#99D850</color>
-    <color name="alert_info">#439EEE</color>
-    <color name="alert_warning">#FFCE36</color>
-    <color name="alert_error">#EE4343</color>
+    <color name="success">#99D850</color>
+    <color name="info">#439EEE</color>
+    <color name="warning">#FFCE36</color>
+    <color name="error">#EE4343</color>
     <color name="code_keypad_number">#1D1D1D</color>
     <color name="close">#EE4343</color>
     <color name="setting">#414141</color>
