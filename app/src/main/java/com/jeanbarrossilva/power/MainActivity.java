@@ -42,7 +42,6 @@ import com.freshchat.consumer.sdk.FreshchatConfig;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -53,23 +52,15 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor preferencesEditor;
 
-    private ConstraintLayout layoutInfo;
-    private TextView layoutTitle;
-
-    private boolean shareUsageData;
-
-    private String empty;
-    private String space;
-
-    private String hyphen;
-
-    private String deviceInfoName;
-    private String deviceInfo;
+    static final int ERROR = -1;
 
     private String appName;
     private String versionName;
 
-    private BottomNavigationView bottomNavigationView;
+    private String deviceInfoName;
+    private String deviceInfo;
+
+    private boolean shareUsageData;
 
     private CalculatorFragment calculatorFragment;
 
@@ -80,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     // private Button dialogBuyProButton;
 
     private Dialog dialogFeedback;
+    private ConstraintLayout dialogFeedbackEmailButton;
 
     private Dialog dialogOK;
     private TextView dialogOKTitle;
@@ -89,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView dialogYesNoTitle;
     private TextView dialogYesNoMessage;
     private Button dialogYesNoYesButton;
+    private Button dialogYesNoNoButton;
 
     private Dialog dialogInput;
     private EditText dialogInputField;
@@ -102,45 +95,17 @@ public class MainActivity extends AppCompatActivity {
     private Timer timer;
     private String unit;
 
-    private double bounceAmplitude;
-    private double bounceFrequency;
-
-    static final String DEFAULT_BOUNCE_IN_SETTING = "0.5, 5";
-
     static final int LAST_PARENTHESIS_LEFT = 0;
     static final int LAST_PARENTHESIS_RIGHT = 1;
 
-    private static final int REMOVE_SQUARE_BRACKET_LEFT = 0;
-    private static final int REMOVE_SQUARE_BRACKET_RIGHT = 1;
-    private static final int REMOVE_SQUARE_BRACKET_ALL = 2;
-
-    private String leftParenthesis;
-    private String rightParenthesis;
-
-    private String leftSquareBracket;
-    private String rightSquareBracket;
+    static final int REMOVE_SQUARE_BRACKET_LEFT = 0;
+    static final int REMOVE_SQUARE_BRACKET_RIGHT = 1;
+    static final int REMOVE_SQUARE_BRACKET_ALL = 2;
 
     private Button number;
     final int[] numbers = {
             R.id.zero, R.id.one, R.id.two, R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine
     };
-
-    private String dot;
-    private String comma;
-    private String[] decimalSeparators;
-
-    private String plus;
-    private String minus;
-    private String times;
-    private String division;
-
-    private String asterisk;
-    private String slash;
-
-    private String powerTwo;
-    private String[] powers;
-
-    private String infinity;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -150,15 +115,6 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
         preferencesEditor = preferences.edit();
-
-        layoutInfo = findViewById(R.id.layout_info);
-        layoutTitle = findViewById(R.id.layout_title);
-
-        empty = "";
-        space = " ";
-        String colon = ":";
-
-        hyphen = "-";
 
         String deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
 
@@ -175,35 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
         timer = new Timer();
 
-        leftParenthesis = getString(R.string.left_parenthesis);
-        rightParenthesis = getString(R.string.right_parenthesis);
-
-        deviceInfoName = (getString(R.string.name) + colon + space + deviceName);
-        deviceInfo = (getString(R.string.device_model) + colon + space + (Build.MANUFACTURER + space + Build.MODEL)) + "\n" + (getString(R.string.so_version) + colon + space + "Android" + space + Build.VERSION.RELEASE + space + leftParenthesis + ("API" + space + Build.VERSION.SDK_INT) + rightParenthesis);
-
-        leftSquareBracket = "[";
-        rightSquareBracket = "]";
-
-        dot = getString(R.string.dot);
-        comma = getString(R.string.comma);
-        decimalSeparators = new String[] {
-                dot, comma
-        };
-
-        plus = getString(R.string.plus);
-        minus = getString(R.string.minus);
-        times = getString(R.string.times);
-        division = getString(R.string.division);
-
-        asterisk = "*";
-        slash = "/";
-
-        powerTwo = "²";
-        powers = new String[]{
-                powerTwo
-        };
-
-        infinity = "∞";
+        deviceInfoName = (getString(R.string.name) + StringUtils.Punctuation.COLON + StringUtils.SPACE + deviceName);
+        deviceInfo = (getString(R.string.device_model) + StringUtils.Punctuation.COLON + StringUtils.SPACE + (Build.MANUFACTURER + StringUtils.SPACE + Build.MODEL)) + "\n" + (getString(R.string.so_version) + StringUtils.Punctuation.COLON + StringUtils.SPACE + "Android" + StringUtils.SPACE + Build.VERSION.RELEASE + StringUtils.SPACE + StringUtils.Punctuation.LEFT_PARENTHESIS + ("API" + StringUtils.SPACE + Build.VERSION.SDK_INT) + StringUtils.Punctuation.RIGHT_PARENTHESIS);
 
         setFragment(calculatorFragment);
 
@@ -213,10 +142,11 @@ public class MainActivity extends AppCompatActivity {
             night(isNightEnabled);
 
         bottomNav();
-        layoutInfo();
 
         alerts();
         dialogs();
+
+        layoutInfo();
     }
 
     @Override
@@ -233,7 +163,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void layoutInfo() {
-        layoutInfo.setVisibility(View.GONE);
+        ConstraintLayout layoutInfo = findViewById(R.id.layout_info);
+        TextView layoutTitle = findViewById(R.id.layout_title);
+
+        try {
+            if (currentFragment().equals("CalculatorFragment"))
+                layoutInfo.setVisibility(View.GONE);
+            else {
+                layoutInfo.setVisibility(View.VISIBLE);
+                layoutTitle.setText(currentFragment().replace("Fragment", StringUtils.EMPTY));
+            }
+        } catch (NullPointerException exception) {
+            setContentView(R.layout.blank);
+
+            setDialogYesNoTitle(getString(R.string.error));
+            setDialogYesNoMessage(getString(R.string.load_layout_title_error));
+
+            setDialogYesNoYesButtonTitle(getString(R.string.contact));
+            setDialogYesNoNoButtonTitle(getString(R.string.cancel_close));
+
+            setDialogYesNoYesButtonOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogFeedbackEmailButton.callOnClick();
+                }
+            });
+
+            setDialogYesNoNoButtonOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.exit(0);
+                }
+            });
+
+            dialogYesNo.show();
+        }
     }
 
     boolean getShareUsageData() {
@@ -273,22 +237,22 @@ public class MainActivity extends AppCompatActivity {
 
         if (!fragments.isEmpty()) {
             String fragment = String.valueOf(fragments.get(fragments.size() - 1));
-            String currentFragment = fragment.replace(fragment.substring(fragment.indexOf("{"), fragment.indexOf("}") + 1), empty);
+            String currentFragment = fragment.replace(fragment.substring(fragment.indexOf("{"), fragment.indexOf("}") + 1), StringUtils.EMPTY);
 
             if (shareUsageData)
-                System.out.println("Current Fragment: " + currentFragment);
+                System.out.println("Current Fragment:" + StringUtils.SPACE + currentFragment);
 
             return currentFragment;
         }
 
-        return null;
+        return StringUtils.EMPTY;
     }
 
     private void bottomNav() {
         final HistoryFragment historyFragment = new HistoryFragment();
         final SettingsFragment settingsFragment = new SettingsFragment();
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -348,15 +312,20 @@ public class MainActivity extends AppCompatActivity {
         dialogYesNoYesButton.setOnClickListener(listener);
     }
 
-    private void setDialogInputFieldInputType(int type) {
-        dialogInputField.setInputType(type);
+    private void setDialogYesNoYesButtonTitle(String title) {
+        dialogYesNoYesButton.setText(title);
     }
 
-    private void setBounceInterpolatorConfig(double amplitude, double frequency) {
-        this.bounceAmplitude = amplitude;
-        this.bounceFrequency = frequency;
+    private void setDialogYesNoNoButtonTitle(String title) {
+        dialogYesNoNoButton.setText(title);
+    }
 
-        bounceInterpolator = new BounceInterpolator(this.bounceAmplitude, this.bounceFrequency);
+    private void setDialogYesNoNoButtonOnClickListener(View.OnClickListener listener) {
+        dialogYesNoNoButton.setOnClickListener(listener);
+    }
+
+    private void setDialogInputFieldInputType(int type) {
+        dialogInputField.setInputType(type);
     }
 
     Animation getBounceOut() {
@@ -364,75 +333,6 @@ public class MainActivity extends AppCompatActivity {
         bounceOut.setInterpolator(bounceInterpolator);
 
         return bounceOut;
-    }
-
-    private String repeat(final String text, int times) {
-        StringBuilder result = new StringBuilder(empty);
-
-        for (int quantity = 0; quantity < times; quantity++)
-            result = result.append(text);
-
-        return result.toString().equals(empty) ? null : result.toString();
-    }
-
-    String getLeftParenthesis() {
-        return leftParenthesis;
-    }
-
-    String getRightParenthesis() {
-        return rightParenthesis;
-    }
-
-    String getEmpty() {
-        return empty;
-    }
-
-    String getSpace() {
-        return space;
-    }
-
-    String getDot() {
-        return dot;
-    }
-
-    private String getComma() {
-        return comma;
-    }
-
-    String[] getDecimalSeparators() {
-        return decimalSeparators;
-    }
-
-    String getPlus() {
-        return plus;
-    }
-
-    String getMinus() {
-        return minus;
-    }
-
-    String getTimes() {
-        return times;
-    }
-
-    String getAsterisk() {
-        return asterisk;
-    }
-
-    String getSlash() {
-        return slash;
-    }
-
-    String getPowerTwo() {
-        return powerTwo;
-    }
-
-    String[] getPowers() {
-        return powers;
-    }
-
-    String getInfinity() {
-        return infinity;
     }
 
     private void alerts() {
@@ -516,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout dialogFeedbackReviewButton = dialogFeedback.findViewById(R.id.review);
         ConstraintLayout dialogFeedbackChatButton = dialogFeedback.findViewById(R.id.chat);
         ConstraintLayout dialogFeedbackTweetDirectMessageButton = dialogFeedback.findViewById(R.id.tweet_direct_message);
-        ConstraintLayout dialogFeedbackEmailButton = dialogFeedback.findViewById(R.id.email);
+        dialogFeedbackEmailButton = dialogFeedback.findViewById(R.id.email);
         Button dialogFeedbackCancelButton = dialogFeedback.findViewById(R.id.cancel);
 
         // Default Dialog Feedback Review button click listener, opens Google Play Store.
@@ -556,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                 email.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.send_feedback_email_subject), appName, versionName));
 
                 deviceInfo = shareUsageData ? deviceInfoName + "\n" + deviceInfo : deviceInfo;
-                email.putExtra(Intent.EXTRA_TEXT, "\n\n" + repeat(hyphen, 50) + "\n\n" + deviceInfo);
+                email.putExtra(Intent.EXTRA_TEXT, "\n\n" + FormatUtils.Companion.repeat(StringUtils.Punctuation.HYPHEN, 50) + "\n\n" + deviceInfo);
 
                 startActivity(Intent.createChooser(email, getString(R.string.send_feedback)));
             }
@@ -589,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialogYesNoTitle = dialogYesNo.findViewById(R.id.title);
         dialogYesNoMessage = dialogYesNo.findViewById(R.id.message);
-        Button dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
+        dialogYesNoNoButton = dialogYesNo.findViewById(R.id.no);
         dialogYesNoYesButton = dialogYesNo.findViewById(R.id.yes);
 
         // Default Yes/No dialog No button click listener, dismisses the dialog.
@@ -649,99 +549,8 @@ public class MainActivity extends AppCompatActivity {
         setIsNightEnabled(enableNight);
     }
 
-    private boolean hasSquareBracket(String text) {
-        return text.contains(leftSquareBracket) || text.contains(rightSquareBracket);
-    }
-
-    private String whichSquareBracket(String text) {
-        String whichSquareBracket = null;
-
-        if (hasSquareBracket(text)) {
-            if (text.contains(leftSquareBracket))
-                whichSquareBracket = "left";
-            else if (text.contains(rightSquareBracket))
-                whichSquareBracket = "right";
-            else if (text.contains(leftSquareBracket) && text.contains(rightSquareBracket))
-                whichSquareBracket = "both";
-            else
-                whichSquareBracket = null;
-        }
-
-        return whichSquareBracket;
-    }
-
-    private String removeSquareBracket(String calc, int squareBracket) {
-        switch (squareBracket) {
-            case REMOVE_SQUARE_BRACKET_LEFT:
-                calc = calc.replace(leftSquareBracket, empty);
-                break;
-            case REMOVE_SQUARE_BRACKET_RIGHT:
-                calc = calc.replace(rightSquareBracket, empty);
-                break;
-            case REMOVE_SQUARE_BRACKET_ALL:
-                calc = calc.replace(leftSquareBracket, empty);
-                calc = calc.replace(rightSquareBracket, empty);
-
-                break;
-        }
-
-        return calc;
-    }
-
-    /**
-     * Applies a bounce in animation effect on a View, usually when it's being tapped.
-     * @param view The View that's supposed to receive the bounce in animation.
-     * @param customSetting Float values for the animation's amplitude and frequency, respectively, separated by a coma + space (", ").
-     */
-    void bounceIn(View view, String... customSetting) {
-        if (!Arrays.toString(customSetting).isEmpty()) {
-            if (Arrays.toString(customSetting).contains(getComma() + getSpace())) {
-                String[] parts = Arrays.toString(customSetting).split(getComma() + getSpace());
-                String formatParts = null;
-
-                if (hasSquareBracket(Arrays.toString(parts))) {
-                    switch (whichSquareBracket(Arrays.toString(parts))) {
-                        case "left":
-                            formatParts = Arrays.toString(parts).replace(leftSquareBracket, getEmpty());
-                            break;
-                        case "right":
-                            formatParts = Arrays.toString(parts).replace(rightSquareBracket, getEmpty());
-                            break;
-                        case "both":
-                            formatParts = Arrays.toString(parts).replaceAll(leftSquareBracket, rightSquareBracket);
-                            break;
-                    }
-
-                    assert formatParts != null;
-                    String[] formatValues = formatParts.split(getComma() + getSpace());
-
-                    String formatAmplitude = formatValues[0];
-                    String formatFrequency = formatValues[1];
-
-                    // For some unknown reason, formatFrequency has "]]" at its end.
-                    if (formatFrequency.endsWith(rightSquareBracket + rightSquareBracket))
-                        formatFrequency = formatFrequency.substring(0, formatFrequency.length() - 2);
-
-                    bounceAmplitude = Double.parseDouble(formatAmplitude);
-                    bounceFrequency = Double.parseDouble(formatFrequency);
-                } else {
-                    bounceAmplitude = Double.parseDouble(parts[1]);
-                    bounceFrequency = Double.parseDouble(parts[2]);
-                }
-
-                setBounceInterpolatorConfig(bounceAmplitude, bounceFrequency);
-            } else if (shareUsageData)
-                System.out.println("bounceInterpolator was incorrectly set and doesn't contain '" + getComma() + getSpace() + "'.");
-
-        } else {
-            customSetting = new String[] {
-                    DEFAULT_BOUNCE_IN_SETTING
-            };
-
-            bounceIn(view, customSetting);
-        }
-
-        bounceInterpolator = new BounceInterpolator(bounceAmplitude, bounceFrequency);
+    void bounceIn(View view, double amplitude, double frequency) {
+        bounceInterpolator = new BounceInterpolator(amplitude, frequency);
 
         Animation bounceIn = AnimationUtils.loadAnimation(MainActivity.this, R.anim.bounce_in);
         bounceIn.setInterpolator(bounceInterpolator);
@@ -756,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(view, "0.35, 1");
+                        bounceIn(view, 0.35, 1);
                         break;
                     case MotionEvent.ACTION_UP:
                         view.startAnimation(getBounceOut());
@@ -773,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
                         calculatorModes.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().equals(className.replace("Fragment", empty)))
+                                if (item.getTitle().equals(className.replace("Fragment", StringUtils.EMPTY)))
                                     calculatorModes.dismiss();
                                 else {
                                     switch (item.getTitleCondensed().toString()) {
@@ -832,7 +641,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        bounceIn(view, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         number.startAnimation(getBounceOut());
@@ -840,7 +649,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!calc.equals(getString(R.string.error))) {
                             input.append(number.getText());
                         } else {
-                            input.setText(empty);
+                            input.setText(StringUtils.EMPTY);
 
                             number = (Button) view;
                             input.append(number.getText());
@@ -871,15 +680,15 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        bounceIn(view, "0.5, 1");
+                        bounceIn(view, 0.5, 1);
                         break;
                     case MotionEvent.ACTION_UP:
                         delete.startAnimation(getBounceOut());
                         delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
                         if (!calc.isEmpty()) {
-                            // When calc ends with " " (space), it means that it ends with an operator; the operator is shown as "space + operator + space". e. g., " × " and " + ". So, for example, if the input is "2 + 2", while deleting, the input would be equal to "2 + ", "2 +", "2 " and "2", respectively; with this method, the result should be "2 +" and "2", respectively.
-                            input.setText(calc.endsWith(space) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
+                            // When calc ends with " " (StringUtils.SPACE), it means that it ends with an operator; the operator is shown as "StringUtils.SPACE + operator + StringUtils.SPACE". e. g., " × " and " + ". So, for example, if the input is "2 + 2", while deleting, the input would be equal to "2 + ", "2 +", "2 " and "2", respectively; with this method, the result should be "2 +" and "2", respectively.
+                            input.setText(calc.endsWith(StringUtils.SPACE) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
 
                             calc(input, conversionResult, conversionResultSymbol);
                         }
@@ -1749,24 +1558,26 @@ public class MainActivity extends AppCompatActivity {
 
     String reformatCalc(String calc) {
         if (calc != null) {
-            if (calc.contains(space))
-                calc = calc.replace(space, empty);
+            if (calc.contains(StringUtils.SPACE))
+                calc = calc.replace(StringUtils.SPACE, StringUtils.EMPTY);
 
-            if (calc.contains(times) || calc.contains(division)) {
-                if (calc.contains(times))
-                    calc = calc.replace(times, asterisk);
+            if (calc.contains(StringUtils.Operator.Stylized.TIMES) || calc.contains(StringUtils.Operator.Stylized.DIVISION)) {
+                if (calc.contains(StringUtils.Operator.Stylized.TIMES))
+                    calc = calc.replace(StringUtils.Operator.Stylized.TIMES, StringUtils.Operator.Raw.TIMES);
 
-                if (calc.contains(division))
-                    calc = calc.replace(division, slash);
+                if (calc.contains(StringUtils.Operator.Stylized.DIVISION))
+                    calc = calc.replace(StringUtils.Operator.Stylized.DIVISION, StringUtils.Operator.Raw.DIVISION);
             }
 
-            if (hasSquareBracket(calc))
-                removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
+            if (FormatUtils.Companion.hasSquareBracket(calc))
+                FormatUtils.Companion.removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
 
-            System.out.println("Transformed calc: " + removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL));
+            System.out.println("Transformed calc: " + FormatUtils.Companion.removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL));
+
+            return FormatUtils.Companion.removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
         }
 
-        return removeSquareBracket(calc, REMOVE_SQUARE_BRACKET_ALL);
+        return null;
     }
 
     /**

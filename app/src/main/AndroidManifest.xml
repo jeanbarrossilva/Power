@@ -43,6 +43,10 @@
 
         </activity>
 
+        <activity android:name=".StringUtils" />
+
+        <activity android:name=".FormatUtils" />
+
     </application>
 
 </manifest>

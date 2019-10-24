@@ -2,6 +2,7 @@ package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -28,9 +29,10 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 
-import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
+import static com.jeanbarrossilva.power.MainActivity.ERROR;
 import static com.jeanbarrossilva.power.MainActivity.LAST_PARENTHESIS_LEFT;
 import static com.jeanbarrossilva.power.MainActivity.LAST_PARENTHESIS_RIGHT;
 
@@ -39,6 +41,9 @@ public class CalculatorFragment extends Fragment {
     Context context;
 
     MainActivity mainActivity;
+
+    private History history;
+    private SQLiteDatabase historyDatabase;
 
     private Animation keypadIn;
     private Animation keypadOut;
@@ -82,6 +87,9 @@ public class CalculatorFragment extends Fragment {
         context = Objects.requireNonNull(getContext());
 
         mainActivity = (MainActivity) getActivity();
+
+        history = new History(context);
+        historyDatabase = history.getWritableDatabase();
 
         keypadIn = AnimationUtils.loadAnimation(context, R.anim.keypad_in);
         keypadOut = AnimationUtils.loadAnimation(context, R.anim.keypad_out);
@@ -148,7 +156,7 @@ public class CalculatorFragment extends Fragment {
 
     @SuppressWarnings("LoopStatementThatDoesntLoop")
     private boolean isInputLastDecimalSeparator(EditText input) {
-        for (String decimalSeparator: mainActivity.getDecimalSeparators()) {
+        for (String decimalSeparator: StringUtils.Punctuation.getDecimalSeparators()) {
             return input.getText().toString().endsWith(decimalSeparator);
         }
 
@@ -157,7 +165,7 @@ public class CalculatorFragment extends Fragment {
 
     private boolean isInputLastOperator(EditText input) {
         String[] operators = {
-                mainActivity.getPlus(), mainActivity.getMinus(), mainActivity.getAsterisk(), mainActivity.getSlash()
+                StringUtils.Operator.Raw.PLUS, StringUtils.Operator.Raw.MINUS, StringUtils.Operator.Raw.TIMES, StringUtils.Operator.Raw.DIVISION
         };
 
         for (String operator: operators) {
@@ -174,9 +182,9 @@ public class CalculatorFragment extends Fragment {
     private boolean isInputLastParenthesis(EditText input, int parenthesis) {
         switch (parenthesis) {
             case LAST_PARENTHESIS_LEFT:
-                return input.getText().toString().endsWith(mainActivity.getLeftParenthesis());
+                return input.getText().toString().endsWith(StringUtils.Punctuation.LEFT_PARENTHESIS);
             case LAST_PARENTHESIS_RIGHT:
-                return input.getText().toString().endsWith(mainActivity.getRightParenthesis());
+                return input.getText().toString().endsWith(StringUtils.Punctuation.RIGHT_PARENTHESIS);
         }
 
         return false;
@@ -189,11 +197,11 @@ public class CalculatorFragment extends Fragment {
             }
 
             if (result.endsWith(".0")) {
-                result = result.replace(".0", mainActivity.getEmpty());
+                result = result.replace(".0", StringUtils.EMPTY);
             }
 
             if (result.contains("Infinity")) {
-                result = result.replace("Infinity", mainActivity.getInfinity());
+                result = result.replace("Infinity", StringUtils.INFINITY);
             }
 
             if (result.length() > 16) {
@@ -223,7 +231,7 @@ public class CalculatorFragment extends Fragment {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(view, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         number.startAnimation(mainActivity.getBounceOut());
@@ -231,7 +239,7 @@ public class CalculatorFragment extends Fragment {
                         if (!input.getText().toString().equals(getString(R.string.error))) {
                             input.append(number.getText());
                         } else {
-                            input.setText(mainActivity.getEmpty());
+                            input.setText(StringUtils.EMPTY);
 
                             number = (Button) view;
                             input.append(number.getText());
@@ -262,13 +270,13 @@ public class CalculatorFragment extends Fragment {
                 public boolean onTouch(View view, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                            mainActivity.bounceIn(view, 0.5, 5);
                             break;
                         case MotionEvent.ACTION_UP:
                             view.startAnimation(mainActivity.getBounceOut());
 
                             if (isInputLastNumber(input))
-                                input.append(mainActivity.getDot());
+                                input.append(StringUtils.Punctuation.DOT);
 
                             break;
                     }
@@ -295,23 +303,23 @@ public class CalculatorFragment extends Fragment {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(view, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         operator.startAnimation(mainActivity.getBounceOut());
 
-                        for (String power: mainActivity.getPowers()) {
+                        for (String power: StringUtils.Superscript.getPowers()) {
                             if (!isInputLastOperator(input)) {
                                 if ((operator.getId() == R.id.plus || operator.getId() == R.id.minus) || input.getText().toString().endsWith(power)) {
                                     if (!input.getText().toString().isEmpty())
-                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                        input.append(StringUtils.SPACE + operator.getText() + StringUtils.SPACE);
                                     else if ((isInputLastNumber(input) || (isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT) || isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT))) & !isInputLastOperator(input))
-                                        input.append(operator.getText() + mainActivity.getSpace());
+                                        input.append(operator.getText() + StringUtils.SPACE);
                                     else
-                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                        input.append(StringUtils.SPACE + operator.getText() + StringUtils.SPACE);
                                 } else if (operator.getId() == R.id.times || operator.getId() == R.id.division) {
                                     if (!(input.getText().toString().isEmpty() && isInputLastDecimalSeparator(input) && isInputLastParenthesis(input, LAST_PARENTHESIS_LEFT)))
-                                        input.append(mainActivity.getSpace() + operator.getText() + mainActivity.getSpace());
+                                        input.append(StringUtils.SPACE + operator.getText() + StringUtils.SPACE);
                                 }
                             }
                         }
@@ -342,7 +350,7 @@ public class CalculatorFragment extends Fragment {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                    mainActivity.bounceIn(view, 0.5, 5);
                     break;
                 case MotionEvent.ACTION_UP:
                     parenthesis.startAnimation(mainActivity.getBounceOut());
@@ -351,14 +359,14 @@ public class CalculatorFragment extends Fragment {
                         switch (parenthesisButton.getId()) {
                             case R.id.left_parenthesis:
                                 if (!isInputLastDecimalSeparator(input))
-                                    input.append(mainActivity.getLeftParenthesis());
+                                    input.append(StringUtils.Punctuation.LEFT_PARENTHESIS);
                                 else if (isInputLastNumber(input))
-                                    input.append(mainActivity.getSpace() + mainActivity.getTimes() + mainActivity.getSpace() + parenthesis);
+                                    input.append(StringUtils.SPACE + StringUtils.Operator.Stylized.TIMES + StringUtils.SPACE + parenthesis);
 
                                 break;
                             case R.id.right_parenthesis:
                                 if (isInputLastNumber(input))
-                                    input.append(mainActivity.getRightParenthesis());
+                                    input.append(StringUtils.Punctuation.RIGHT_PARENTHESIS);
 
                                 break;
                         }
@@ -385,16 +393,16 @@ public class CalculatorFragment extends Fragment {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(view, "0.5, 1");
+                        mainActivity.bounceIn(view, 0.5, 1);
                         break;
                     case MotionEvent.ACTION_UP:
                         delete.startAnimation(mainActivity.getBounceOut());
                         delete.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
                         if (!calc.isEmpty()) try {
-                            input.setText(calc.endsWith(mainActivity.getSpace()) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
+                            input.setText(calc.endsWith(StringUtils.SPACE) ? calc.substring(0, calc.length() - 2) : calc.substring(0, calc.length() - 1));
                         } catch (Exception exception) {
-                            input.setText(mainActivity.getEmpty());
+                            input.setText(StringUtils.EMPTY);
                         }
 
                         break;
@@ -428,7 +436,7 @@ public class CalculatorFragment extends Fragment {
                                 } catch (Exception exception) {
                                     // If the calc is unfinished, "String.valueOf(expression.evaluate())" throws an IllegalArgumentException.
                                     if (!input.getText().toString().isEmpty()) {
-                                        input.append(input.getText().toString().endsWith(mainActivity.getSpace()) ? getString(R.string.zero) : mainActivity.getSpace() + getString(R.string.zero));
+                                        input.append(input.getText().toString().endsWith(StringUtils.SPACE) ? getString(R.string.zero) : StringUtils.SPACE + getString(R.string.zero));
                                     } else {
                                         input.append(getString(R.string.zero));
                                     }
@@ -441,14 +449,14 @@ public class CalculatorFragment extends Fragment {
                                 inputFormat(input, input.getText().toString());
 
                                 if (result != null) try {
-                                    new HistoryFragment().add(new Calc(previousCalc, result));
+                                    new HistoryFragment().add(previousCalc, result, String.valueOf(FormatUtils.Companion.generateId(previousCalc + StringUtils.SPACE + "=" + StringUtils.SPACE + result)));
                                 } catch (NullPointerException exception) {
                                     System.out.println("Couldn't add expression to History.");
                                 }
                             }
                         }
 
-                        System.out.println("\"isScientific\":" + mainActivity.getSpace() + isScientific);
+                        System.out.println("\"isScientific\":" + StringUtils.SPACE + isScientific);
 
                         break;
                 }
@@ -474,17 +482,17 @@ public class CalculatorFragment extends Fragment {
 
         keypad.startAnimation(isScientific ? keypadOut : keypadIn);
 
-        keypadButtons[0].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.zero));
-        keypadButtons[1].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.one));
-        keypadButtons[2].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.two));
-        keypadButtons[3].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.three));
-        keypadButtons[4].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.four));
-        keypadButtons[5].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.five));
-        keypadButtons[6].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.six));
-        keypadButtons[7].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.seven));
-        keypadButtons[8].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.eight));
-        keypadButtons[9].setText(isScientific ? mainActivity.getEmpty() : getString(R.string.nine));
-        keypadButtons[10].setText(isScientific ? mainActivity.getEmpty() : mainActivity.getDot());
+        keypadButtons[0].setText(isScientific ? StringUtils.EMPTY : getString(R.string.zero));
+        keypadButtons[1].setText(isScientific ? StringUtils.EMPTY : getString(R.string.one));
+        keypadButtons[2].setText(isScientific ? StringUtils.EMPTY : getString(R.string.two));
+        keypadButtons[3].setText(isScientific ? StringUtils.EMPTY : getString(R.string.three));
+        keypadButtons[4].setText(isScientific ? StringUtils.EMPTY : getString(R.string.four));
+        keypadButtons[5].setText(isScientific ? StringUtils.EMPTY : getString(R.string.five));
+        keypadButtons[6].setText(isScientific ? StringUtils.EMPTY : getString(R.string.six));
+        keypadButtons[7].setText(isScientific ? StringUtils.EMPTY : getString(R.string.seven));
+        keypadButtons[8].setText(isScientific ? StringUtils.EMPTY : getString(R.string.eight));
+        keypadButtons[9].setText(isScientific ? StringUtils.EMPTY : getString(R.string.nine));
+        keypadButtons[10].setText(isScientific ? StringUtils.EMPTY : StringUtils.Punctuation.DOT);
 
         for (final Button keypadButton : keypadButtons) {
             for (int index = 0; index < keypadButtons.length; index++) {
@@ -512,7 +520,7 @@ public class CalculatorFragment extends Fragment {
                             @Override
                             public void onTextChanged(CharSequence s, int start, int before, int count) {
                                 if (isScientific) {
-                                    keypadButton.setText(s.toString().length() == 1 && isInputLastNumber(input) ? s.toString().charAt(0) + mainActivity.getPowerTwo() : getString(R.string.x_power_two));
+                                    keypadButton.setText(s.toString().length() == 1 && isInputLastNumber(input) ? s.toString().charAt(0) + StringUtils.Superscript.POWER_TWO : getString(R.string.x_power_two));
                                 } else {
                                     keypadButton.setText(getString(R.string.seven));
                                 }
@@ -529,13 +537,13 @@ public class CalculatorFragment extends Fragment {
                             public boolean onTouch(View view, MotionEvent event) {
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_DOWN:
-                                        mainActivity.bounceIn(view, DEFAULT_BOUNCE_IN_SETTING);
+                                        mainActivity.bounceIn(view, 0.5, 5);
                                         break;
                                     case MotionEvent.ACTION_UP:
                                         view.startAnimation(mainActivity.getBounceOut());
 
                                         if (isInputLastNumber(input) && isInputLastParenthesis(input, LAST_PARENTHESIS_RIGHT))
-                                            input.append(mainActivity.getPowerTwo());
+                                            input.append(StringUtils.Superscript.POWER_TWO);
 
                                         break;
                                 }

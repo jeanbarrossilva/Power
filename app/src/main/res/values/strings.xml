@@ -2,6 +2,9 @@
     <string name="app_name" translatable="false">Power</string>
     <string name="freshchat_file_provider_authority" translatable="false">com.jeanbarrossilva.power.provider</string>
 
+    <string name="load_layout_title_error">An unexpected error occurred. For further information, contact the developer.</string>
+    <string name="contact">Contact</string>
+
     <string name="unauthentic_app">Unauthentic app</string>
     <string name="unauthentic_version_general">You\'re using an unauthentic version of Power. Some features may not be available.</string>
     <string name="unauthentic_version_feature">Because you\'re using an unauthentic version of %1$s, you don\'t have access to this feature. Too bad.</string>
@@ -23,6 +26,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_close">Cancel and close</string>
 
     <string name="success">Success</string>
     <string name="action_success">The action was successfully performed.</string>

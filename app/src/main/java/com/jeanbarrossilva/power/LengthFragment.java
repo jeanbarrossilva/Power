@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
-
 public class LengthFragment extends CalculatorFragment {
     private TextView inputSymbol;
 
@@ -120,7 +118,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(unit, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -223,7 +221,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(lightYear, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(lightYear, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         lightYear.startAnimation(mainActivity.getBounceOut());
@@ -247,7 +245,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(kilometer, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(kilometer, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         kilometer.startAnimation(mainActivity.getBounceOut());
@@ -271,7 +269,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(hectometer, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(hectometer, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         hectometer.startAnimation(mainActivity.getBounceOut());
@@ -295,7 +293,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(decameter, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(decameter, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         decameter.startAnimation(mainActivity.getBounceOut());
@@ -319,7 +317,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(mile, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(mile, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         meter.startAnimation(mainActivity.getBounceOut());
@@ -343,7 +341,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(meter, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(meter, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         meter.startAnimation(mainActivity.getBounceOut());
@@ -367,7 +365,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(decimeter, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(decimeter, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         decimeter.startAnimation(mainActivity.getBounceOut());
@@ -391,7 +389,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(centimeter, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(centimeter, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         centimeter.startAnimation(mainActivity.getBounceOut());
@@ -415,7 +413,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(millimeter, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(millimeter, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         millimeter.startAnimation(mainActivity.getBounceOut());
@@ -439,7 +437,7 @@ public class LengthFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(micrometer, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(micrometer, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         micrometer.startAnimation(mainActivity.getBounceOut());

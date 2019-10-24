@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
-
 public class TemperatureFragment extends CalculatorFragment {
     private TextView inputSymbol;
 
@@ -111,7 +109,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(unit, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -179,7 +177,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(celsius, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(celsius, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         celsius.startAnimation(mainActivity.getBounceOut());
@@ -203,7 +201,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(fahrenheit, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(fahrenheit, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         fahrenheit.startAnimation(mainActivity.getBounceOut());
@@ -227,7 +225,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(kelvin, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(kelvin, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         kelvin.startAnimation(mainActivity.getBounceOut());
@@ -251,7 +249,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(rankine, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(rankine, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         rankine.startAnimation(mainActivity.getBounceOut());
@@ -275,7 +273,7 @@ public class TemperatureFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(reaumur, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(reaumur, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         reaumur.startAnimation(mainActivity.getBounceOut());

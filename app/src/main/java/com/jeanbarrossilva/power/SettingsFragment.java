@@ -97,7 +97,7 @@ public class SettingsFragment extends Fragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(sendFeedback, "0.35, 1");
+                        mainActivity.bounceIn(sendFeedback, 0.35, 1);
                         break;
                     case MotionEvent.ACTION_UP:
                         sendFeedback.startAnimation(mainActivity.getBounceOut());
@@ -117,7 +117,7 @@ public class SettingsFragment extends Fragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(sourceCode, "0.35, 1");
+                        mainActivity.bounceIn(sourceCode, 0.35, 1);
                         sourceCodeTitle.setText(getString(R.string.source_code));
                         break;
                     case MotionEvent.ACTION_UP:

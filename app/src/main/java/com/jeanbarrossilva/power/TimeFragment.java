@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.jeanbarrossilva.power.MainActivity.DEFAULT_BOUNCE_IN_SETTING;
-
 public class TimeFragment extends CalculatorFragment {
     private TextView inputSymbol;
 
@@ -115,7 +113,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(unit, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(unit, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         final PopupMenu units;
@@ -195,7 +193,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(year, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(year, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         year.startAnimation(mainActivity.getBounceOut());
@@ -219,7 +217,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(month, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(month, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         month.startAnimation(mainActivity.getBounceOut());
@@ -243,7 +241,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(day, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(day, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         day.startAnimation(mainActivity.getBounceOut());
@@ -267,7 +265,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(hour, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(hour, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         hour.startAnimation(mainActivity.getBounceOut());
@@ -291,7 +289,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(minute, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(minute, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         minute.startAnimation(mainActivity.getBounceOut());
@@ -315,7 +313,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(second, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(second, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         second.startAnimation(mainActivity.getBounceOut());
@@ -339,7 +337,7 @@ public class TimeFragment extends CalculatorFragment {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mainActivity.bounceIn(millisecond, DEFAULT_BOUNCE_IN_SETTING);
+                        mainActivity.bounceIn(millisecond, 0.5, 5);
                         break;
                     case MotionEvent.ACTION_UP:
                         millisecond.startAnimation(mainActivity.getBounceOut());

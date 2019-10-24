@@ -81,4 +81,7 @@
     <string name="tweet_direct_message">Tweet ou Mensagem Direta</string>
     <string name="so_version">Versão do SO</string>
     <string name="history">Histórico</string>
+    <string name="contact">Contatar</string>
+    <string name="load_layout_title_error">Um erro inesperado ocorreu. Para mais informações, contate o desenvolvedor.</string>
+    <string name="cancel_close">Cancelar e fechar</string>
 </resources>
