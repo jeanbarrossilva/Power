@@ -2,14 +2,8 @@ package com.jeanbarrossilva.power;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.HapticFeedbackConstants;
@@ -24,15 +18,15 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 
+import androidx.fragment.app.Fragment;
+
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import static com.jeanbarrossilva.power.MainActivity.ERROR;
 import static com.jeanbarrossilva.power.MainActivity.LAST_PARENTHESIS_LEFT;
 import static com.jeanbarrossilva.power.MainActivity.LAST_PARENTHESIS_RIGHT;
 
@@ -41,9 +35,6 @@ public class CalculatorFragment extends Fragment {
     Context context;
 
     MainActivity mainActivity;
-
-    private History history;
-    private SQLiteDatabase historyDatabase;
 
     private Animation keypadIn;
     private Animation keypadOut;
@@ -88,9 +79,6 @@ public class CalculatorFragment extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
 
-        history = new History(context);
-        historyDatabase = history.getWritableDatabase();
-
         keypadIn = AnimationUtils.loadAnimation(context, R.anim.keypad_in);
         keypadOut = AnimationUtils.loadAnimation(context, R.anim.keypad_out);
 
@@ -125,14 +113,6 @@ public class CalculatorFragment extends Fragment {
         delete = view.findViewById(R.id.delete);
 
         equal = view.findViewById(R.id.equal);
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            if (mainActivity.getIsNightEnabled()) {
-                mainActivity.getWindow().setNavigationBarColor(Color.BLACK);
-            } else {
-                mainActivity.getWindow().setNavigationBarColor(Color.WHITE);
-            }
-        }
 
         mainActivity.calculatorMode(context, calculatorMode);
 
@@ -447,12 +427,6 @@ public class CalculatorFragment extends Fragment {
                                 final String previousCalc = input.getText().toString();
 
                                 inputFormat(input, input.getText().toString());
-
-                                if (result != null) try {
-                                    new HistoryFragment().add(previousCalc, result, String.valueOf(FormatUtils.Companion.generateId(previousCalc + StringUtils.SPACE + "=" + StringUtils.SPACE + result)));
-                                } catch (NullPointerException exception) {
-                                    System.out.println("Couldn't add expression to History.");
-                                }
                             }
                         }
 

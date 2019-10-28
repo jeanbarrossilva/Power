@@ -12,14 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -36,6 +28,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.freshchat.consumer.sdk.Freshchat;
 import com.freshchat.consumer.sdk.FreshchatConfig;
@@ -249,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bottomNav() {
-        final HistoryFragment historyFragment = new HistoryFragment();
         final SettingsFragment settingsFragment = new SettingsFragment();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -260,9 +258,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.calculator:
                         setFragment(calculatorFragment);
-                        break;
-                    case R.id.history:
-                        setFragment(historyFragment);
                         break;
                     case R.id.settings:
                         setFragment(settingsFragment);
@@ -614,14 +609,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-        // The units Button[] must contain all the unit buttons available, including the selected one.
-    void selectButton(final Button selected, final Button[] units, int background) {
+        // The all Button[] must contain all the unit buttons available, including the selected one.
+    void selectButton(final Button selected, final Button[] all, int background) {
         int selectedId = selected.getId();
 
         selected.setTextColor(isNightEnabled ? Color.BLACK : Color.WHITE);
         selected.setBackgroundResource(background);
 
-        for (Button unit: units) {
+        for (Button unit: all) {
             if (unit.getId() != selectedId) try {
                 unit.setTextColor(isNightEnabled ? Color.WHITE : Color.BLACK);
                 unit.setBackgroundResource(R.drawable.option);
