@@ -1,32 +1,42 @@
 package com.jeanbarrossilva.power
 
 class StringUtils : MainActivity() {
-    companion object {
-        const val EMPTY = ""
-        const val SPACE = " "
-        const val INFINITY = "∞"
+    object Format {
+        fun repeat(text: String, times: Int): String? {
+            var result = StringBuilder("")
+
+            for (quantity in 0 until times)
+                result = result.append(text)
+
+            return if (result.toString() == "") null else result.toString()
+        }
+
+        fun hasSquareBracket(text: String): Boolean {
+            return text.contains("[") || text.contains("]")
+        }
+
+        fun removeSquareBracket(calc: String, squareBracket: Int): String {
+            when (squareBracket) {
+                REMOVE_SQUARE_BRACKET_LEFT -> calc.replace("[", "")
+                REMOVE_SQUARE_BRACKET_RIGHT -> calc.replace("]", "")
+                REMOVE_SQUARE_BRACKET_ALL -> {
+                    calc.replace("[", "")
+                    calc.replace("]", "")
+                }
+            }
+
+            return calc
+        }
     }
 
     object Punctuation {
-        const val HYPHEN = "-"
-        const val COLON = ":"
-        const val LEFT_PARENTHESIS = "("
-        const val RIGHT_PARENTHESIS = ")"
-        const val LEFT_SQUARE_BRACKET = "["
-        const val RIGHT_SQUARE_BRACKET = "]"
-        const val DOT = "."
-        const val COMMA = ","
+        private const val DOT = "."
+        private const val COMMA = ","
+
         @JvmStatic val decimalSeparators = arrayOf(DOT, COMMA)
     }
 
     object Operator {
-        object Raw {
-            const val PLUS = "+"
-            const val MINUS = "-"
-            const val TIMES = "*"
-            const val DIVISION = "/"
-        }
-
         object Stylized {
             const val TIMES = "×"
             const val DIVISION = "÷"

@@ -43,4 +43,6 @@
     <color name="equal_pressed">#C7C7C7</color>
     <color name="mask">@android:color/white</color>
 
+    <color name="keypad_button_hover">@android:color/white</color>
+
 </resources>

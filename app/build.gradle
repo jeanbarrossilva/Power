@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "com.jeanbarrossilva.power"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 41
-        versionName "2019.18"
+        versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

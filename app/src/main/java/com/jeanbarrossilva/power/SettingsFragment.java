@@ -5,10 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,9 +14,10 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 
-import nl.dionsegijn.konfetti.KonfettiView;
+import org.jetbrains.annotations.NotNull;
 
 public class SettingsFragment extends Fragment {
     private MainActivity mainActivity;
@@ -80,10 +77,32 @@ public class SettingsFragment extends Fragment {
         shareUsageData.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    new KonfettiView(getContext()).build()
-                        .setFadeOutEnabled(true)
-                        .streamFor(300, 5000L);
+                if (isChecked) {
+                    mainActivity.dialogYesNoTitle.setText(getString(R.string.share_usage_data));
+                    mainActivity.dialogYesNoMessage.setText(getString(R.string.share_usage_data_warning));
+
+                    mainActivity.dialogYesNoYesButton.setText(getString(R.string.ok));
+
+                    mainActivity.dialogYesNoYesButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            shareUsageData.setChecked(true);
+                            mainActivity.dialogYesNo.dismiss();
+                        }
+                    });
+
+                    mainActivity.dialogYesNoNoButton.setText(getString(R.string.cancel));
+
+                    mainActivity.dialogYesNoNoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            shareUsageData.setChecked(false);
+                            mainActivity.dialogYesNo.dismiss();
+                        }
+                    });
+
+                    mainActivity.dialogYesNo.show();
+                }
 
                 mainActivity.setShareUsageData(isChecked);
             }
@@ -101,7 +120,7 @@ public class SettingsFragment extends Fragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         sendFeedback.startAnimation(mainActivity.getBounceOut());
-                        mainActivity.getDialogFeedback().show();
+                        mainActivity.dialogFeedback.show();
                         break;
                 }
 

@@ -28,9 +28,10 @@
         android:id="@+id/input_horizontal_scroll_view"
         android:layout_width="@+id/calculator"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8.5dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="@+id/calculator"
         app:layout_constraintBottom_toTopOf="@+id/calculator">
 
@@ -55,7 +56,7 @@
         android:id="@+id/calculator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -63,7 +64,7 @@
         <HorizontalScrollView
             android:id="@+id/others_horizontal_scroll_view"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/others"
             android:paddingStart="5dp"
@@ -79,7 +80,7 @@
                 android:id="@+id/others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="110dp">
+                android:paddingEnd="105dp">
 
                 <Button
                     android:id="@+id/plus"
@@ -181,17 +182,29 @@
 
         </HorizontalScrollView>
 
-        <ImageButton
-            android:id="@+id/calculator_mode"
-            android:layout_width="100dp"
-            android:layout_height="70dp"
-            android:padding="23dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/calculator"
-            android:background="@drawable/calculator_mode"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/calculator_mode_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="5dp"
             app:layout_constraintTop_toTopOf="@+id/others_horizontal_scroll_view"
             app:layout_constraintEnd_toEndOf="@+id/others_horizontal_scroll_view"
-            app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view" />
+            app:layout_constraintBottom_toBottomOf="@+id/others_horizontal_scroll_view">
+
+            <ImageButton
+                android:id="@+id/calculator_mode"
+                android:layout_width="100dp"
+                android:layout_height="70dp"
+                android:padding="23dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/calculator"
+                android:background="@drawable/calculator_mode"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             android:id="@+id/keypad_delete"

@@ -68,14 +68,9 @@
     <string name="conversions">Conversões</string>
     <string name="mile">Milha</string>
     <string name="cancel">Cancelar</string>
-    <string name="rate">Avaliar</string>
-    <string name="share_thoughts">Compartilhe o você que acha deste aplicativo com o desenvolvedor através de uma das maneiras abaixo.</string>
+    <string name="share_thoughts">Compartilhe o que você acha deste aplicativo com o desenvolvedor selecionando uma das opções abaixo.</string>
     <string name="review">Resenha</string>
     <string name="report">Reportar</string>
-    <string name="loved_it">Amei</string>
-    <string name="dislike">Não gostei</string>
-    <string name="thank_you">Obrigado!</string>
-    <string name="store_rating_error">Ocorreu um erro ao armazenar sua avaliação. Ela será enviada assim que possível.</string>
     <string name="share_usage_data">Compartilhar dados de uso</string>
     <string name="chat">Conversar</string>
     <string name="tweet_direct_message">Tweet ou Mensagem Direta</string>
@@ -84,4 +79,5 @@
     <string name="contact">Contatar</string>
     <string name="load_layout_title_error">Um erro inesperado ocorreu. Para mais informações, contate o desenvolvedor.</string>
     <string name="cancel_close">Cancelar e fechar</string>
+    <string name="share_usage_data_warning">Ao ativar esta opção, você concorda em compartilhar seus dados de uso (expressões, conversões e ocorrências de erro) com o desenvolvedor.</string>
 </resources>
